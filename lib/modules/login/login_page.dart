@@ -195,7 +195,9 @@ class _LoginPageState extends State<LoginPage> {
                     GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => WorkerDetailPage(),
+                          builder: (context) => WorkerDetailPage(
+                            isProfile: true,
+                          ),
                         ));
                       },
                       child: Text("Register as a Worker?",

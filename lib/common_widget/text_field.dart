@@ -69,7 +69,10 @@ class HandyTextField extends StatelessWidget {
                 onTap: onSuffixTap,
                 child: Icon(suffixIcon, color: suffixIconColor),
               )
-            : null,
+            : null,focusedErrorBorder:OutlineInputBorder(
+          borderRadius: BorderRadius.circular(borderRadius),
+          borderSide: BorderSide(color: borderColor),
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadius),
           borderSide: BorderSide(color: borderColor),
@@ -80,7 +83,7 @@ class HandyTextField extends StatelessWidget {
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadius),
-          borderSide: BorderSide(color: AppColor.red),
+          borderSide: BorderSide(color: borderColor, width: 2.0),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(borderRadius),

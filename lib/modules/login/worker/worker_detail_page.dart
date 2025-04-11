@@ -1,17 +1,19 @@
 import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
 import 'package:handyman_bbk_panel/common_widget/button.dart';
 import 'package:handyman_bbk_panel/common_widget/custom_drop_drown.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
+import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
 import 'package:handyman_bbk_panel/common_widget/text_field.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 import 'package:image_picker/image_picker.dart';
 
 class WorkerDetailPage extends StatefulWidget {
-  const WorkerDetailPage({super.key});
-
+  const WorkerDetailPage({super.key, required this.isProfile});
+  final bool isProfile;
   @override
   State<WorkerDetailPage> createState() => _WorkerDetailPageState();
 }
@@ -24,6 +26,12 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   DateTime selectedDate = DateTime.now();
   File? _imageFile;
   File? _idImageFile;
+  bool isEdit = false;
+  final emailRegExp = RegExp(
+    r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+"
+    r"@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?"
+    r"(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
+  );
 
   Future<void> _pickImage({required bool isProfilePic}) async {
     final picker = ImagePicker();
@@ -55,193 +63,270 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:
-          handyAppBar("Register", context, isCenter: true, isneedtopop: true),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 26),
-        child: HandymanButton(
-          text: "Submit Registration",
-          onPressed: () {},
-          isLoading: false,
-        ),
-      ),
+      appBar: handyAppBar(widget.isProfile ? "Profile" : "Register", context,
+          isCenter: true,
+          isneedtopop: true,
+          actions: widget.isProfile
+              ? [
+                  TextButton(
+                      onPressed: isEdit
+                          ? () {
+                              if (nameController.text.isEmpty) {
+                                return HandySnackBar.shower(
+                                    context: context,
+                                    message: "Please enter name",
+                                    isTrue: false);
+                              } else if (phoneController.text.isEmpty) {
+                                return HandySnackBar.shower(
+                                    context: context,
+                                    message: "Please enter mobile number",
+                                    isTrue: false);
+                              } else if (nameController.text.length < 10) {
+                                return HandySnackBar.shower(
+                                    context: context,
+                                    message:
+                                        "Please enter a valid mobile number",
+                                    isTrue: false);
+                              } else if (emailController.text.isEmpty) {
+                                return HandySnackBar.shower(
+                                    context: context,
+                                    message: "Please enter email",
+                                    isTrue: false);
+                              } else if (!emailRegExp
+                                  .hasMatch(emailController.text)) {
+                                return HandySnackBar.shower(
+                                    context: context,
+                                    message: "Please enter a valid email",
+                                    isTrue: false);
+                              } else if (locationController.text.isEmpty) {
+                                return HandySnackBar.shower(
+                                    context: context,
+                                    message: "Please enter location",
+                                    isTrue: false);
+                              } else if (_idImageFile == null) {
+                                return HandySnackBar.shower(
+                                    context: context,
+                                    message: "Please upload ID proof",
+                                    isTrue: false);
+                              }
+                              FocusScope.of(context).unfocus();
+                              HandySnackBar.show(
+                                  context: context,
+                                  isTrue: true,
+                                  message: "Profile updated successfully");
+                              setState(() {
+                                isEdit = !isEdit;
+                              });
+                            }
+                          : () {
+                              setState(() {
+                                isEdit = !isEdit;
+                              });
+                            },
+                      child: Text(
+                        isEdit ? "Done" : "Edit",
+                        style: TextStyle(color: AppColor.blue, fontSize: 16),
+                      ))
+                ]
+              : []),
+      bottomNavigationBar: widget.isProfile
+          ? null
+          : Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 26),
+              child: HandymanButton(
+                text: "Submit Registration",
+                onPressed: () {},
+                isLoading: false,
+              ),
+            ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Form(
             key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Align(
-                  alignment: Alignment.center,
-                  child: Stack(
-                    alignment: Alignment.bottomRight,
-                    children: [
-                      CircleAvatar(
-                        radius: 65,
-                        backgroundColor: Colors.grey[200],
-                        backgroundImage:
-                            _imageFile != null ? FileImage(_imageFile!) : null,
-                        child: _imageFile == null
-                            ? Icon(Icons.person, size: 50, color: Colors.grey)
-                            : null,
-                      ),
-                      GestureDetector(
-                        onTap: () => _pickImage(isProfilePic: true),
-                        child: CircleAvatar(
-                          radius: 20,
-                          backgroundColor: Colors.white,
-                          child: Icon(
-                            Icons.edit,
-                            size: 18,
-                            color: AppColor.black,
+            child: IgnorePointer(
+              ignoring: !isEdit,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Align(
+                    alignment: Alignment.center,
+                    child: Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        CircleAvatar(
+                          radius: 65,
+                          backgroundColor: Colors.grey[200],
+                          backgroundImage: _imageFile != null
+                              ? FileImage(_imageFile!)
+                              : null,
+                          child: _imageFile == null
+                              ? Icon(Icons.person, size: 50, color: Colors.grey)
+                              : null,
+                        ),
+                        GestureDetector(
+                          onTap: () => _pickImage(isProfilePic: true),
+                          child: CircleAvatar(
+                            radius: 20,
+                            backgroundColor: Colors.white,
+                            child: Icon(
+                              Icons.edit,
+                              size: 18,
+                              color: AppColor.black,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                HandyLabel(
-                  text: "Name",
-                  isBold: true,
-                  fontSize: 16,
-                ),
-                const SizedBox(height: 8),
-                _buildDropDownTextField(
-                    "Enter Your Name", nameController, titleOptions),
-                const SizedBox(height: 15),
-                HandyLabel(
-                  text: "Mobile Number",
-                  isBold: true,
-                  fontSize: 16,
-                ),
-                const SizedBox(height: 8),
-                _buildDropDownTextField(
-                    "Enter Mobile Number ", phoneController, phoneCodeOptions),
-                const SizedBox(height: 15),
-                Row(
-                  children: [
-                    Expanded(
-                      child: HandyLabel(
-                          text: "Gender", isBold: true, fontSize: 16),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child:
-                          HandyLabel(text: "D.O.B", isBold: true, fontSize: 16),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 15),
-                Row(
-                  children: [
-                    Expanded(
-                      child:
-                          CustomDropdown(items: genderOptions, hasBorder: true),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: _buildDOBPicker(),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 15),
-                HandyLabel(text: "Address", isBold: true, fontSize: 16),
-                const SizedBox(height: 8),
-                _buildLocationPicker(),
-                const SizedBox(height: 15),
-                HandyLabel(text: "Service", isBold: true, fontSize: 16),
-                const SizedBox(height: 8),
-                CustomDropdown(items: serviceOptions, hasBorder: true),
-                const SizedBox(height: 15),
-                HandyLabel(text: "Experience", isBold: true, fontSize: 16),
-                const SizedBox(height: 8),
-                CustomDropdown(items: experienceOptions, hasBorder: true),
-                const SizedBox(height: 15),
-                HandyLabel(text: "Email ID", isBold: true, fontSize: 16),
-                const SizedBox(height: 8),
-                HandyTextField(
-                  hintText: "Email ID",
-                  controller: emailController,
-                  borderColor: AppColor.lightGrey300,
-                  textcolor: AppColor.greyDark,
-                ),
-                const SizedBox(height: 20),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: HandyLabel(
-                    text: 'Upload ID Proof',
+                  const SizedBox(height: 20),
+                  HandyLabel(
+                    text: "Name",
                     isBold: true,
                     fontSize: 16,
                   ),
-                ),
-                const SizedBox(height: 12),
-                GestureDetector(
-                  onTap: () => _pickImage(isProfilePic: false),
-                  child: _idImageFile != null
-                      ? Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Container(
-                              height: 120,
-                              width: MediaQuery.of(context).size.width * 0.5,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.file(
-                                  _idImageFile!,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              top: -5,
-                              right: -15,
-                              child: Container(
-                                height: 25,
+                  const SizedBox(height: 8),
+                  _buildDropDownTextField("Enter Your Name", nameController,
+                      titleOptions, [], TextInputType.name),
+                  const SizedBox(height: 15),
+                  HandyLabel(
+                    text: "Mobile Number",
+                    isBold: true,
+                    fontSize: 16,
+                  ),
+                  const SizedBox(height: 8),
+                  _buildDropDownTextField(
+                      "Enter Mobile Number ",
+                      phoneController,
+                      phoneCodeOptions,
+                      [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(10)
+                      ],
+                      TextInputType.phone),
+                  const SizedBox(height: 15),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: HandyLabel(
+                            text: "Gender", isBold: true, fontSize: 16),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: HandyLabel(
+                            text: "D.O.B", isBold: true, fontSize: 16),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomDropdown(
+                            items: genderOptions, hasBorder: true),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _buildDOBPicker(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  HandyLabel(text: "Address", isBold: true, fontSize: 16),
+                  const SizedBox(height: 8),
+                  _buildLocationPicker(),
+                  const SizedBox(height: 15),
+                  HandyLabel(text: "Service", isBold: true, fontSize: 16),
+                  const SizedBox(height: 8),
+                  CustomDropdown(items: serviceOptions, hasBorder: true),
+                  const SizedBox(height: 15),
+                  HandyLabel(text: "Experience", isBold: true, fontSize: 16),
+                  const SizedBox(height: 8),
+                  CustomDropdown(items: experienceOptions, hasBorder: true),
+                  const SizedBox(height: 15),
+                  HandyLabel(text: "Email ID", isBold: true, fontSize: 16),
+                  const SizedBox(height: 8),
+                  HandyTextField(
+                    hintText: "Email ID",
+                    controller: emailController,
+                    borderColor: AppColor.lightGrey300,
+                    textcolor: AppColor.greyDark,
+                  ),
+                  const SizedBox(height: 20),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: HandyLabel(
+                      text: 'Upload ID Proof',
+                      isBold: true,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  GestureDetector(
+                    onTap: () => _pickImage(isProfilePic: false),
+                    child: _idImageFile != null
+                        ? Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              Container(
+                                height: 120,
+                                width: MediaQuery.of(context).size.width * 0.5,
                                 decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.white, // white background
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 4,
-                                    ),
-                                  ],
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: IconButton(
-                                  icon: Icon(Icons.close, color: Colors.red),
-                                  iconSize: 17,
-                                  padding: EdgeInsets.all(4),
-                                  constraints: BoxConstraints(),
-                                  onPressed: () {
-                                    setState(() {
-                                      _idImageFile = null;
-                                    });
-                                  },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.file(
+                                    _idImageFile!,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
+                              Positioned(
+                                top: -5,
+                                right: -15,
+                                child: Container(
+                                  height: 25,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white, // white background
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 4,
+                                      ),
+                                    ],
+                                  ),
+                                  child: IconButton(
+                                    icon: Icon(Icons.close, color: Colors.red),
+                                    iconSize: 17,
+                                    padding: EdgeInsets.all(4),
+                                    constraints: BoxConstraints(),
+                                    onPressed: () {
+                                      setState(() {
+                                        _idImageFile = null;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        : DottedBorder(
+                            borderType: BorderType.RRect,
+                            strokeWidth: 2,
+                            radius: Radius.circular(12),
+                            color: AppColor.lightGrey400,
+                            dashPattern: [6, 5],
+                            child: Padding(
+                              padding: const EdgeInsets.all(30),
+                              child: Icon(Icons.add_photo_alternate_outlined,
+                                  color: AppColor.lightGrey400, size: 40),
                             ),
-                          ],
-                        )
-                      : DottedBorder(
-                          borderType: BorderType.RRect,
-                          strokeWidth: 2,
-                          radius: Radius.circular(12),
-                          color: AppColor.lightGrey400,
-                          dashPattern: [6, 5],
-                          child: Padding(
-                            padding: const EdgeInsets.all(30),
-                            child: Icon(Icons.add_photo_alternate_outlined,
-                                color: AppColor.lightGrey400, size: 40),
                           ),
-                        ),
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -250,7 +335,11 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   }
 
   Widget _buildDropDownTextField(
-      String hinttext, TextEditingController controller, List<String> items) {
+      String hinttext,
+      TextEditingController controller,
+      List<String> items,
+      List<TextInputFormatter> inputFormatters,
+      TextInputType keyboardType) {
     return Container(
       decoration: BoxDecoration(
           border: Border.all(color: AppColor.lightGrey300),
@@ -273,6 +362,8 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
             flex: 9,
             child: HandyTextField(
               hintText: hinttext,
+              keyboardType: keyboardType,
+              inputFormatters: [],
               controller: controller,
               borderColor: AppColor.transparent,
             ),
