@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:handyman_bbk_panel/modules/Home/home_page.dart';
 import 'package:handyman_bbk_panel/modules/login/login_page.dart';
+import 'package:handyman_bbk_panel/modules/products/products_page.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 
 void main() {
@@ -13,13 +15,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        scaffoldBackgroundColor: AppColor.white,
-        useMaterial3: true,
-      ),
-      home: LoginPage(),
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          scaffoldBackgroundColor: AppColor.white,
+          useMaterial3: true,
+        ),
+        home: ProductsPage());
   }
 }

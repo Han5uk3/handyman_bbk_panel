@@ -19,17 +19,17 @@ class AppColor {
   static Color lightGrey400 = Colors.grey.shade400;
   static Color lightGrey700 = Colors.grey.shade700;
   static Color lightGrey800 = Colors.grey.shade800;
-
-  static const Color pink = Color(0xFFD732A8);
-  static const Color lightPink = Color.fromARGB(30, 215, 50, 168);
+  static Color skyBlue = Color(0xFF5CCFF2);
+  static const Color pink = Color(0xFFF25C81);
+  static const Color lightPink = Color.fromARGB(60, 242, 92, 129);
   static const Color blue = Colors.blue;
-  static Color lightblue = const Color.fromARGB(30, 33, 149, 243);
+  static Color lightblue = const Color.fromARGB(60, 33, 149, 243);
   static const Color yellow = Color(0XFFFCB040);
-  static const Color lightYellow = Color.fromARGB(30, 252, 177, 64);
+  static const Color lightYellow = Color.fromARGB(60, 252, 177, 64);
   static const Color purple = Color(0XFF6368C6);
-  static const Color lightPurple = Color.fromARGB(30, 99, 104, 198);
+  static const Color lightPurple = Color.fromARGB(360, 99, 104, 198);
   static const Color red = Colors.red;
-  static const Color lightRed = Color.fromARGB(30, 244, 67, 54);
+  static const Color lightRed = Color.fromARGB(60, 244, 67, 54);
   static const Color green = Colors.green;
-  static const Color lightGreen = Color.fromARGB(30, 76, 175, 79);
+  static const Color lightGreen = Color.fromARGB(60, 76, 175, 79);
 }
