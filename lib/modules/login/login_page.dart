@@ -1,11 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:handyman_bbk_panel/common_widget/outline_button.dart';
-
+import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
 import 'package:handyman_bbk_panel/common_widget/svgicon.dart';
-import 'package:handyman_bbk_panel/modules/login/worker/worker_detail_page.dart';
-
+import 'package:handyman_bbk_panel/modules/login/otp/otp.dart';
+import 'package:handyman_bbk_panel/services/auth_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 
 class LoginPage extends StatefulWidget {
@@ -19,8 +18,6 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _phoneController = TextEditingController();
   bool _isChecked = false;
   bool isLoading = false;
-  bool isAdmin = true;
-
   @override
   void dispose() {
     _phoneController.dispose();
@@ -88,55 +85,11 @@ class _LoginPageState extends State<LoginPage> {
           topRight: Radius.circular(20),
         ),
       ),
-      padding: const EdgeInsets.only(left: 25, right: 25, top: 0, bottom: 16),
+      padding: const EdgeInsets.only(left: 25, right: 25, top: 0, bottom: 0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Login As',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            spacing: 12,
-            children: [
-              Expanded(
-                child: HandymanOutlineButton(
-                  borderRadius: 5,
-                  borderThickness: 1,
-                  text: "Admin",
-                  onPressed: () {
-                    setState(() {
-                      isAdmin = true;
-                    });
-                  },
-                  textColor: isAdmin ? Colors.black : AppColor.lightGrey400,
-                  borderColor: isAdmin ? Colors.black : AppColor.lightGrey300,
-                ),
-              ),
-              Expanded(
-                child: HandymanOutlineButton(
-                  text: "Worker",
-                  onPressed: () {
-                    setState(() {
-                      isAdmin = false;
-                    });
-                  },
-                  textColor: isAdmin ? AppColor.lightGrey400 : AppColor.yellow,
-                  borderColor:
-                      isAdmin ? AppColor.lightGrey300 : AppColor.yellow,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 16,
-          ),
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -178,34 +131,16 @@ class _LoginPageState extends State<LoginPage> {
                 'I agree with the ',
                 style: TextStyle(color: Colors.black),
               ),
-              TextButton(
-                onPressed: () {},
+              GestureDetector(
+                onTap: () => print("Terms & Conditions"),
                 child: const Text(
                   'Terms & Conditions',
-                  style: TextStyle(color: Colors.green),
+                  style: TextStyle(
+                      color: AppColor.yellow, fontWeight: FontWeight.w700),
                 ),
               ),
             ],
           ),
-          !isAdmin
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 12),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => WorkerDetailPage(
-                            isProfile: true,
-                          ),
-                        ));
-                      },
-                      child: Text("Register as a Worker?",
-                          style: TextStyle(color: AppColor.yellow)),
-                    ),
-                  ],
-                )
-              : SizedBox.shrink(),
           const SizedBox(height: 30),
           Row(
             children: [
@@ -214,8 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                   duration: Duration(milliseconds: 300),
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () {},
-                    // onPressed: isLoading ? null : _sendOTP,
+                    onPressed: isLoading ? null : _sendOTP,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColor.black,
                       foregroundColor: AppColor.white,
@@ -274,30 +208,28 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(height: 10),
           Platform.isIOS
               ? _loginButtonTile(
-                  onTap: () {},
-                  // onTap: () async {
-                  //   final user = await AuthServices().signInWithApple();
-                  //   if (user != null) {
-                  //     await AuthServices().checkUser(
-                  //       userCredential: user,
-                  //       context: context,
-                  //     );
-                  //   }
-                  // },
+                  onTap: () async {
+                    final user = await AuthServices().signInWithApple();
+                    if (user != null) {
+                      await AuthServices().checkUser(
+                        userCredential: user,
+                        context: context,
+                      );
+                    }
+                  },
                   title: "Apple",
                 )
               : SizedBox(),
           _loginButtonTile(
-            onTap: () {},
-            // onTap: () async {
-            //   final user = await AuthServices().signInWithGoogle();
-            //   if (user != null) {
-            //     await AuthServices().checkUser(
-            //       userCredential: user,
-            //       context: context,
-            //     );
-            //   }
-            // },
+            onTap: () async {
+              final user = await AuthServices().signInWithGoogle();
+              if (user != null) {
+                await AuthServices().checkUser(
+                  userCredential: user,
+                  context: context,
+                );
+              }
+            },
             title: "Google",
           ),
         ],
@@ -305,99 +237,99 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Future<void> _sendOTP() async {
-  //   final phone = _phoneController.text.trim();
+  Future<void> _sendOTP() async {
+    final phone = _phoneController.text.trim();
 
-  //   if (phone.length == 10 && RegExp(r'^[0-9]{10}$').hasMatch(phone)) {
-  //     if (_isChecked) {
-  //       setState(() {
-  //         isLoading = true;
-  //       });
+    if (phone.length == 10 && RegExp(r'^[0-9]{10}$').hasMatch(phone)) {
+      if (_isChecked) {
+        setState(() {
+          isLoading = true;
+        });
 
-  //       try {
-  //         await AuthServices().sendOTP(
-  //           phoneNumber: phone,
-  //           onCodeSent: (verificationId) {
-  //             setState(() {
-  //               isLoading = false;
-  //             });
+        try {
+          await AuthServices().sendOTP(
+            phoneNumber: phone,
+            onCodeSent: (verificationId) {
+              setState(() {
+                isLoading = false;
+              });
 
-  //             // Subtle success feedback
-  //             HandySnackBar.show(
-  //               context: context,
-  //               message: "OTP sent successfully",
-  //               isTrue: true,
-  //             );
+              // Subtle success feedback
+              HandySnackBar.show(
+                context: context,
+                message: "OTP sent successfully",
+                isTrue: true,
+              );
 
-  //             // Navigate with a smoother transition
-  //             Navigator.of(context).push(
-  //               PageRouteBuilder(
-  //                 pageBuilder: (context, animation, secondaryAnimation) =>
-  //                     OtpVerificationScreen(
-  //                   phoneNumber: phone,
-  //                   verificationId: verificationId,
-  //                 ),
-  //                 transitionsBuilder: (
-  //                   context,
-  //                   animation,
-  //                   secondaryAnimation,
-  //                   child,
-  //                 ) {
-  //                   const begin = Offset(1.0, 0.0);
-  //                   const end = Offset.zero;
-  //                   const curve = Curves.easeInOut;
-  //                   var tween = Tween(
-  //                     begin: begin,
-  //                     end: end,
-  //                   ).chain(CurveTween(curve: curve));
-  //                   var offsetAnimation = animation.drive(tween);
-  //                   return SlideTransition(
-  //                     position: offsetAnimation,
-  //                     child: child,
-  //                   );
-  //                 },
-  //                 transitionDuration: Duration(milliseconds: 300),
-  //               ),
-  //             );
-  //           },
-  //           onError: (error) {
-  //             setState(() {
-  //               isLoading = false;
-  //             });
+              // Navigate with a smoother transition
+              Navigator.of(context).push(
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      OtpVerificationScreen(
+                    phoneNumber: phone,
+                    verificationId: verificationId,
+                  ),
+                  transitionsBuilder: (
+                    context,
+                    animation,
+                    secondaryAnimation,
+                    child,
+                  ) {
+                    const begin = Offset(1.0, 0.0);
+                    const end = Offset.zero;
+                    const curve = Curves.easeInOut;
+                    var tween = Tween(
+                      begin: begin,
+                      end: end,
+                    ).chain(CurveTween(curve: curve));
+                    var offsetAnimation = animation.drive(tween);
+                    return SlideTransition(
+                      position: offsetAnimation,
+                      child: child,
+                    );
+                  },
+                  transitionDuration: Duration(milliseconds: 300),
+                ),
+              );
+            },
+            onError: (error) {
+              setState(() {
+                isLoading = false;
+              });
 
-  //             HandySnackBar.show(
-  //               context: context,
-  //               message: error.message ?? "Failed to send OTP",
-  //               isTrue: false,
-  //             );
-  //           },
-  //         );
-  //       } catch (e) {
-  //         setState(() {
-  //           isLoading = false;
-  //         });
+              HandySnackBar.show(
+                context: context,
+                message: error.message ?? "Failed to send OTP",
+                isTrue: false,
+              );
+            },
+          );
+        } catch (e) {
+          setState(() {
+            isLoading = false;
+          });
 
-  //         HandySnackBar.show(
-  //           context: context,
-  //           message: "An unexpected error occurred",
-  //           isTrue: false,
-  //         );
-  //       }
-  //     } else {
-  //       HandySnackBar.show(
-  //         context: context,
-  //         message: "Please accept our terms and conditions",
-  //         isTrue: false,
-  //       );
-  //     }
-  //   } else {
-  //     HandySnackBar.show(
-  //       context: context,
-  //       message: "Enter valid mobile number",
-  //       isTrue: false,
-  //     );
-  //   }
-  // }
+          HandySnackBar.show(
+            context: context,
+            message: "An unexpected error occurred",
+            isTrue: false,
+          );
+        }
+      } else {
+        HandySnackBar.show(
+          context: context,
+          message: "Please accept our terms and conditions",
+          isTrue: false,
+        );
+      }
+    } else {
+      HandySnackBar.show(
+        context: context,
+        message: "Enter valid mobile number",
+        isTrue: false,
+      );
+    }
+  }
 
   Widget _loginButtonTile({void Function()? onTap, String? title}) {
     return GestureDetector(

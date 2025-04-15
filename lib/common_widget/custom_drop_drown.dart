@@ -147,7 +147,7 @@ class _CustomDropdownState extends State<CustomDropdown>
             children: [
               Expanded(
                 child: HandyLabel(
-                  fontSize: 14,
+                  fontSize: 12,
                   text: selectedValue == "" ? "Choose" : selectedValue!,
                   textcolor: AppColor.black,
                   isBold: false,
