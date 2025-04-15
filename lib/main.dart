@@ -1,25 +1,41 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:handyman_bbk_panel/firebase_options.dart';
+import 'package:handyman_bbk_panel/modules/login/bloc/login_bloc.dart';
 import 'package:handyman_bbk_panel/modules/login/login_page.dart';
+import 'package:handyman_bbk_panel/modules/splash%20screen/splash_screen.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+const myBox = "myBox";
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Hive.initFlutter();
+  await Hive.openBox(myBox);
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  static final box = Hive.box(myBox);
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        scaffoldBackgroundColor: AppColor.white,
-        useMaterial3: true,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<LoginBloc>(create: (context) => LoginBloc()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Handyman Panel',
+        theme: ThemeData(
+          scaffoldBackgroundColor: AppColor.white,
+          useMaterial3: true,
+        ),
+        home: SplashScreen(),
       ),
-      home: LoginPage(),
     );
   }
 }
