@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:handyman_bbk_panel/styles/color.dart';
 
 PreferredSizeWidget handyAppBar(
   String title,
@@ -31,39 +32,36 @@ PreferredSizeWidget handyAppBar(
       ),
     ),
     shape: BorderDirectional(
-      bottom: BorderSide(color: Colors.grey.shade100, width: 1),
+      bottom: BorderSide(color: AppColor.lightGrey100, width: 1),
     ),
     leadingWidth: isneedtopop ? 75 : 0,
-    leading:
-        isneedtopop
-            ? GestureDetector(
-              onTap: () {
-                Navigator.of(context).pop();
-              },
-              child: Row(
-                children: [
-                  Icon(CupertinoIcons.back, color: Colors.blue),
-
-                  Text(
-                    "Back",
-                    style: TextStyle(color: Colors.blue, fontSize: 16),
-                  ),
-                ],
-              ),
-            )
-            : SizedBox(),
-    backgroundColor: iswhite ? Colors.white : Colors.grey,
-    actions:
-        isneedchat
-            ? [
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.chat_bubble_outline_outlined,
-                  color: iconColor,
+    leading: isneedtopop
+        ? GestureDetector(
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+            child: Row(
+              children: [
+                Icon(CupertinoIcons.back, color: AppColor.blue),
+                Text(
+                  "Back",
+                  style: TextStyle(color: AppColor.blue, fontSize: 16),
                 ),
+              ],
+            ),
+          )
+        : SizedBox(),
+    backgroundColor: iswhite ? AppColor.white : AppColor.black,
+    actions: isneedchat
+        ? [
+            IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.chat_bubble_outline_outlined,
+                color: iconColor,
               ),
-            ]
-            : actions,
+            ),
+          ]
+        : actions,
   );
 }
