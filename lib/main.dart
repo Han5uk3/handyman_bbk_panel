@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/firebase_options.dart';
+import 'package:handyman_bbk_panel/modules/jobs/jobs_page.dart';
 import 'package:handyman_bbk_panel/modules/login/bloc/login_bloc.dart';
 import 'package:handyman_bbk_panel/modules/login/login_page.dart';
 import 'package:handyman_bbk_panel/modules/splash%20screen/splash_screen.dart';
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: AppColor.white,
           useMaterial3: true,
         ),
-        home: SplashScreen(),
+        home: JobsPage(),
       ),
     );
   }

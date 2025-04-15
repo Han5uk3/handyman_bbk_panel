@@ -47,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen>
       if (HiveHelper.getUID() != null) {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(builder: (context) => const HomePage(isAdmin: true,)),
           (route) => false,
         );
       } else {
