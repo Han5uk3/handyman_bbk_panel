@@ -294,7 +294,9 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
             Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => HomePage(),
+                  builder: (context) => HomePage(
+                    isAdmin: false,
+                  ),
                 ),
                 (route) => false);
             HandySnackBar.show(

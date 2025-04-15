@@ -150,7 +150,10 @@ class AuthServices {
     if (userDoc.exists) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(
+            builder: (context) => const HomePage(
+                  isAdmin: true,
+                )),
       );
     } else {
       Navigator.pushReplacement(
