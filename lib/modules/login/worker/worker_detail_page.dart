@@ -295,7 +295,11 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => HomePage(
+<<<<<<< Updated upstream
                     isAdmin: false,
+=======
+                 isAdmin: true,
+>>>>>>> Stashed changes
                   ),
                 ),
                 (route) => false);

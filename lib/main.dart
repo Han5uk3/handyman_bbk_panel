@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/firebase_options.dart';
 import 'package:handyman_bbk_panel/modules/jobs/jobs_page.dart';
 import 'package:handyman_bbk_panel/modules/login/bloc/login_bloc.dart';
-import 'package:handyman_bbk_panel/modules/login/login_page.dart';
 import 'package:handyman_bbk_panel/modules/splash%20screen/splash_screen.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 import 'package:hive_flutter/hive_flutter.dart';
