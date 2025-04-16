@@ -9,7 +9,13 @@ sealed class LoginEvent extends Equatable {
 
 class CreateAccountEvent extends LoginEvent {
   final UserData userData;
-  const CreateAccountEvent({required this.userData});
+  final File? idProof;
+  final File? profilePic;
+  const CreateAccountEvent({
+    required this.userData,
+    this.idProof,
+    this.profilePic,
+  });
   @override
   List<Object> get props => [userData];
 }

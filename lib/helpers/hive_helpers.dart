@@ -12,4 +12,14 @@ class HiveHelper {
   static removeUID() {
     return MyApp.box.delete('uid');
   }
+
+  putUserlanguage(String lang) async {
+    await MyApp.box.put('user_language', lang);
+    await MyApp.box.flush();
+    return lang;
+  }
+
+  String getUserlanguage() {
+    return MyApp.box.get('user_language', defaultValue: 'en');
+  }
 }

@@ -32,6 +32,7 @@ class _HomeState extends State<Home> {
         final List<Widget> pages = [
           HomePage(
             isAdmin: isAdmin,
+            userData: user,
           ),
           JobsPage(),
           ProductsPage(),
@@ -39,45 +40,53 @@ class _HomeState extends State<Home> {
         ];
         return Scaffold(
           body: pages[_currentIndex],
-          bottomNavigationBar: Theme(
-            data: Theme.of(context).copyWith(
-              splashColor: AppColor.transparent,
-              highlightColor: AppColor.transparent,
-            ),
-            child: BottomNavigationBar(
-              backgroundColor: AppColor.white,
-              elevation: 0,
-              currentIndex: _currentIndex,
-              onTap: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
-              },
-              unselectedItemColor: AppColor.greyDark,
-              selectedItemColor: AppColor.purple,
-              iconSize: 28,
-              selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
-              showUnselectedLabels: true,
-              type: BottomNavigationBarType.fixed,
-              items: [
-                _bottomNavBarItem(0, Icons.home, Icons.home_outlined, 'Home'),
-                _bottomNavBarItem(
-                    1, Icons.handyman, Icons.handyman_outlined, 'Jobs'),
-                _bottomNavBarItem(
-                  2,
-                  isAdmin ? Icons.inventory : Icons.history,
-                  isAdmin ? Icons.inventory_2_outlined : Icons.history_outlined,
-                  isAdmin ? 'Products' : 'History',
-                ),
-                _bottomNavBarItem(
-                  3,
-                  isAdmin ? Icons.people : Icons.person,
-                  isAdmin ? Icons.people_outline : Icons.person_2_outlined,
-                  isAdmin ? 'Workers' : 'Profile',
-                ),
-              ],
-            ),
-          ),
+          bottomNavigationBar: (user.isVerified ?? false)
+              ? Theme(
+                  data: Theme.of(context).copyWith(
+                    splashColor: AppColor.transparent,
+                    highlightColor: AppColor.transparent,
+                  ),
+                  child: BottomNavigationBar(
+                    backgroundColor: AppColor.white,
+                    elevation: 0,
+                    currentIndex: _currentIndex,
+                    onTap: (index) {
+                      setState(() {
+                        _currentIndex = index;
+                      });
+                    },
+                    unselectedItemColor: AppColor.greyDark,
+                    selectedItemColor: AppColor.purple,
+                    iconSize: 28,
+                    selectedLabelStyle:
+                        const TextStyle(fontWeight: FontWeight.w600),
+                    showUnselectedLabels: true,
+                    type: BottomNavigationBarType.fixed,
+                    items: [
+                      _bottomNavBarItem(
+                          0, Icons.home, Icons.home_outlined, 'Home'),
+                      _bottomNavBarItem(
+                          1, Icons.handyman, Icons.handyman_outlined, 'Jobs'),
+                      _bottomNavBarItem(
+                        2,
+                        isAdmin ? Icons.inventory : Icons.history,
+                        isAdmin
+                            ? Icons.inventory_2_outlined
+                            : Icons.history_outlined,
+                        isAdmin ? 'Products' : 'History',
+                      ),
+                      _bottomNavBarItem(
+                        3,
+                        isAdmin ? Icons.people : Icons.person,
+                        isAdmin
+                            ? Icons.people_outline
+                            : Icons.person_2_outlined,
+                        isAdmin ? 'Workers' : 'Profile',
+                      ),
+                    ],
+                  ),
+                )
+              : SizedBox.shrink(),
         );
       },
     );
