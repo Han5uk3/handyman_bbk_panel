@@ -26,9 +26,24 @@ class AppServices {
         .map((event) => event.docs.length);
   }
 
+  static Stream<int> getProductsCount() {
+    return FirebaseCollections.products.snapshots().map((event) {
+      return event.docs.length;
+    });
+  }
+
   static Stream<List<ProductsModel>> getProductsList() {
     return FirebaseCollections.products.snapshots().map((event) => event.docs
         .map((e) => ProductsModel.fromMap(e.data() as Map<String, dynamic>))
         .toList());
+  }
+
+  static Stream<List<UserData>> getWorkersList() {
+    return FirebaseCollections.users
+        .where("userType", isEqualTo: "Worker")
+        .snapshots()
+        .map((event) => event.docs
+            .map((e) => UserData.fromMap(e.data() as Map<String, dynamic>))
+            .toList());
   }
 }
