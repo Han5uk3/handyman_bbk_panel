@@ -47,14 +47,10 @@ class _SplashScreenState extends State<SplashScreen>
       if (HiveHelper.getUID() != null) {
         Navigator.pushAndRemoveUntil(
           context,
-<<<<<<< Updated upstream
-          MaterialPageRoute(builder: (context) => const HomePage(isAdmin: true,)),
-=======
           MaterialPageRoute(
               builder: (context) => const HomePage(
                      isAdmin: true,
                   )),
->>>>>>> Stashed changes
           (route) => false,
         );
       } else {
