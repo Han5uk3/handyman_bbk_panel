@@ -1,7 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
+import 'package:handyman_bbk_panel/common_widget/loader.dart';
+import 'package:handyman_bbk_panel/models/products_model.dart';
 import 'package:handyman_bbk_panel/modules/products/add_product_page.dart';
+import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 
 class ProductsPage extends StatefulWidget {
@@ -12,6 +16,14 @@ class ProductsPage extends StatefulWidget {
 }
 
 class _ProductsPageState extends State<ProductsPage> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   List<Map<String, dynamic>> productData = [
     {
       "title": "MCB/Fuse Repair",
@@ -47,21 +59,6 @@ class _ProductsPageState extends State<ProductsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(30))),
-          backgroundColor: AppColor.black,
-          child: Icon(
-            Icons.add,
-            size: 32,
-            color: AppColor.white,
-          ),
-          onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => AddProductPage(isEdit: false),
-            ));
-            //add product page
-          }),
       appBar: handyAppBar("Products", context,
           isCenter: true,
           isneedtopop: false,
@@ -69,64 +66,107 @@ class _ProductsPageState extends State<ProductsPage> {
           actions: [
             IconButton(onPressed: () {}, icon: Icon(Icons.filter_list))
           ]),
-      body: _buildBody(),
+      body: _buildProductsList(),
+      floatingActionButton: FloatingActionButton(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(30))),
+        backgroundColor: AppColor.black,
+        child: Icon(
+          Icons.add,
+          size: 32,
+          color: AppColor.white,
+        ),
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => AddProductPage(isEdit: false),
+            ),
+          );
+        },
+      ),
     );
   }
 
-  Widget _buildBody() {
-    return ListView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      itemCount: productData.length,
-      itemBuilder: (context, index) {
-        return GestureDetector(
-          onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => AddProductPage(isEdit: true),
-            ));
+  Widget _buildProductsList() {
+    return StreamBuilder<List<ProductsModel>>(
+      stream: AppServices.getProductsList(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return HandymanLoader();
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No products available'));
+        }
+        final products = snapshot.data!;
+        return ListView.builder(
+          controller: _scrollController,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          itemCount: products.length,
+          itemBuilder: (context, index) {
+            final product = products[index];
+            return _buildProductCard(product);
           },
-          child: Card(
-            elevation: 0,
-            color: AppColor.white,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: BorderSide(color: AppColor.lightGrey200)),
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  spacing: 5,
-                  children: [
-                    Container(
-                      height: 80,
-                      width: 100,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(14),
-                          image: DecorationImage(
-                              image: AssetImage(productData[index]["image"]))),
-                    ),
-                    Flexible(
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            HandyLabel(
-                              text: productData[index]["title"],
-                              fontSize: 14,
-                              isBold: false,
-                              textcolor: AppColor.greyDark,
-                            ),
-                            HandyLabel(
-                              text: "\$${productData[index]["price"]}",
-                              isBold: true,
-                              fontSize: 16,
-                            ),
-                            _buildStatusCard(productData[index]["status"]),
-                          ]),
-                    )
-                  ]),
-            ),
-          ),
         );
       },
+    );
+  }
+
+  Widget _buildProductCard(ProductsModel productData) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => AddProductPage(
+            isEdit: true,
+            productModel: productData,
+          ),
+        ));
+      },
+      child: Card(
+        elevation: 0,
+        color: AppColor.white,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: AppColor.lightGrey200)),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              spacing: 5,
+              children: [
+                SizedBox(
+                  height: 80,
+                  width: 100,
+                  child: CachedNetworkImage(
+                    imageUrl: productData.image ?? "",
+                    placeholder: (context, url) => HandymanLoader(),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
+                  ),
+                ),
+                Flexible(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        HandyLabel(
+                          text: productData.name ?? "",
+                          fontSize: 14,
+                          isBold: false,
+                          textcolor: AppColor.greyDark,
+                        ),
+                        HandyLabel(
+                          text: "\$${productData.price}",
+                          isBold: true,
+                          fontSize: 16,
+                        ),
+                        _buildStatusCard(
+                            productData.availability == "in stock"),
+                      ]),
+                )
+              ]),
+        ),
+      ),
     );
   }
 

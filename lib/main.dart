@@ -2,8 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/firebase_options.dart';
-import 'package:handyman_bbk_panel/modules/jobs/jobs_page.dart';
 import 'package:handyman_bbk_panel/modules/login/bloc/login_bloc.dart';
+import 'package:handyman_bbk_panel/modules/products/bloc/products_bloc.dart';
 import 'package:handyman_bbk_panel/modules/splash%20screen/splash_screen.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<LoginBloc>(create: (context) => LoginBloc()),
+        BlocProvider<ProductsBloc>(create: (context) => ProductsBloc()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: AppColor.white,
           useMaterial3: true,
         ),
-        home: JobsPage(),
+        home: SplashScreen(),
       ),
     );
   }

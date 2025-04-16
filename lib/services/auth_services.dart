@@ -1,12 +1,11 @@
 import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
 import 'package:handyman_bbk_panel/helpers/collections.dart';
 import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
-import 'package:handyman_bbk_panel/modules/home/home_page.dart';
+import 'package:handyman_bbk_panel/modules/home/home.dart';
 import 'package:handyman_bbk_panel/modules/login/worker/worker_detail_page.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -134,7 +133,6 @@ class AuthServices {
     required BuildContext context,
   }) async {
     final uid = userCredential.user?.uid;
-
     if (uid == null) {
       HandySnackBar.show(
         context: context,
@@ -144,16 +142,11 @@ class AuthServices {
       return;
     }
     await HiveHelper.putUID(uid);
-
     final userDoc = await FirebaseCollections.users.doc(uid).get();
-
     if (userDoc.exists) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-            builder: (context) => const HomePage(
-                        isAdmin: true,
-                )),
+        MaterialPageRoute(builder: (context) => Home()),
       );
     } else {
       Navigator.pushReplacement(

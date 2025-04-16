@@ -11,7 +11,7 @@ import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
 import 'package:handyman_bbk_panel/common_widget/text_field.dart';
 import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
-import 'package:handyman_bbk_panel/modules/home/home_page.dart';
+import 'package:handyman_bbk_panel/modules/home/home.dart';
 import 'package:handyman_bbk_panel/modules/login/bloc/login_bloc.dart';
 import 'package:handyman_bbk_panel/services/auth_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
@@ -25,16 +25,13 @@ class WorkerDetailPage extends StatefulWidget {
 }
 
 class _WorkerDetailPageState extends State<WorkerDetailPage> {
-  // Form controllers
   final TextEditingController nameController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
 
-  // Form key for validation
   final _formKey = GlobalKey<FormState>();
 
-  // Selected values
   String? selectedTitle;
   String? selectedPhoneCode;
   String? selectedGender;
@@ -42,15 +39,12 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   String? selectedExperience;
   DateTime selectedDate = DateTime.now();
 
-  // Image files
   File? _profileImageFile;
   File? _idImageFile;
 
-  // UI state
   bool isEdit = false;
   bool isLoading = false;
 
-  // Dropdown options
   final titleOptions = ['Mr.', 'Ms.', 'Mrs.', 'Dr.'];
   final phoneCodeOptions = ['+91', '+955', '+965'];
   final genderOptions = ['Male', 'Female', 'Other'];
@@ -68,7 +62,6 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
     '5+ years'
   ];
 
-  // Email validation regex
   final emailRegExp = RegExp(
     r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+"
     r"@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?"
@@ -78,14 +71,13 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   @override
   void initState() {
     super.initState();
-    // Set default values for dropdowns
+
     selectedTitle = titleOptions.first;
     selectedPhoneCode = phoneCodeOptions.first;
     selectedGender = genderOptions.first;
     selectedService = serviceOptions.first;
     selectedExperience = experienceOptions.first;
 
-    // Enable editing by default for registration
     if (!widget.isProfile) {
       isEdit = true;
     }
@@ -94,14 +86,10 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
         (AuthServices.userName?.isNotEmpty ?? false)) {
       nameController.text = AuthServices.userName ?? '';
     }
-
-    // For profile page, you could load existing data here
-    // loadProfileData();
   }
 
   @override
   void dispose() {
-    // Dispose controllers to prevent memory leaks
     nameController.dispose();
     locationController.dispose();
     phoneController.dispose();
@@ -114,7 +102,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(
         source: ImageSource.gallery,
-        imageQuality: 80, // Optimize image quality
+        imageQuality: 80,
       );
 
       if (pickedFile != null) {
@@ -173,7 +161,6 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   }
 
   Map<String, dynamic> _collectFormData() {
-    // Collect all form data in a structured way
     return {
       'name': nameController.text,
       'title': selectedTitle,
@@ -189,14 +176,12 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   }
 
   void _handleSubmitRegistration() async {
-    // Validate and submit
     if (!_validateForm()) return;
 
     setState(() {
       isLoading = true;
     });
 
-    // Collect form data
     final userData = UserData(
       address: locationController.text,
       service: selectedService,
@@ -209,6 +194,8 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
       latitude: 0.0,
       longitude: 0.0,
       userType: "Worker",
+      isAdmin: false,
+      isUserOnline: false,
       location: locationController.text,
       loginType: AuthServices.loginType,
       name: nameController.text,
@@ -216,25 +203,15 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
       title: selectedTitle,
       uid: HiveHelper.getUID(),
     );
-
-    // Log the collected data (for demonstration)
-    print('User Registration Data: $userData');
-
-    // Here you would typically send this data to your backend service
-
-    // Simulate a network request
     context.read<LoginBloc>().add(CreateAccountEvent(userData: userData));
   }
 
   void _handleProfileUpdate() {
-    // For the profile edit mode
     if (!_validateForm()) return;
 
-    // Collect and log profile data
     final profileData = _collectFormData();
     print('Updated Profile Data: $profileData');
 
-    // Show success message
     HandySnackBar.show(
       context: context,
       isTrue: true,
@@ -294,9 +271,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
             Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => HomePage(
-                 isAdmin: true,
-                  ),
+                  builder: (context) => Home(),
                 ),
                 (route) => false);
             HandySnackBar.show(
@@ -442,8 +417,6 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
               child: CustomDropdown(
                 items: genderOptions,
                 hasBorder: true,
-                // onChanged: (value) => setState(() => selectedGender = value),
-                // initialValue: selectedGender,
               ),
             ),
             const SizedBox(width: 10),
@@ -479,8 +452,6 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
         CustomDropdown(
           items: serviceOptions,
           hasBorder: true,
-          // onChanged: (value) => setState(() => selectedService = value),
-          // initialValue: selectedService,
         ),
         const SizedBox(height: 15),
         HandyLabel(text: "Experience", isBold: true, fontSize: 16),
@@ -488,8 +459,6 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
         CustomDropdown(
           items: experienceOptions,
           hasBorder: true,
-          // onChanged: (value) => setState(() => selectedExperience = value),
-          // initialValue: selectedExperience,
         ),
       ],
     );
@@ -506,9 +475,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
         ),
         const SizedBox(height: 12),
         GestureDetector(
-          onTap: () => _pickImage(
-              isProfilePic:
-                  false), // Removed isEdit condition to allow upload in registration
+          onTap: () => _pickImage(isProfilePic: false),
           child: _idImageFile != null
               ? Stack(
                   clipBehavior: Clip.none,
@@ -534,7 +501,6 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
                         ),
                       ),
                     ),
-                    // Show remove button for both profile and registration
                     Positioned(
                       top: -5,
                       right: -15,
@@ -617,8 +583,6 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
             child: CustomDropdown(
               items: items,
               hasBorder: false,
-              // initialValue: selectedDropdownValue,
-              // onChanged: onDropdownChanged,
             ),
           ),
           Container(
@@ -644,7 +608,6 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   Widget _buildDOBPicker() {
     return GestureDetector(
       onTap: () {
-        // Removed isEdit condition to allow DOB selection in registration
         showDatePicker(
           context: context,
           initialDate: selectedDate,
@@ -713,7 +676,6 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
           ),
           IconButton(
             onPressed: () {
-              // Removed isEdit condition to allow location selection in registration
               HandySnackBar.show(
                 context: context,
                 message: "Location picker would open here",

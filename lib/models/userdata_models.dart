@@ -7,8 +7,8 @@ class UserData {
   final String? name;
   final String? phoneNumber;
   final String? uid;
-
-  // New fields
+  final bool? isAdmin;
+  final bool? isUserOnline;
   final String? title;
   final String? userType;
   final String? gender;
@@ -26,6 +26,8 @@ class UserData {
     this.loginType,
     this.longitude,
     this.name,
+    this.isAdmin,
+    this.isUserOnline,
     this.phoneNumber,
     this.uid,
     this.title,
@@ -47,6 +49,8 @@ class UserData {
       loginType: map['loginType'] ?? '',
       longitude: (map['longitude'] ?? 0).toDouble(),
       name: map['name'] ?? '',
+      isAdmin: map['isAdmin'] ?? false,
+      isUserOnline: map['isUserOnline'] ?? false,
       phoneNumber: map['phoneNumber'],
       uid: map['uid'] ?? '',
       title: map['title'] ?? '',
@@ -71,6 +75,8 @@ class UserData {
       'name': name,
       'phoneNumber': phoneNumber,
       'uid': uid,
+      'isAdmin': isAdmin,
+      'isUserOnline': isUserOnline,
       'title': title,
       'gender': gender,
       'userType': userType,

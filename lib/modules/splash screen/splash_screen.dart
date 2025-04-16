@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:handyman_bbk_panel/common_widget/svgicon.dart';
 import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
-import 'package:handyman_bbk_panel/modules/home/home_page.dart';
+import 'package:handyman_bbk_panel/modules/home/home.dart';
 import 'package:handyman_bbk_panel/modules/login/login_page.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 
@@ -47,10 +47,7 @@ class _SplashScreenState extends State<SplashScreen>
       if (HiveHelper.getUID() != null) {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(
-              builder: (context) => const HomePage(
-                     isAdmin: true,
-                  )),
+          MaterialPageRoute(builder: (context) => Home()),
           (route) => false,
         );
       } else {
