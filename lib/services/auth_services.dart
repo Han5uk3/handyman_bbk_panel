@@ -152,11 +152,7 @@ class AuthServices {
         context,
         MaterialPageRoute(
             builder: (context) => const HomePage(
-<<<<<<< Updated upstream
-                  isAdmin: true,
-=======
                         isAdmin: true,
->>>>>>> Stashed changes
                 )),
       );
     } else {
