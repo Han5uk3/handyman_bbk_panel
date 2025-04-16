@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/common_widget/svgicon.dart';
-import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,51 +12,75 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   bool showGrid = true;
+
   bool isVerified = true;
   bool isSeen = false;
   bool isOnline = false;
-  int totalWorkers = 0;
-  Stream<int>? workersCountStream;
-  Stream<int>? scheduledBookingsStream;
-  Stream<int>? urgentBookingsStream;
+
+  late AnimationController _controller;
+  late Animation<Offset> _slideAnimation;
 
   @override
   void initState() {
-    showGrid = true;
-    if (widget.isAdmin) {
-      workersCountStream = AppServices.getWorkersCount();
-      scheduledBookingsStream = AppServices.getScheduleUrgentCount();
-      urgentBookingsStream = AppServices.getScheduleUrgentCount(isUrgent: true);
-    }
     super.initState();
+    _controller = AnimationController(
+      duration: Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(0, -0.2),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    ));
+    showGrid = true;
+    _controller.forward();
   }
 
   void toggleGrid() {
     setState(() {
       showGrid = !showGrid;
+      if (showGrid) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   List<Map<String, dynamic>> adminData = [
     {
       "title": "Total Workers",
+      "count": "120",
       "color": AppColor.yellow,
       "icon": "assets/icons/worker.svg"
     },
     {
       "title": "Products Listed",
+      "count": "50",
       "color": AppColor.purple,
       "icon": "assets/icons/power_drill.svg"
     },
     {
       "title": "Scheduled",
+      "count": "12",
       "color": AppColor.pink,
       "icon": "assets/icons/calendar_clock.svg"
     },
     {
       "title": "Urgent",
+      "count": "5",
       "color": AppColor.skyBlue,
       "icon": "assets/icons/urgent.svg"
     },
@@ -151,7 +174,7 @@ class _HomePageState extends State<HomePage> {
           !isSeen
               ? Container(
                   width: double.infinity,
-                  height: 25,
+                  height: 35,
                   decoration: BoxDecoration(
                     color: !isVerified ? AppColor.yellow : AppColor.green,
                   ),
@@ -166,21 +189,22 @@ class _HomePageState extends State<HomePage> {
                   ),
                 )
               : SizedBox.shrink(),
-          SizedBox(height: 8),
+          SizedBox(height: 16),
           widget.isAdmin
               ? Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: GestureDetector(
                     onTap: toggleGrid,
                     child: SizedBox(
-                      height: 35,
+                      height: 30,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          HandyLabel(
-                            text: "Dashboard",
-                            fontSize: 14,
-                            isBold: false,
+                          Expanded(
+                            child: HandyLabel(
+                              fontSize: 18,
+                              text: "This Week",
+                              isBold: false,
+                            ),
                           ),
                           Icon(
                             showGrid
@@ -218,7 +242,14 @@ class _HomePageState extends State<HomePage> {
                   : SizedBox.shrink(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: showGrid ? _buildCardsGrid() : SizedBox.shrink(),
+            child: SizeTransition(
+              sizeFactor: _controller,
+              axisAlignment: -1.0,
+              child: SlideTransition(
+                position: _slideAnimation,
+                child: _buildCardsGrid(),
+              ),
+            ),
           ),
           SizedBox(height: 16),
           if (widget.isAdmin)
@@ -240,143 +271,68 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildCardsGrid() {
-    if (widget.isAdmin) {
-      return SizedBox(
-        height: MediaQuery.of(context).size.height * 0.2,
-        child: GridView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 0,
-            crossAxisSpacing: 0,
-            childAspectRatio: 2.1,
-          ),
-          itemCount: 4,
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return StreamBuilder<int>(
-                stream: workersCountStream,
-                builder: (context, snapshot) {
-                  String count =
-                      snapshot.hasData ? snapshot.data.toString() : "0";
-                  return _buildGridCard(
-                    title: "Total Workers",
-                    count: count,
-                    color: AppColor.yellow,
-                    icon: "assets/icons/worker.svg",
-                  );
-                },
-              );
-            } else if (index == 1) {
-              return _buildGridCard(
-                title: "Products Listed",
-                count: 100.toString(),
-                color: AppColor.purple,
-                icon: "assets/icons/power_drill.svg",
-              );
-            } else if (index == 2) {
-              return StreamBuilder<int>(
-                stream: scheduledBookingsStream,
-                builder: (context, snapshot) {
-                  String count =
-                      snapshot.hasData ? snapshot.data.toString() : "0";
-                  return _buildGridCard(
-                    title: "Scheduled",
-                    count: count,
-                    color: AppColor.pink,
-                    icon: "assets/icons/calendar_clock.svg",
-                  );
-                },
-              );
-            } else {
-              return StreamBuilder<int>(
-                stream: urgentBookingsStream,
-                builder: (context, snapshot) {
-                  String count =
-                      snapshot.hasData ? snapshot.data.toString() : "0";
-                  return _buildGridCard(
-                    title: "Urgent",
-                    count: count,
-                    color: AppColor.skyBlue,
-                    icon: "assets/icons/urgent.svg",
-                  );
-                },
-              );
-            }
-          },
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.2,
+      child: GridView.builder(
+        physics: NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 0,
+          crossAxisSpacing: 0,
+          childAspectRatio: 2.1,
         ),
-      );
-    } else {
-      return SizedBox(
-        height: MediaQuery.of(context).size.height * 0.2,
-        child: GridView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 0,
-            crossAxisSpacing: 0,
-            childAspectRatio: 2.1,
-          ),
-          itemCount: workerData.length,
-          itemBuilder: (context, index) {
-            return _buildGridCard(
-              title: workerData[index]["title"],
-              count: workerData[index]["count"],
-              color: workerData[index]["color"],
-              icon: workerData[index]["icon"],
-            );
-          },
-        ),
-      );
-    }
-  }
-
-  Widget _buildGridCard({
-    required String title,
-    required String count,
-    required Color color,
-    required String icon,
-  }) {
-    return Card(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: AppColor.lightGrey200)),
-      elevation: 0,
-      color: AppColor.white,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            height: 45,
-            width: 45,
-            decoration: BoxDecoration(
-              color: color,
-              border: Border.all(color: AppColor.lightGrey200),
-              borderRadius: BorderRadius.all(Radius.circular(10)),
+        itemCount: adminData.length,
+        itemBuilder: (context, index) {
+          return Card(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(color: AppColor.lightGrey200)),
+            elevation: 0,
+            color: AppColor.white,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 45,
+                  width: 45,
+                  decoration: BoxDecoration(
+                    color: widget.isAdmin
+                        ? adminData[index]["color"]
+                        : workerData[index]["color"],
+                    border: Border.all(color: AppColor.lightGrey200),
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  margin: EdgeInsets.fromLTRB(8, 8, 8, 8),
+                  padding: EdgeInsets.all(10),
+                  child: loadsvg(widget.isAdmin
+                      ? adminData[index]["icon"]
+                      : workerData[index]["icon"]),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    HandyLabel(
+                      text: widget.isAdmin
+                          ? adminData[index]["title"]
+                          : workerData[index]["title"],
+                      isBold: false,
+                      fontSize: 16,
+                      textcolor: AppColor.greyDark,
+                    ),
+                    HandyLabel(
+                      text: widget.isAdmin
+                          ? adminData[index]["count"]
+                          : workerData[index]["count"],
+                      isBold: true,
+                      fontSize: 18,
+                    ),
+                  ],
+                )
+              ],
             ),
-            margin: EdgeInsets.fromLTRB(8, 8, 8, 8),
-            padding: EdgeInsets.all(10),
-            child: loadsvg(icon),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              HandyLabel(
-                text: title,
-                isBold: false,
-                fontSize: 14,
-                textcolor: AppColor.greyDark,
-              ),
-              HandyLabel(
-                text: count,
-                isBold: true,
-                fontSize: 15,
-              ),
-            ],
-          )
-        ],
+          );
+        },
       ),
     );
   }
