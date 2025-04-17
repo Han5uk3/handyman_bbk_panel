@@ -1,190 +1,307 @@
-// ignore_for_file: deprecated_member_use
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
-import 'package:handyman_bbk_panel/common_widget/button.dart';
-
-import 'package:handyman_bbk_panel/common_widget/jobcard.dart';
-import 'package:handyman_bbk_panel/common_widget/label.dart';
-import 'package:handyman_bbk_panel/common_widget/outline_button.dart';
+import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
+import 'package:handyman_bbk_panel/modules/workers/bloc/workers_bloc.dart';
+import 'package:handyman_bbk_panel/modules/workers/widgets/jobcard.dart';
+import 'package:handyman_bbk_panel/models/booking_data.dart';
+import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 
 class JobsPage extends StatefulWidget {
-  const JobsPage({super.key});
+  final bool isAdmin;
+  const JobsPage({super.key, required this.isAdmin});
 
   @override
   State<JobsPage> createState() => _JobsPageState();
 }
 
-List<String> workers = [
-  'Alice',
-  'Bob',
-  'Charlie',
-  'Bob',
-  'Charlie',
-  'Bob',
-  'Charlie',
-  'Bob',
-  'Bob',
-  'Charlie',
-  'Bob',
-  'Bob',
-  'Charlie',
-  'Bob',
-];
-int? workerChoice;
+class _JobsPageState extends State<JobsPage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
 
-class _JobsPageState extends State<JobsPage> {
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(_handleTabChange);
+  }
+
+  void _handleTabChange() {
+    if (!_tabController.indexIsChanging) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void dispose() {
+    _tabController.removeListener(_handleTabChange);
+    _tabController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: handyAppBar("Jobs", context, isCenter: true, isneedtopop: false),
-      body: GestureDetector(
-        onTap: () {
-          _showWorkerAssignmentBottomSheet(context);
-        },
-        child: JobCard(
-            completedDate: DateTime.now(),
-            isinHistory: false,
-            status: false,
-            customerName: "Hansuke",
-            paymentStatus: true,
-            description:
-                "testikjlfhcvnkdsfugksruglasifchlaskgvjalsfga ;sgfikdfubsaygvcrsifgyvrskyi lasygfawv lrsfwgszugf uklsfg lasgflsruifn aufgvvvvvvvbksurfgnlsAIfcnlasuitgvnauchfl",
-            date: DateTime.now(),
-            price: 110.00,
-            time: "12:00 AM",
-            jobID: "#101",
-            jobType: "Electrical",
-            address: "PKC Building, Karuvambram, Manjeri"),
+    return BlocListener<WorkersBloc, WorkersState>(
+      listener: (context, state) {
+        if (state is RejectWorkSuccess) {
+          HandySnackBar.show(
+              context: context, message: "Rejected", isTrue: false);
+          return;
+        }
+        if (state is RejectWorkFailure) {
+          HandySnackBar.show(
+              context: context, message: state.error, isTrue: false);
+          return;
+        }
+        if (state is AcceptWorkSuccess) {
+          HandySnackBar.show(
+              context: context, message: "Accepted", isTrue: true);
+          return;
+        }
+        if (state is AcceptWorkFailure) {
+          HandySnackBar.show(
+              context: context, message: state.error, isTrue: false);
+          return;
+        }
+      },
+      child: Scaffold(
+        appBar: handyAppBar(
+          widget.isAdmin ? "Admin Jobs Assign" : "Jobs",
+          context,
+          isCenter: true,
+          isneedtopop: false,
+        ),
+        body: _buildBody(),
       ),
     );
   }
 
-  void _showWorkerAssignmentBottomSheet(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      isDismissible: false,
-      backgroundColor: AppColor.white,
-      isScrollControlled: true,
-      builder: (context) {
-        return WillPopScope(
-          onWillPop: () async => false,
-          child: StatefulBuilder(
-            builder: (context, setState) {
-              final screenHeight = MediaQuery.of(context).size.height;
-              return SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom,
-                  ),
-                  child: Container(
-                    constraints: BoxConstraints(
-                      maxHeight: screenHeight * 0.65,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                          child: HandyLabel(
-                            text: "Search Worker",
-                            isBold: true,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Divider(thickness: 1),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 5, 16, 10),
-                          child: SearchBar(
-                            elevation: WidgetStatePropertyAll(0),
-                            constraints: const BoxConstraints(
-                              maxHeight: 40,
-                              minHeight: 40,
-                              maxWidth: double.infinity,
-                            ),
-                            shape: const WidgetStatePropertyAll(
-                              RoundedRectangleBorder(
-                                side: BorderSide.none,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(12)),
-                              ),
-                            ),
-                            hintText: "Search Worker",
-                            hintStyle: const WidgetStatePropertyAll(
-                              TextStyle(color: AppColor.greyDark),
-                            ),
-                            leading: const Icon(Icons.search,
-                                color: AppColor.greyDark),
-                            backgroundColor:
-                                WidgetStatePropertyAll(AppColor.lightGrey200),
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: HandyLabel(
-                            text: "Choose Worker",
-                            isBold: false,
-                            textcolor: AppColor.green,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Flexible(
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: workers.length,
-                            itemBuilder: (context, index) {
-                              return ListTile(
-                                trailing: Radio<int>(
-                                  value: index,
-                                  groupValue: workerChoice,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      workerChoice = value!;
-                                    });
-                                  },
-                                ),
-                                title: HandyLabel(text: workers[index]),
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: HandymanOutlineButton(
-                                  text: "Cancel",
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: HandymanButton(
-                                  text: "Assign",
-                                  onPressed: () {},
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                      ],
-                    ),
-                  ),
+  Widget _buildBody() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildTabSelector(),
+          _buildTabContent(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabContent() {
+    return Expanded(
+      child: TabBarView(
+        controller: _tabController,
+        children: [
+          _urgentTabContent(),
+          _scheduledTabContent(),
+          _ongoingTabContent()
+        ],
+      ),
+    );
+  }
+
+  Widget _urgentTabContent() {
+    return StreamBuilder<List<BookingModel>>(
+      stream: AppServices.getBookingsStream(
+        isUrgent: true,
+        status: null,
+      ),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.info_outline, size: 48, color: AppColor.greyDark),
+                const SizedBox(height: 16),
+                const Text(
+                  'No urgent jobs available',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
+              ],
+            ),
+          );
+        }
+
+        final urgentJobs = snapshot.data!;
+        return RefreshIndicator(
+          onRefresh: () async {
+            setState(() {});
+            await Future.delayed(const Duration(milliseconds: 500));
+          },
+          child: ListView.builder(
+            itemCount: urgentJobs.length,
+            itemBuilder: (context, index) {
+              final job = urgentJobs[index];
+              return JobCard(
+                bookingData: job,
+                isAdmin: widget.isAdmin,
               );
             },
           ),
         );
       },
+    );
+  }
+
+  Widget _scheduledTabContent() {
+    return StreamBuilder<List<BookingModel>>(
+      stream: widget.isAdmin
+          ? AppServices.getBookingsStream(
+              isUrgent: false,
+              status: "P",
+            )
+          : AppServices.getBookingsByWorkerId(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          log(snapshot.error.toString());
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.calendar_today, size: 48, color: AppColor.greyDark),
+                const SizedBox(height: 16),
+                const Text(
+                  'No scheduled jobs available',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          );
+        }
+
+        final scheduledJobs = snapshot.data!;
+        log(scheduledJobs.toString());
+        return RefreshIndicator(
+          onRefresh: () async {
+            setState(() {});
+            await Future.delayed(const Duration(milliseconds: 500));
+          },
+          child: ListView.builder(
+            itemCount: scheduledJobs.length,
+            itemBuilder: (context, index) {
+              final job = scheduledJobs[index];
+              return JobCard(
+                bookingData: job,
+                isAdmin: widget.isAdmin,
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _ongoingTabContent() {
+    return StreamBuilder<List<BookingModel>>(
+      stream: AppServices.getBookingsStream(
+        isUrgent: false,
+        status: "ONGOING",
+      ),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.engineering, size: 48, color: AppColor.greyDark),
+                const SizedBox(height: 16),
+                const Text(
+                  'No ongoing jobs available',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          );
+        }
+
+        final ongoingJobs = snapshot.data!;
+        return RefreshIndicator(
+          onRefresh: () async {
+            setState(() {});
+            await Future.delayed(const Duration(milliseconds: 500));
+          },
+          child: ListView.builder(
+            itemCount: ongoingJobs.length,
+            itemBuilder: (context, index) {
+              final job = ongoingJobs[index];
+              return JobCard(
+                bookingData: job,
+                isAdmin: widget.isAdmin,
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTabSelector() {
+    return Container(
+      height: 45,
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColor.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TabBar(
+        controller: _tabController,
+        indicatorColor: widget.isAdmin ? AppColor.blue : AppColor.green,
+        labelPadding: EdgeInsets.zero,
+        tabs: [
+          _customTab("Urgent", 0),
+          _customTab("Scheduled", 1),
+          _customTab("Ongoing", 2),
+        ],
+      ),
+    );
+  }
+
+  Widget _customTab(String text, int index) {
+    bool isSelected = _tabController.index == index;
+    return Tab(
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: isSelected
+              ? (widget.isAdmin
+                  ? AppColor.blue.withOpacity(0.1)
+                  : AppColor.green.withOpacity(0.1))
+              : Colors.transparent,
+        ),
+        child: Text(
+          text,
+          style: TextStyle(
+            color: isSelected
+                ? (widget.isAdmin ? AppColor.blue : AppColor.green)
+                : AppColor.lightGrey400,
+            fontSize: 14,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      ),
     );
   }
 }

@@ -37,3 +37,28 @@ class SwitchToOfflineEvent extends WorkersEvent {
   @override
   List<Object> get props => [workerId];
 }
+
+class AssignWorkerToAProjectEvent extends WorkersEvent {
+  final UserData workerData;
+  final String projectId;
+  const AssignWorkerToAProjectEvent({
+    required this.workerData,
+    required this.projectId,
+  });
+  @override
+  List<Object> get props => [workerData, projectId];
+}
+
+class RejectWorkEvent extends WorkersEvent {
+  final String projectId;
+  const RejectWorkEvent({required this.projectId});
+  @override
+  List<Object> get props => [projectId];
+}
+
+class AcceptWorkEvent extends WorkersEvent {
+  final String projectId;
+  const AcceptWorkEvent({required this.projectId});
+  @override
+  List<Object> get props => [projectId];
+}

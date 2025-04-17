@@ -35,8 +35,10 @@ class _HomeState extends State<Home> {
             isAdmin: isAdmin,
             userData: user,
           ),
-          JobsPage(),
-          isAdmin ? ProductsPage() : HistoryPage(),
+          JobsPage(
+            isAdmin: isAdmin,
+          ),
+          ProductsPage(),
           isAdmin ? WorkersPage() : ProfilePage(),
         ];
         return Scaffold(
