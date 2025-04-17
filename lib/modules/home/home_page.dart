@@ -26,12 +26,22 @@ class _HomePageState extends State<HomePage> {
   bool showGrid = true;
   bool isVerified = true;
   bool isSeen = false;
-  bool isOnline = false;
+  int totalWorkers = 0;
+  Stream<int>? workersCountStream;
+  Stream<int>? scheduledBookingsStream;
+  Stream<int>? urgentBookingsStream;
+  Stream<int>? productsStream;
 
   @override
   void initState() {
-    super.initState();
     showGrid = true;
+    if (widget.isAdmin) {
+      workersCountStream = AppServices.getWorkersCount();
+      scheduledBookingsStream = AppServices.getScheduleUrgentCount();
+      urgentBookingsStream = AppServices.getScheduleUrgentCount(isUrgent: true);
+      productsStream = AppServices.getProductsCount();
+    }
+    super.initState();
   }
 
   void toggleGrid() {
@@ -43,25 +53,21 @@ class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> adminData = [
     {
       "title": "Total Workers",
-      "count": "120",
       "color": AppColor.yellow,
       "icon": "assets/icons/worker.svg"
     },
     {
       "title": "Products Listed",
-      "count": "50",
       "color": AppColor.purple,
       "icon": "assets/icons/power_drill.svg"
     },
     {
       "title": "Scheduled",
-      "count": "12",
       "color": AppColor.pink,
       "icon": "assets/icons/calendar_clock.svg"
     },
     {
       "title": "Urgent",
-      "count": "5",
       "color": AppColor.skyBlue,
       "icon": "assets/icons/urgent.svg"
     },
@@ -154,7 +160,7 @@ class _HomePageState extends State<HomePage> {
                 Icons.language,
                 color: AppColor.white,
               ),
-              onPressed: () => Localization.showLanguageDialog(context),
+              onPressed: ()=> Localization.showLanguageDialog(context),
             ),
             IconButton(
               icon: Icon(
@@ -204,15 +210,14 @@ class _HomePageState extends State<HomePage> {
                   child: GestureDetector(
                     onTap: toggleGrid,
                     child: SizedBox(
-                      height: 30,
+                      height: 35,
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(
-                            child: HandyLabel(
-                              fontSize: 18,
-                              text: "This Week",
-                              isBold: false,
-                            ),
+                          HandyLabel(
+                            text: "Dashboard",
+                            fontSize: 14,
+                            isBold: false,
                           ),
                           Icon(
                             showGrid
@@ -263,11 +268,10 @@ class _HomePageState extends State<HomePage> {
                       },
                     )
                   : SizedBox.shrink(),
-          if (showGrid)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: _buildCardsGrid(),
-            ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: showGrid ? _buildCardsGrid() : SizedBox.shrink(),
+          ),
           SizedBox(height: 16),
           if (widget.isAdmin)
             Column(
@@ -288,68 +292,150 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildCardsGrid() {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.2,
-      child: GridView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 0,
-          crossAxisSpacing: 0,
-          childAspectRatio: 2.1,
+    if (widget.isAdmin) {
+      return SizedBox(
+        height: MediaQuery.of(context).size.height * 0.2,
+        child: GridView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 0,
+            crossAxisSpacing: 0,
+            childAspectRatio: 2.1,
+          ),
+          itemCount: 4,
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return StreamBuilder<int>(
+                stream: workersCountStream,
+                builder: (context, snapshot) {
+                  String count =
+                      snapshot.hasData ? snapshot.data.toString() : "0";
+                  return _buildGridCard(
+                    title: "Total Workers",
+                    count: count,
+                    color: AppColor.yellow,
+                    icon: "assets/icons/worker.svg",
+                  );
+                },
+              );
+            } else if (index == 1) {
+              return StreamBuilder<int>(
+                stream: productsStream,
+                builder: (context, snapshot) {
+                  String count =
+                      snapshot.hasData ? snapshot.data.toString() : "0";
+                  return _buildGridCard(
+                    title: "Products Listed",
+                    count: count,
+                    color: AppColor.purple,
+                    icon: "assets/icons/power_drill.svg",
+                  );
+                },
+              );
+            } else if (index == 2) {
+              return StreamBuilder<int>(
+                stream: scheduledBookingsStream,
+                builder: (context, snapshot) {
+                  String count =
+                      snapshot.hasData ? snapshot.data.toString() : "0";
+                  return _buildGridCard(
+                    title: "Scheduled",
+                    count: count,
+                    color: AppColor.pink,
+                    icon: "assets/icons/calendar_clock.svg",
+                  );
+                },
+              );
+            } else {
+              return StreamBuilder<int>(
+                stream: urgentBookingsStream,
+                builder: (context, snapshot) {
+                  String count =
+                      snapshot.hasData ? snapshot.data.toString() : "0";
+                  return _buildGridCard(
+                    title: "Urgent",
+                    count: count,
+                    color: AppColor.skyBlue,
+                    icon: "assets/icons/urgent.svg",
+                  );
+                },
+              );
+            }
+          },
         ),
-        itemCount: adminData.length,
-        itemBuilder: (context, index) {
-          return Card(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: BorderSide(color: AppColor.lightGrey200)),
-            elevation: 0,
-            color: AppColor.white,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  height: 45,
-                  width: 45,
-                  decoration: BoxDecoration(
-                    color: widget.isAdmin
-                        ? adminData[index]["color"]
-                        : workerData[index]["color"],
-                    border: Border.all(color: AppColor.lightGrey200),
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  margin: EdgeInsets.fromLTRB(8, 8, 8, 8),
-                  padding: EdgeInsets.all(10),
-                  child: loadsvg(widget.isAdmin
-                      ? adminData[index]["icon"]
-                      : workerData[index]["icon"]),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    HandyLabel(
-                      text: widget.isAdmin
-                          ? adminData[index]["title"]
-                          : workerData[index]["title"],
-                      isBold: false,
-                      fontSize: 16,
-                      textcolor: AppColor.greyDark,
-                    ),
-                    HandyLabel(
-                      text: widget.isAdmin
-                          ? adminData[index]["count"]
-                          : workerData[index]["count"],
-                      isBold: true,
-                      fontSize: 18,
-                    ),
-                  ],
-                )
-              ],
+      );
+    } else {
+      return SizedBox(
+        height: MediaQuery.of(context).size.height * 0.2,
+        child: GridView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 0,
+            crossAxisSpacing: 0,
+            childAspectRatio: 2.1,
+          ),
+          itemCount: workerData.length,
+          itemBuilder: (context, index) {
+            return _buildGridCard(
+              title: workerData[index]["title"],
+              count: workerData[index]["count"],
+              color: workerData[index]["color"],
+              icon: workerData[index]["icon"],
+            );
+          },
+        ),
+      );
+    }
+  }
+
+  Widget _buildGridCard({
+    required String title,
+    required String count,
+    required Color color,
+    required String icon,
+  }) {
+    return Card(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: AppColor.lightGrey200)),
+      elevation: 0,
+      color: AppColor.white,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: 45,
+            width: 45,
+            decoration: BoxDecoration(
+              color: color,
+              border: Border.all(color: AppColor.lightGrey200),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
-          );
-        },
+            margin: EdgeInsets.fromLTRB(8, 8, 8, 8),
+            padding: EdgeInsets.all(10),
+            child: loadsvg(icon),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              HandyLabel(
+                text: title,
+                isBold: false,
+                fontSize: 14,
+                textcolor: AppColor.greyDark,
+              ),
+              HandyLabel(
+                text: count,
+                isBold: true,
+                fontSize: 15,
+              ),
+            ],
+          )
+        ],
       ),
     );
   }
