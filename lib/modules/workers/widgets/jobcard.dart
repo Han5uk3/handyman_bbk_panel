@@ -30,14 +30,13 @@ class _JobCardState extends State<JobCard> {
 
   @override
   void initState() {
-    super.initState();
     _setupUserDataStream();
+    super.initState();
   }
 
   void _setupUserDataStream() {
     if (widget.bookingData.uid != null && widget.bookingData.uid!.isNotEmpty) {
       _userStream = AppServices.getUserStream(widget.bookingData.uid!);
-
       AppServices.getUserById(widget.bookingData.uid!).then((user) {
         if (mounted) {
           setState(() {
@@ -61,6 +60,8 @@ class _JobCardState extends State<JobCard> {
 
   bool get _shouldDisplay {
     if (widget.bookingData.isUrgent == true) {
+      return true;
+    } else if (widget.bookingData.status == "S") {
       return true;
     } else {
       return widget.bookingData.status == "P";
@@ -175,6 +176,27 @@ class _JobCardState extends State<JobCard> {
                   ),
                 ),
               ]
+            ] else if (widget.bookingData.status == "S" &&
+                (widget.bookingData.isWorkerAccept ?? false)) ...[
+              Expanded(
+                flex: 3,
+                child: TextButton(
+                  onPressed: () {
+                    // context.read<WorkersBloc>().add(
+                    //       CompleteWorkEvent(
+                    //         projectId: widget.bookingData.id ?? '',
+                    //       ),
+                    //     );
+                  },
+                  style: const ButtonStyle(
+                    backgroundColor: WidgetStatePropertyAll(AppColor.yellow),
+                  ),
+                  child: const Text(
+                    "Track",
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                ),
+              ),
             ] else ...[
               if (widget.isAdmin && widget.bookingData.isUrgent != true)
                 Expanded(
@@ -190,12 +212,16 @@ class _JobCardState extends State<JobCard> {
                       backgroundColor: WidgetStatePropertyAll(
                           widget.bookingData.workerData == null
                               ? AppColor.blue
-                              : AppColor.greyDark),
+                              : (widget.bookingData.isWorkerAccept ?? false)
+                                  ? AppColor.lightSplashBlue
+                                  : AppColor.greyDark),
                     ),
                     child: Text(
                       widget.bookingData.workerData == null
                           ? "Assign"
-                          : "Waiting...",
+                          : (widget.bookingData.isWorkerAccept ?? false)
+                              ? "Ongoing"
+                              : "Waiting...",
                       style: TextStyle(color: Colors.white, fontSize: 12),
                     ),
                   ),
