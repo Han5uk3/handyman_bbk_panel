@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-
 import 'package:handyman_bbk_panel/common_widget/label.dart';
-
+import 'package:handyman_bbk_panel/common_widget/rating_display.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 import 'package:intl/intl.dart';
 
 class JobCard extends StatelessWidget {
   final String customerName;
   final String description;
-
-  final String imagePath;
+  final bool isinHistory;
   final String jobID;
   final String jobType;
   final String address;
@@ -17,25 +15,29 @@ class JobCard extends StatelessWidget {
   final String time;
   final double price;
   final bool paymentStatus;
+  final bool status;
+  final DateTime completedDate;
 
   const JobCard({
     super.key,
     required this.customerName,
     required this.description,
     required this.date,
-    required this.imagePath,
     required this.jobID,
     required this.jobType,
     required this.address,
     required this.time,
     required this.price,
     required this.paymentStatus,
+    required this.isinHistory,
+    required this.status,
+    required this.completedDate,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Container(
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
@@ -61,10 +63,10 @@ class JobCard extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Row(
-                      spacing: 5,
+                      spacing: 8,
                       children: [
                         Expanded(
-                          flex: 6,
+                          flex: isinHistory ? 0 : 6,
                           child: Text(
                             "$jobID $jobType",
                             overflow: TextOverflow.ellipsis,
@@ -74,40 +76,50 @@ class JobCard extends StatelessWidget {
                                 fontWeight: FontWeight.w700),
                           ),
                         ),
-                        Expanded(
-                            flex: 2,
-                            child: TextButton(
-                              onPressed: () {},
-                              style: ButtonStyle(
-                                  minimumSize:
-                                      WidgetStatePropertyAll(Size(60, 34)),
-                                  maximumSize:
-                                      WidgetStatePropertyAll(Size(60, 34)),
-                                  backgroundColor:
-                                      WidgetStatePropertyAll(AppColor.green)),
-                              child: Text(
-                                "Accept",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 12),
-                              ),
-                            )),
-                        Expanded(
-                            flex: 2,
-                            child: TextButton(
-                              onPressed: () {},
-                              style: ButtonStyle(
-                                  minimumSize:
-                                      WidgetStatePropertyAll(Size(60, 34)),
-                                  maximumSize:
-                                      WidgetStatePropertyAll(Size(60, 34)),
-                                  backgroundColor:
-                                      WidgetStatePropertyAll(AppColor.red)),
-                              child: Text(
-                                "Reject",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 12),
-                              ),
-                            )),
+                        isinHistory
+                            ? _buildStatus(status)
+                            : Row(
+                                children: [
+                                  Expanded(
+                                      flex: 2,
+                                      child: TextButton(
+                                        onPressed: () {},
+                                        style: ButtonStyle(
+                                            minimumSize: WidgetStatePropertyAll(
+                                                Size(60, 34)),
+                                            maximumSize: WidgetStatePropertyAll(
+                                                Size(60, 34)),
+                                            backgroundColor:
+                                                WidgetStatePropertyAll(
+                                                    AppColor.green)),
+                                        child: Text(
+                                          "Accept",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12),
+                                        ),
+                                      )),
+                                  Expanded(
+                                      flex: 2,
+                                      child: TextButton(
+                                        onPressed: () {},
+                                        style: ButtonStyle(
+                                            minimumSize: WidgetStatePropertyAll(
+                                                Size(60, 34)),
+                                            maximumSize: WidgetStatePropertyAll(
+                                                Size(60, 34)),
+                                            backgroundColor:
+                                                WidgetStatePropertyAll(
+                                                    AppColor.red)),
+                                        child: Text(
+                                          "Reject",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12),
+                                        ),
+                                      )),
+                                ],
+                              )
                       ],
                     ),
                   ),
@@ -129,6 +141,7 @@ class JobCard extends StatelessWidget {
                             ),
                           ),
                           HandyLabel(
+                            textcolor: AppColor.lightGrey500,
                             text: customerName,
                             fontSize: 14,
                           )
@@ -146,7 +159,7 @@ class JobCard extends StatelessWidget {
                             textAlign: TextAlign.justify,
                             address,
                             style: TextStyle(
-                              color: AppColor.black,
+                              color: AppColor.lightGrey500,
                               fontSize: 14,
                             ),
                           )
@@ -156,25 +169,27 @@ class JobCard extends StatelessWidget {
                         text: "Issue Details",
                         fontSize: 14,
                       ),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Image.network(
-                          imagePath,
-                          width: 90,
-                          height: 90,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
                       Text(
                         description,
+                        style: TextStyle(color: AppColor.lightGrey500),
                         textAlign: TextAlign.justify,
                       ),
                     ],
                   ),
                 ),
                 Divider(
+                  indent: 10,
+                  endIndent: 10,
                   thickness: 1,
                 ),
+                Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                    child: RatingDisplay(
+                      rating: 4.0,
+                      reviewCount: 42,
+                      isInHistory: false,
+                    )),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -186,12 +201,13 @@ class JobCard extends StatelessWidget {
                       HandyLabel(
                         text: "${_getformattedDate(date)}",
                         fontSize: 14,
-                        isBold: true,
+                        isBold: false,
                       ),
                     ]),
                     Container(
+                      margin: EdgeInsets.only(top: 12, bottom: 12),
                       width: 1,
-                      height: 40,
+                      height: 22,
                       color: AppColor.greyDark,
                     ),
                     Row(spacing: 3, children: [
@@ -202,12 +218,12 @@ class JobCard extends StatelessWidget {
                       HandyLabel(
                         text: time,
                         fontSize: 14,
-                        isBold: true,
+                        isBold: false,
                       ),
                     ]),
                     Container(
                       width: 1,
-                      height: 40,
+                      height: 22,
                       color: AppColor.greyDark,
                     ),
                     Row(spacing: 3, children: [
@@ -218,7 +234,7 @@ class JobCard extends StatelessWidget {
                       HandyLabel(
                         text: "\$ $price",
                         fontSize: 14,
-                        isBold: true,
+                        isBold: false,
                       ),
                       HandyLabel(
                         text: paymentStatus ? "Paid" : "Unpaid",
@@ -236,5 +252,24 @@ class JobCard extends StatelessWidget {
   _getformattedDate(date) {
     DateFormat dateFormat = DateFormat("dd MMM");
     return dateFormat.format(date);
+  }
+
+  _buildStatus(status) {
+    return Row(
+      spacing: 3,
+      children: [
+        CircleAvatar(
+          radius: 5,
+          backgroundColor: status ? AppColor.green : AppColor.red,
+        ),
+        HandyLabel(
+          textcolor: status ? AppColor.green : AppColor.red,
+          text: status
+              ? "Completed on ${_getformattedDate(completedDate)}"
+              : "Cancelled",
+          fontSize: 14,
+        )
+      ],
+    );
   }
 }
