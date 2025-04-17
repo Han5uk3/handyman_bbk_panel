@@ -22,51 +22,22 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage> {
   bool showGrid = true;
-
   bool isVerified = true;
   bool isSeen = false;
   bool isOnline = false;
 
-  late AnimationController _controller;
-  late Animation<Offset> _slideAnimation;
-
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: Duration(milliseconds: 300),
-      vsync: this,
-    );
-
-    _slideAnimation = Tween<Offset>(
-      begin: Offset(0, -0.2),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    ));
     showGrid = true;
-    _controller.forward();
   }
 
   void toggleGrid() {
     setState(() {
       showGrid = !showGrid;
-      if (showGrid) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
     });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   List<Map<String, dynamic>> adminData = [
@@ -183,7 +154,7 @@ class _HomePageState extends State<HomePage>
                 Icons.language,
                 color: AppColor.white,
               ),
-              onPressed: ()=> Localization.showLanguageDialog(context),
+              onPressed: () => Localization.showLanguageDialog(context),
             ),
             IconButton(
               icon: Icon(
@@ -292,17 +263,11 @@ class _HomePageState extends State<HomePage>
                       },
                     )
                   : SizedBox.shrink(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: SizeTransition(
-              sizeFactor: _controller,
-              axisAlignment: -1.0,
-              child: SlideTransition(
-                position: _slideAnimation,
-                child: _buildCardsGrid(),
-              ),
+          if (showGrid)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: _buildCardsGrid(),
             ),
-          ),
           SizedBox(height: 16),
           if (widget.isAdmin)
             Column(
