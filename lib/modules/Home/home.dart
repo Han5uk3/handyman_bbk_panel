@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:handyman_bbk_panel/common_widget/loader.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
 import 'package:handyman_bbk_panel/modules/Home/home_page.dart';
+import 'package:handyman_bbk_panel/modules/history/history_page.dart';
 import 'package:handyman_bbk_panel/modules/jobs/jobs_page.dart';
 import 'package:handyman_bbk_panel/modules/products/products_page.dart';
 import 'package:handyman_bbk_panel/modules/profile/profile_page.dart';
@@ -66,7 +67,7 @@ class _HomeState extends State<Home> {
                     type: BottomNavigationBarType.fixed,
                     items: [
                       _bottomNavBarItem(
-                          0, Icons.home, Icons.home_outlined, 'Home'),
+                          0, Icons.home, Icons.home_outlined, 'Dashboard'),
                       _bottomNavBarItem(
                           1, Icons.handyman, Icons.handyman_outlined, 'Jobs'),
                       _bottomNavBarItem(

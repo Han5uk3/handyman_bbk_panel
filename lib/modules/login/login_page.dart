@@ -128,16 +128,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(width: 8),
               const Text(
-                'I agree with the ',
+                'I agree with the Terms & Conditions',
                 style: TextStyle(color: Colors.black),
-              ),
-              GestureDetector(
-                onTap: () => print("Terms & Conditions"),
-                child: const Text(
-                  'Terms & Conditions',
-                  style: TextStyle(
-                      color: AppColor.yellow, fontWeight: FontWeight.w700),
-                ),
               ),
             ],
           ),
