@@ -89,7 +89,7 @@ class WorkersBloc extends Bloc<WorkersEvent, WorkersState> {
     try {
       emit(RejectWorkLoading());
       await FirebaseCollections.bookings.doc(event.projectId).update({
-        'status': 'X',
+        'status': 'P',
         'workerData': null,
         'assignedDateTime': null,
       });
@@ -104,6 +104,7 @@ class WorkersBloc extends Bloc<WorkersEvent, WorkersState> {
       emit(AcceptWorkLoading());
       await FirebaseCollections.bookings.doc(event.projectId).update({
         'isWorkerAccept': true,
+        'status':'S',
         'acceptedDateTime': FieldValue.serverTimestamp(),
       });
       emit(AcceptWorkSuccess());

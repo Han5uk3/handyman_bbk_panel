@@ -97,9 +97,9 @@ class _JobsPageState extends State<JobsPage>
       child: TabBarView(
         controller: _tabController,
         children: [
-          _urgentTabContent(),
+          _pendingTabContent(),
           _scheduledTabContent(),
-          _ongoingTabContent()
+          _urgentTabContent(),
         ],
       ),
     );
@@ -152,7 +152,7 @@ class _JobsPageState extends State<JobsPage>
     );
   }
 
-  Widget _scheduledTabContent() {
+  Widget _pendingTabContent() {
     return StreamBuilder<List<BookingModel>>(
       stream: widget.isAdmin
           ? AppServices.getBookingsStream(
@@ -203,11 +203,11 @@ class _JobsPageState extends State<JobsPage>
     );
   }
 
-  Widget _ongoingTabContent() {
+  Widget _scheduledTabContent() {
     return StreamBuilder<List<BookingModel>>(
       stream: AppServices.getBookingsStream(
         isUrgent: false,
-        status: "ONGOING",
+        status: "S",
       ),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -221,7 +221,7 @@ class _JobsPageState extends State<JobsPage>
                 Icon(Icons.engineering, size: 48, color: AppColor.greyDark),
                 const SizedBox(height: 16),
                 const Text(
-                  'No ongoing jobs available',
+                  'No scheduled jobs available',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ],
@@ -229,17 +229,20 @@ class _JobsPageState extends State<JobsPage>
           );
         }
 
-        final ongoingJobs = snapshot.data!;
+        log(snapshot.data.toString());
+
+        final scheduledWork = snapshot.data!;
         return RefreshIndicator(
           onRefresh: () async {
             setState(() {});
             await Future.delayed(const Duration(milliseconds: 500));
           },
           child: ListView.builder(
-            itemCount: ongoingJobs.length,
+            itemCount: scheduledWork.length,
             itemBuilder: (context, index) {
-              final job = ongoingJobs[index];
-              return JobCard(
+              final job = scheduledWork[index];
+              return 
+              JobCard(
                 bookingData: job,
                 isAdmin: widget.isAdmin,
               );
@@ -270,9 +273,9 @@ class _JobsPageState extends State<JobsPage>
         indicatorColor: widget.isAdmin ? AppColor.blue : AppColor.green,
         labelPadding: EdgeInsets.zero,
         tabs: [
-          _customTab("Urgent", 0),
+          _customTab("Pending", 0),
           _customTab("Scheduled", 1),
-          _customTab("Ongoing", 2),
+          _customTab("Urgent", 2),
         ],
       ),
     );
