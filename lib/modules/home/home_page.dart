@@ -1,13 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/common_widget/svgicon.dart';
+import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
+import 'package:handyman_bbk_panel/models/userdata_models.dart';
+import 'package:handyman_bbk_panel/modules/login/login_page.dart';
+import 'package:handyman_bbk_panel/modules/workers/bloc/workers_bloc.dart';
+import 'package:handyman_bbk_panel/services/app_services.dart';
+import 'package:handyman_bbk_panel/sheets/localization_sheet.dart';
+import 'package:handyman_bbk_panel/sheets/logout_sheet.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.isAdmin});
   final bool isAdmin;
+  final UserData userData;
+  const HomePage({super.key, required this.isAdmin, required this.userData});
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -137,11 +147,33 @@ class _HomePageState extends State<HomePage>
       "jobcount": "2"
     },
   ];
+
+  void _showLogoutPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AdminLogoutPopup(
+        onLogout: () async {
+          await HiveHelper.removeUID();
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => LoginPage()),
+            (route) => false,
+          );
+        },
+        onCancel: () {
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: handyAppBar(
-          widget.isAdmin ? "Dashboard" : "Welcome Mathew!", context,
+          widget.isAdmin ? "Dashboard" : "Welcome ${widget.userData.name}",
+          context,
           isCenter: false,
           iswhite: false,
           textColor: AppColor.white,
@@ -151,7 +183,7 @@ class _HomePageState extends State<HomePage>
                 Icons.language,
                 color: AppColor.white,
               ),
-              onPressed: () {},
+              onPressed: ()=> Localization.showLanguageDialog(context),
             ),
             IconButton(
               icon: Icon(
@@ -159,9 +191,32 @@ class _HomePageState extends State<HomePage>
                 color: AppColor.white,
               ),
               onPressed: () {},
-            )
+            ),
+            widget.isAdmin
+                ? IconButton(
+                    icon: Icon(
+                      Icons.logout,
+                      color: AppColor.white,
+                    ),
+                    onPressed: () => _showLogoutPopup(context),
+                  )
+                : SizedBox.shrink()
           ]),
-      body: _buildBody(),
+      body: (widget.userData.isVerified ?? false)
+          ? _buildBody()
+          : _adminWantToVerifyWorkersAccount(),
+    );
+  }
+
+  Widget _adminWantToVerifyWorkersAccount() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: HandyLabel(
+          text: "Please wait for admin to verify your account",
+          fontSize: 14,
+        ),
+      ),
     );
   }
 
@@ -171,25 +226,7 @@ class _HomePageState extends State<HomePage>
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          !isSeen
-              ? Container(
-                  width: double.infinity,
-                  height: 35,
-                  decoration: BoxDecoration(
-                    color: !isVerified ? AppColor.yellow : AppColor.green,
-                  ),
-                  child: Center(
-                    child: HandyLabel(
-                      text: !isVerified
-                          ? "Your ID has been sent for Verification!"
-                          : "Your ID has been successfully verified!",
-                      textcolor: AppColor.white,
-                      isBold: false,
-                    ),
-                  ),
-                )
-              : SizedBox.shrink(),
-          SizedBox(height: 16),
+          SizedBox(height: 8),
           widget.isAdmin
               ? Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -219,25 +256,40 @@ class _HomePageState extends State<HomePage>
                   ),
                 )
               : isVerified
-                  ? Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          HandyLabel(
-                              text: "Online", fontSize: 18, isBold: false),
-                          Switch(
-                            value: isOnline,
-                            onChanged: (value) {
-                              setState(() {
-                                isOnline = value;
-                              });
-                            },
-                            activeColor: AppColor.white,
-                            activeTrackColor: AppColor.green,
+                  ? BlocBuilder<WorkersBloc, WorkersState>(
+                      builder: (context, state) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              HandyLabel(
+                                text: "Online",
+                                fontSize: 18,
+                                isBold: false,
+                              ),
+                              Switch(
+                                value: widget.userData.isUserOnline ?? false,
+                                onChanged: (value) {
+                                  if (value) {
+                                    context.read<WorkersBloc>().add(
+                                          SwitchToOnlineEvent(
+                                              workerId: AppServices.uid),
+                                        );
+                                  } else {
+                                    context.read<WorkersBloc>().add(
+                                          SwitchToOfflineEvent(
+                                              workerId: AppServices.uid),
+                                        );
+                                  }
+                                },
+                                activeColor: AppColor.white,
+                                activeTrackColor: AppColor.green,
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     )
                   : SizedBox.shrink(),
           Padding(

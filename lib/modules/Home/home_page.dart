@@ -1,86 +1,73 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/common_widget/svgicon.dart';
+import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
+import 'package:handyman_bbk_panel/models/userdata_models.dart';
+import 'package:handyman_bbk_panel/modules/login/login_page.dart';
+import 'package:handyman_bbk_panel/modules/workers/bloc/workers_bloc.dart';
+import 'package:handyman_bbk_panel/services/app_services.dart';
+import 'package:handyman_bbk_panel/sheets/localization_sheet.dart';
+import 'package:handyman_bbk_panel/sheets/logout_sheet.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.isAdmin});
   final bool isAdmin;
+  final UserData userData;
+  const HomePage({super.key, required this.isAdmin, required this.userData});
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage> {
   bool showGrid = true;
-
   bool isVerified = true;
   bool isSeen = false;
-  bool isOnline = false;
-
-  late AnimationController _controller;
-  late Animation<Offset> _slideAnimation;
+  int totalWorkers = 0;
+  Stream<int>? workersCountStream;
+  Stream<int>? scheduledBookingsStream;
+  Stream<int>? urgentBookingsStream;
+  Stream<int>? productsStream;
 
   @override
   void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: Duration(milliseconds: 300),
-      vsync: this,
-    );
-
-    _slideAnimation = Tween<Offset>(
-      begin: Offset(0, -0.2),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    ));
     showGrid = true;
-    _controller.forward();
+    if (widget.isAdmin) {
+      workersCountStream = AppServices.getWorkersCount();
+      scheduledBookingsStream = AppServices.getScheduleUrgentCount();
+      urgentBookingsStream = AppServices.getScheduleUrgentCount(isUrgent: true);
+      productsStream = AppServices.getProductsCount();
+    }
+    super.initState();
   }
 
   void toggleGrid() {
     setState(() {
       showGrid = !showGrid;
-      if (showGrid) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
     });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   List<Map<String, dynamic>> adminData = [
     {
       "title": "Total Workers",
-      "count": "120",
       "color": AppColor.yellow,
       "icon": "assets/icons/worker.svg"
     },
     {
       "title": "Products Listed",
-      "count": "50",
       "color": AppColor.purple,
       "icon": "assets/icons/power_drill.svg"
     },
     {
       "title": "Scheduled",
-      "count": "12",
       "color": AppColor.pink,
       "icon": "assets/icons/calendar_clock.svg"
     },
     {
       "title": "Urgent",
-      "count": "5",
       "color": AppColor.skyBlue,
       "icon": "assets/icons/urgent.svg"
     },
@@ -137,11 +124,33 @@ class _HomePageState extends State<HomePage>
       "jobcount": "2"
     },
   ];
+
+  void _showLogoutPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AdminLogoutPopup(
+        onLogout: () async {
+          await HiveHelper.removeUID();
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => LoginPage()),
+            (route) => false,
+          );
+        },
+        onCancel: () {
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: handyAppBar(
-          widget.isAdmin ? "Dashboard" : "Welcome Mathew!", context,
+          widget.isAdmin ? "Dashboard" : "Welcome ${widget.userData.name}",
+          context,
           isCenter: false,
           iswhite: false,
           textColor: AppColor.white,
@@ -151,7 +160,7 @@ class _HomePageState extends State<HomePage>
                 Icons.language,
                 color: AppColor.white,
               ),
-              onPressed: () {},
+              onPressed: ()=> Localization.showLanguageDialog(context),
             ),
             IconButton(
               icon: Icon(
@@ -159,9 +168,32 @@ class _HomePageState extends State<HomePage>
                 color: AppColor.white,
               ),
               onPressed: () {},
-            )
+            ),
+            widget.isAdmin
+                ? IconButton(
+                    icon: Icon(
+                      Icons.logout,
+                      color: AppColor.white,
+                    ),
+                    onPressed: () => _showLogoutPopup(context),
+                  )
+                : SizedBox.shrink()
           ]),
-      body: _buildBody(),
+      body: (widget.userData.isVerified ?? false)
+          ? _buildBody()
+          : _adminWantToVerifyWorkersAccount(),
+    );
+  }
+
+  Widget _adminWantToVerifyWorkersAccount() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: HandyLabel(
+          text: "Please wait for admin to verify your account",
+          fontSize: 14,
+        ),
+      ),
     );
   }
 
@@ -171,40 +203,21 @@ class _HomePageState extends State<HomePage>
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          !isSeen
-              ? Container(
-                  width: double.infinity,
-                  height: 35,
-                  decoration: BoxDecoration(
-                    color: !isVerified ? AppColor.yellow : AppColor.green,
-                  ),
-                  child: Center(
-                    child: HandyLabel(
-                      text: !isVerified
-                          ? "Your ID has been sent for Verification!"
-                          : "Your ID has been successfully verified!",
-                      textcolor: AppColor.white,
-                      isBold: false,
-                    ),
-                  ),
-                )
-              : SizedBox.shrink(),
-          SizedBox(height: 16),
+          SizedBox(height: 8),
           widget.isAdmin
               ? Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: GestureDetector(
                     onTap: toggleGrid,
                     child: SizedBox(
-                      height: 30,
+                      height: 35,
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(
-                            child: HandyLabel(
-                              fontSize: 18,
-                              text: "This Week",
-                              isBold: false,
-                            ),
+                          HandyLabel(
+                            text: "Dashboard",
+                            fontSize: 14,
+                            isBold: false,
                           ),
                           Icon(
                             showGrid
@@ -219,37 +232,45 @@ class _HomePageState extends State<HomePage>
                   ),
                 )
               : isVerified
-                  ? Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          HandyLabel(
-                              text: "Online", fontSize: 18, isBold: false),
-                          Switch(
-                            value: isOnline,
-                            onChanged: (value) {
-                              setState(() {
-                                isOnline = value;
-                              });
-                            },
-                            activeColor: AppColor.white,
-                            activeTrackColor: AppColor.green,
+                  ? BlocBuilder<WorkersBloc, WorkersState>(
+                      builder: (context, state) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              HandyLabel(
+                                text: "Online",
+                                fontSize: 18,
+                                isBold: false,
+                              ),
+                              Switch(
+                                value: widget.userData.isUserOnline ?? false,
+                                onChanged: (value) {
+                                  if (value) {
+                                    context.read<WorkersBloc>().add(
+                                          SwitchToOnlineEvent(
+                                              workerId: AppServices.uid),
+                                        );
+                                  } else {
+                                    context.read<WorkersBloc>().add(
+                                          SwitchToOfflineEvent(
+                                              workerId: AppServices.uid),
+                                        );
+                                  }
+                                },
+                                activeColor: AppColor.white,
+                                activeTrackColor: AppColor.green,
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     )
                   : SizedBox.shrink(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: SizeTransition(
-              sizeFactor: _controller,
-              axisAlignment: -1.0,
-              child: SlideTransition(
-                position: _slideAnimation,
-                child: _buildCardsGrid(),
-              ),
-            ),
+            child: showGrid ? _buildCardsGrid() : SizedBox.shrink(),
           ),
           SizedBox(height: 16),
           if (widget.isAdmin)
@@ -271,68 +292,150 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget _buildCardsGrid() {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.2,
-      child: GridView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 0,
-          crossAxisSpacing: 0,
-          childAspectRatio: 2.1,
+    if (widget.isAdmin) {
+      return SizedBox(
+        height: MediaQuery.of(context).size.height * 0.2,
+        child: GridView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 0,
+            crossAxisSpacing: 0,
+            childAspectRatio: 2.1,
+          ),
+          itemCount: 4,
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return StreamBuilder<int>(
+                stream: workersCountStream,
+                builder: (context, snapshot) {
+                  String count =
+                      snapshot.hasData ? snapshot.data.toString() : "0";
+                  return _buildGridCard(
+                    title: "Total Workers",
+                    count: count,
+                    color: AppColor.yellow,
+                    icon: "assets/icons/worker.svg",
+                  );
+                },
+              );
+            } else if (index == 1) {
+              return StreamBuilder<int>(
+                stream: productsStream,
+                builder: (context, snapshot) {
+                  String count =
+                      snapshot.hasData ? snapshot.data.toString() : "0";
+                  return _buildGridCard(
+                    title: "Products Listed",
+                    count: count,
+                    color: AppColor.purple,
+                    icon: "assets/icons/power_drill.svg",
+                  );
+                },
+              );
+            } else if (index == 2) {
+              return StreamBuilder<int>(
+                stream: scheduledBookingsStream,
+                builder: (context, snapshot) {
+                  String count =
+                      snapshot.hasData ? snapshot.data.toString() : "0";
+                  return _buildGridCard(
+                    title: "Scheduled",
+                    count: count,
+                    color: AppColor.pink,
+                    icon: "assets/icons/calendar_clock.svg",
+                  );
+                },
+              );
+            } else {
+              return StreamBuilder<int>(
+                stream: urgentBookingsStream,
+                builder: (context, snapshot) {
+                  String count =
+                      snapshot.hasData ? snapshot.data.toString() : "0";
+                  return _buildGridCard(
+                    title: "Urgent",
+                    count: count,
+                    color: AppColor.skyBlue,
+                    icon: "assets/icons/urgent.svg",
+                  );
+                },
+              );
+            }
+          },
         ),
-        itemCount: adminData.length,
-        itemBuilder: (context, index) {
-          return Card(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: BorderSide(color: AppColor.lightGrey200)),
-            elevation: 0,
-            color: AppColor.white,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  height: 45,
-                  width: 45,
-                  decoration: BoxDecoration(
-                    color: widget.isAdmin
-                        ? adminData[index]["color"]
-                        : workerData[index]["color"],
-                    border: Border.all(color: AppColor.lightGrey200),
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  margin: EdgeInsets.fromLTRB(8, 8, 8, 8),
-                  padding: EdgeInsets.all(10),
-                  child: loadsvg(widget.isAdmin
-                      ? adminData[index]["icon"]
-                      : workerData[index]["icon"]),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    HandyLabel(
-                      text: widget.isAdmin
-                          ? adminData[index]["title"]
-                          : workerData[index]["title"],
-                      isBold: false,
-                      fontSize: 16,
-                      textcolor: AppColor.greyDark,
-                    ),
-                    HandyLabel(
-                      text: widget.isAdmin
-                          ? adminData[index]["count"]
-                          : workerData[index]["count"],
-                      isBold: true,
-                      fontSize: 18,
-                    ),
-                  ],
-                )
-              ],
+      );
+    } else {
+      return SizedBox(
+        height: MediaQuery.of(context).size.height * 0.2,
+        child: GridView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 0,
+            crossAxisSpacing: 0,
+            childAspectRatio: 2.1,
+          ),
+          itemCount: workerData.length,
+          itemBuilder: (context, index) {
+            return _buildGridCard(
+              title: workerData[index]["title"],
+              count: workerData[index]["count"],
+              color: workerData[index]["color"],
+              icon: workerData[index]["icon"],
+            );
+          },
+        ),
+      );
+    }
+  }
+
+  Widget _buildGridCard({
+    required String title,
+    required String count,
+    required Color color,
+    required String icon,
+  }) {
+    return Card(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: AppColor.lightGrey200)),
+      elevation: 0,
+      color: AppColor.white,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: 45,
+            width: 45,
+            decoration: BoxDecoration(
+              color: color,
+              border: Border.all(color: AppColor.lightGrey200),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
-          );
-        },
+            margin: EdgeInsets.fromLTRB(8, 8, 8, 8),
+            padding: EdgeInsets.all(10),
+            child: loadsvg(icon),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              HandyLabel(
+                text: title,
+                isBold: false,
+                fontSize: 14,
+                textcolor: AppColor.greyDark,
+              ),
+              HandyLabel(
+                text: count,
+                isBold: true,
+                fontSize: 15,
+              ),
+            ],
+          )
+        ],
       ),
     );
   }

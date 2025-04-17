@@ -33,10 +33,10 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   final _formKey = GlobalKey<FormState>();
 
   String? selectedTitle;
-  String? selectedPhoneCode;
-  String? selectedGender;
-  String? selectedService;
-  String? selectedExperience;
+  String? selectedPhoneCode = '+91';
+  String selectedGender = 'Male';
+  String selectedService = 'Plumbing';
+  String? selectedExperience = 'Less than 1 year';
   DateTime selectedDate = DateTime.now();
 
   File? _profileImageFile;
@@ -48,13 +48,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   final titleOptions = ['Mr.', 'Ms.', 'Mrs.', 'Dr.'];
   final phoneCodeOptions = ['+91', '+955', '+965'];
   final genderOptions = ['Male', 'Female', 'Other'];
-  final serviceOptions = [
-    'Plumbing',
-    'Electrical',
-    'Carpentry',
-    'Painting',
-    'Cleaning'
-  ];
+  final serviceOptions = ['Plumbing', 'Electrical'];
   final experienceOptions = [
     'Less than 1 year',
     '1-3 years',
@@ -85,6 +79,15 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
     if (AuthServices.userName != null ||
         (AuthServices.userName?.isNotEmpty ?? false)) {
       nameController.text = AuthServices.userName ?? '';
+    }
+
+    if (AuthServices.userEmail != null ||
+        (AuthServices.userEmail?.isNotEmpty ?? false)) {
+      emailController.text = AuthServices.userEmail ?? '';
+    }
+    if (AuthServices.phoneNumber != null ||
+        (AuthServices.phoneNumber?.isNotEmpty ?? false)) {
+      phoneController.text = AuthServices.phoneNumber ?? '';
     }
   }
 
@@ -160,21 +163,6 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
     );
   }
 
-  Map<String, dynamic> _collectFormData() {
-    return {
-      'name': nameController.text,
-      'title': selectedTitle,
-      'gender': selectedGender,
-      'dateOfBirth': _formattedDate(selectedDate),
-      'address': locationController.text,
-      'service': selectedService,
-      'experience': selectedExperience,
-      'email': emailController.text,
-      'hasProfileImage': _profileImageFile != null,
-      'hasIdProof': _idImageFile != null,
-    };
-  }
-
   void _handleSubmitRegistration() async {
     if (!_validateForm()) return;
 
@@ -187,8 +175,6 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
       service: selectedService,
       experience: selectedExperience,
       email: emailController.text,
-      hasProfileImage: _profileImageFile != null,
-      hasIdProof: _idImageFile != null,
       gender: selectedGender,
       dateOfBirth: _formattedDate(selectedDate),
       latitude: 0.0,
@@ -196,6 +182,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
       userType: "Worker",
       isAdmin: false,
       isUserOnline: false,
+      isVerified: false,
       location: locationController.text,
       loginType: AuthServices.loginType,
       name: nameController.text,
@@ -203,21 +190,19 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
       title: selectedTitle,
       uid: HiveHelper.getUID(),
     );
-    context.read<LoginBloc>().add(CreateAccountEvent(userData: userData));
+    context.read<LoginBloc>().add(CreateAccountEvent(
+        userData: userData,
+        idProof: _idImageFile,
+        profilePic: _profileImageFile));
   }
 
   void _handleProfileUpdate() {
     if (!_validateForm()) return;
-
-    final profileData = _collectFormData();
-    print('Updated Profile Data: $profileData');
-
     HandySnackBar.show(
       context: context,
       isTrue: true,
       message: "Profile updated successfully",
     );
-
     setState(() {
       isEdit = false;
     });
@@ -417,6 +402,10 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
               child: CustomDropdown(
                 items: genderOptions,
                 hasBorder: true,
+                selectedValue: selectedGender,
+                onChanged: (value) => setState(
+                  () => selectedGender = value,
+                ),
               ),
             ),
             const SizedBox(width: 10),
@@ -452,6 +441,10 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
         CustomDropdown(
           items: serviceOptions,
           hasBorder: true,
+          selectedValue: selectedService,
+          onChanged: (value) => setState(
+            () => selectedService = value,
+          ),
         ),
         const SizedBox(height: 15),
         HandyLabel(text: "Experience", isBold: true, fontSize: 16),
@@ -459,6 +452,10 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
         CustomDropdown(
           items: experienceOptions,
           hasBorder: true,
+          selectedValue: selectedExperience,
+          onChanged: (value) => setState(
+            () => selectedExperience = value,
+          ),
         ),
       ],
     );
@@ -583,6 +580,8 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
             child: CustomDropdown(
               items: items,
               hasBorder: false,
+              selectedValue: selectedDropdownValue,
+              onChanged: (value) => onDropdownChanged(value),
             ),
           ),
           Container(
