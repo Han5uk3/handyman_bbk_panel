@@ -173,7 +173,7 @@ class _JobsPageState extends State<JobsPage>
                 Icon(Icons.calendar_today, size: 48, color: AppColor.greyDark),
                 const SizedBox(height: 16),
                 const Text(
-                  'No scheduled jobs available',
+                  'No pending jobs available',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ],

@@ -2,44 +2,24 @@ import 'package:flutter/material.dart';
 
 import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/common_widget/location_history_display.dart';
-// import 'package:handyman_bbk_panel/models/userdata_models.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 
 class Jobsummarycard extends StatelessWidget {
   final String time;
   final String date;
   final double price;
-  final String jobID;
   final String jobType;
 
-  const Jobsummarycard({
+  const Jobsummarycard( {
     super.key,
     required this.time,
     required this.date,
     required this.price,
-    required this.jobID,
     required this.jobType,
   });
 
   @override
   Widget build(BuildContext context) {
-    // return StreamBuilder<UserData>(
-    //   stream: AppServices.getUserData(),
-    //   builder: (context, snapshot) {
-    //     if (snapshot.connectionState == ConnectionState.waiting) {}
-
-    //     if (!snapshot.hasData) {
-    //       return const Center(child: Text(""));
-    //     }
-
-    //     final user = snapshot.data!;
-    //     String? userLocation = user.location;
-
-    //     return SingleChildScrollView(
-    //       child: _buildBodyWidget(context, userLocation),
-    //     );
-    //   },
-    // );
     return _buildBodyWidget(context, "userLocation");
   }
 
@@ -62,7 +42,7 @@ class Jobsummarycard extends StatelessWidget {
             children: [
               SizedBox(height: 1),
               HandyLabel(
-                text: "$jobID $jobType",
+                text: jobType,
                 isBold: true,
                 fontSize: 18,
               ),

@@ -1,43 +1,42 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
 import 'package:handyman_bbk_panel/common_widget/button.dart';
 import 'package:handyman_bbk_panel/common_widget/jobsummarycard.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
+import 'package:handyman_bbk_panel/common_widget/loader.dart';
+import 'package:handyman_bbk_panel/models/booking_data.dart';
+import 'package:handyman_bbk_panel/models/userdata_models.dart';
+import 'package:handyman_bbk_panel/modules/workers/widgets/jobcard.dart';
 
 import 'package:handyman_bbk_panel/styles/color.dart';
 
 class JobDetailsPage extends StatelessWidget {
-  const JobDetailsPage(
-      {super.key,
-      required this.jobID,
-      required this.jobType,
-      required this.date,
-      required this.price,
-      required this.time,
-      required this.isAccepted});
-
-  final String jobID;
-  final bool isAccepted;
-  final String jobType;
-  final String date;
-  final double price;
-  final String time;
+  final BookingModel bookingModel;
+  final UserData userData;
+  const JobDetailsPage({
+    super.key,
+    required this.bookingModel,
+    required this.userData,
+  });
 
   @override
   Widget build(BuildContext context) {
+    String bookedDate = getformattedDate(bookingModel.date);
+    String todayDate = getformattedDate(DateTime.now());
+    bool isStartButtonLocked = bookedDate == todayDate ? false : true;
     return Scaffold(
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.fromLTRB(16, 5, 16, 28),
-        child: HandymanButton(
-            text: "Start Job",
-            onPressed:
-                () {}), // if current date == date of appointment then show button else grey button with ignorePointer
-                // after start job button pressed, replace it with "mark as complete" button.
-                
-      ),
       appBar: handyAppBar("", context,
           isCenter: true, isneedtopop: true, iswhite: true),
       body: _buildBody(),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.fromLTRB(16, 5, 16, 28),
+        child: HandymanButton(
+          text: "Start Job ($bookedDate)",
+          onPressed: isStartButtonLocked ? () {} : () {},
+          color: isStartButtonLocked ? AppColor.greyDark : AppColor.black,
+        ),
+      ),
     );
   }
 
@@ -46,26 +45,24 @@ class JobDetailsPage extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        isAccepted
+        bookingModel.isWorkerAccept ?? false
             ? Container(
                 color: AppColor.yellow,
                 height: 30,
                 child: Center(
                     child: HandyLabel(
-                  text: "Customer has been notified that you accepted the job!",// when button is "mark as complete", change to "Payment Done by Customer" if payment is done.
-                  //if service is completed, change to "Service completed on date."
+                  text: "Customer has been notified that you accepted the job!",
                   textcolor: AppColor.white,
                   isBold: true,
-                  fontSize: 16,
+                  fontSize: 12,
                 )),
               )
             : SizedBox.shrink(),
         Jobsummarycard(
-          date: date,
-          jobID: jobID,
-          jobType: jobType,
-          price: price,
-          time: time,
+          date: getformattedDate(bookingModel.date),
+          jobType: bookingModel.name ?? "",
+          price: bookingModel.totalFee ?? 0,
+          time: bookingModel.time ?? "",
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -78,10 +75,9 @@ class JobDetailsPage extends StatelessWidget {
               SizedBox(
                   height: 120,
                   child: Text(
-                      textAlign: TextAlign.justify,
-                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")),
-              // add before and after service images in a row 
-              
+                    textAlign: TextAlign.justify,
+                    bookingModel.issue ?? "",
+                  )),
               SizedBox(height: 20),
             ],
           ),
@@ -90,7 +86,7 @@ class JobDetailsPage extends StatelessWidget {
           color: AppColor.lightGrey100,
           height: 15,
         ),
-        _buildCustomerCard(), // switch with rating and review setup
+        _buildCustomerCard(),
         Container(
           color: AppColor.lightGrey100,
           height: 15,
@@ -113,11 +109,21 @@ class JobDetailsPage extends StatelessWidget {
           children: [
             ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: Container(
-                  height: 60,
-                  width: 60,
-                  color: AppColor.purple,
-                )),
+                child: CachedNetworkImage(
+                    imageUrl: userData.profilePic ?? "",
+                    height: 55,
+                    width: 55,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => HandymanLoader(),
+                    errorWidget: (context, url, error) => Container(
+                          height: 55,
+                          width: 55,
+                          color: AppColor.lightGrey100,
+                          child: Icon(
+                            Icons.person,
+                            size: 30,
+                          ),
+                        ))),
             Expanded(
               child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -129,7 +135,7 @@ class JobDetailsPage extends StatelessWidget {
                       fontSize: 14,
                     ),
                     HandyLabel(
-                      text: "John Doe",
+                      text: userData.name ?? "",
                       isBold: true,
                       fontSize: 16,
                     )

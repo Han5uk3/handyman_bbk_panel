@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/models/booking_data.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
+import 'package:handyman_bbk_panel/modules/jobs/job_details_page.dart';
 import 'package:handyman_bbk_panel/modules/workers/bloc/workers_bloc.dart';
 import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/sheets/workers_list_sheet.dart';
@@ -84,24 +85,34 @@ class _JobCardState extends State<JobCard> {
           userData = streamUserData;
         }
 
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColor.lightGrey400),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildHeader(),
-                _buildBody(),
-                const Divider(thickness: 1),
-                _buildFooter(),
-              ],
+        return GestureDetector(
+          onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => JobDetailsPage(
+                  bookingModel: widget.bookingData,
+                  userData: streamUserData!,
+                ),
+              )),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColor.lightGrey400),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildHeader(),
+                  _buildBody(),
+                  const Divider(thickness: 1),
+                  _buildFooter(),
+                ],
+              ),
             ),
           ),
         );
@@ -384,7 +395,7 @@ class _JobCardState extends State<JobCard> {
             ),
             const SizedBox(width: 4),
             HandyLabel(
-              text: _getformattedDate(widget.bookingData.date),
+              text: getformattedDate(widget.bookingData.date),
               fontSize: 14,
               isBold: true,
             ),
@@ -428,12 +439,6 @@ class _JobCardState extends State<JobCard> {
     );
   }
 
-  String _getformattedDate(DateTime? date) {
-    if (date == null) return 'N/A';
-    DateFormat dateFormat = DateFormat("dd MMM");
-    return dateFormat.format(date);
-  }
-
   void _showWorkerAssignmentBottomSheet(
       BuildContext context, String projectId, UserData workerData) {
     showModalBottomSheet<void>(
@@ -447,4 +452,10 @@ class _JobCardState extends State<JobCard> {
           );
         });
   }
+}
+
+String getformattedDate(DateTime? date) {
+  if (date == null) return 'N/A';
+  DateFormat dateFormat = DateFormat("dd MMM");
+  return dateFormat.format(date);
 }
