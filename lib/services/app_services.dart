@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:handyman_bbk_panel/helpers/collections.dart';
 import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
@@ -106,7 +104,7 @@ class AppServices {
 
   static Stream<List<BookingModel>> getBookingsByWorkerId() {
     return FirebaseCollections.bookings
-        .where('workerData.uid', isEqualTo: uid)
+        .where('workerData.uid', isEqualTo: uid).where('status', isEqualTo: "P")
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
