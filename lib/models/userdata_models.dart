@@ -7,8 +7,11 @@ class UserData {
   final String? name;
   final String? phoneNumber;
   final String? uid;
-
-  // New fields
+  final bool? isAdmin;
+  final bool? isUserOnline;
+  final bool? isVerified;
+  final String? profilePic;
+  final String? idProof;
   final String? title;
   final String? userType;
   final String? gender;
@@ -16,8 +19,6 @@ class UserData {
   final String? address;
   final String? service;
   final String? experience;
-  final bool? hasProfileImage;
-  final bool? hasIdProof;
 
   UserData({
     this.email,
@@ -26,8 +27,13 @@ class UserData {
     this.loginType,
     this.longitude,
     this.name,
+    this.isAdmin,
+    this.isVerified,
+    this.isUserOnline,
     this.phoneNumber,
     this.uid,
+    this.profilePic,
+    this.idProof,
     this.title,
     this.userType,
     this.gender,
@@ -35,8 +41,6 @@ class UserData {
     this.address,
     this.service,
     this.experience,
-    this.hasProfileImage,
-    this.hasIdProof,
   });
 
   factory UserData.fromMap(Map map) {
@@ -47,6 +51,9 @@ class UserData {
       loginType: map['loginType'] ?? '',
       longitude: (map['longitude'] ?? 0).toDouble(),
       name: map['name'] ?? '',
+      isAdmin: map['isAdmin'] ?? false,
+      isUserOnline: map['isUserOnline'] ?? false,
+      isVerified: map['isVerified'] ?? false,
       phoneNumber: map['phoneNumber'],
       uid: map['uid'] ?? '',
       title: map['title'] ?? '',
@@ -55,9 +62,9 @@ class UserData {
       dateOfBirth: map['dateOfBirth'] ?? '',
       address: map['address'] ?? '',
       service: map['service'] ?? '',
+      profilePic: map['profilePic'] ?? '',
+      idProof: map['idProof'] ?? '',
       experience: map['experience'] ?? '',
-      hasProfileImage: map['hasProfileImage'] ?? false,
-      hasIdProof: map['hasIdProof'] ?? false,
     );
   }
 
@@ -71,6 +78,9 @@ class UserData {
       'name': name,
       'phoneNumber': phoneNumber,
       'uid': uid,
+      'isAdmin': isAdmin,
+      'isVerified': isVerified,
+      'isUserOnline': isUserOnline,
       'title': title,
       'gender': gender,
       'userType': userType,
@@ -78,8 +88,6 @@ class UserData {
       'address': address,
       'service': service,
       'experience': experience,
-      'hasProfileImage': hasProfileImage,
-      'hasIdProof': hasIdProof,
     };
   }
 }

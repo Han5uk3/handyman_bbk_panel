@@ -4,11 +4,19 @@ import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 
 class CustomDropdown extends StatefulWidget {
-  const CustomDropdown(
-      {super.key, required this.items, required this.hasBorder});
+  CustomDropdown(
+      {super.key,
+      required this.items,
+      required this.hasBorder,
+      this.selectedValue,
+      this.onChanged});
   final List<String> items;
+  String? selectedValue;
   final bool hasBorder;
+  final Function(String)? onChanged;
+
   @override
+
   // ignore: library_private_types_in_public_api
   _CustomDropdownState createState() => _CustomDropdownState();
 }
@@ -18,8 +26,6 @@ class _CustomDropdownState extends State<CustomDropdown>
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
   GlobalKey buttonKey = GlobalKey();
-
-  String? selectedValue = "";
 
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
@@ -48,8 +54,7 @@ class _CustomDropdownState extends State<CustomDropdown>
     double buttonHeight = buttonBox.size.height;
     double screenHeight = MediaQuery.of(context).size.height;
 
-    double estimatedDropdownHeight =
-        widget.items.length * 56.0 + 16; // ListTile height + padding
+    double estimatedDropdownHeight = widget.items.length * 56.0 + 16;
     bool willOverflow =
         buttonPosition.dy + buttonHeight + estimatedDropdownHeight >
             screenHeight;
@@ -86,7 +91,8 @@ class _CustomDropdownState extends State<CustomDropdown>
                           tileColor: AppColor.white,
                           title: Text(item),
                           onTap: () {
-                            setState(() => selectedValue = item);
+                            setState(() => widget.selectedValue = item);
+                            widget.onChanged!(item);
                             _hideOverlay();
                           },
                         );
@@ -148,7 +154,9 @@ class _CustomDropdownState extends State<CustomDropdown>
               Expanded(
                 child: HandyLabel(
                   fontSize: 12,
-                  text: selectedValue == "" ? "Choose" : selectedValue!,
+                  text: widget.selectedValue == ""
+                      ? "Choose"
+                      : widget.selectedValue!,
                   textcolor: AppColor.black,
                   isBold: false,
                 ),
