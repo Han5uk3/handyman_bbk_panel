@@ -34,7 +34,9 @@ class _HomeState extends State<Home> {
             isAdmin: isAdmin,
             userData: user,
           ),
-          JobsPage(),
+          JobsPage(
+            isAdmin: isAdmin,
+          ),
           ProductsPage(),
           isAdmin ? WorkersPage() : ProfilePage(),
         ];

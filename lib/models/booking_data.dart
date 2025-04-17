@@ -1,63 +1,69 @@
-class BookingData {
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:handyman_bbk_panel/models/userdata_models.dart';
+
+class BookingModel {
   final String? id;
-  final String? uid;
-  final String? name;
-  final String? imageUrl;
   final String? audioUrl;
-  final bool? isUrgent;
-  final DateTime? date;
-  final String? time;
   final String? issue;
   final String? status;
-  final bool? isWorkerAssign;
-  final bool? isBookingcancel;
-  final Location? location;
-  final double? serviceFee;
+  final String? uid;
   final double? taxFee;
+  final String? time;
+  final String? imageUrl;
+  final bool? isUrgent;
+  final Location? location;
+  final DateTime? date;
+  final double? serviceFee;
   final double? totalFee;
+  final bool? isWorkerAccept;
+  final DateTime? createdAt;
+  final String? name;
+  final bool? isBookingcancel;
+  final UserData? workerData;
 
-  BookingData({
+  BookingModel({
     this.id,
-    this.uid,
-    this.name,
-    this.imageUrl,
     this.audioUrl,
-    this.isUrgent,
-    this.date,
-    this.time,
     this.issue,
-    this.isBookingcancel,
     this.status,
-    this.location,
-    this.isWorkerAssign,
-    this.serviceFee,
+    this.uid,
     this.taxFee,
+    this.time,
+    this.imageUrl,
+    this.isUrgent,
+    this.location,
+    this.date,
+    this.serviceFee,
     this.totalFee,
+    this.isWorkerAccept,
+    this.createdAt,
+    this.name,
+    this.isBookingcancel,
+    this.workerData, 
   });
 
-  factory BookingData.fromJson(Map<String, dynamic> json) {
-    return BookingData(
-      id: json['id'] as String?,
-      uid: json['uid'] as String?,
-      name: json['name'] as String?,
-      imageUrl: json['imageUrl'] as String?,
-      audioUrl: json['audioUrl'] as String?,
-      isUrgent: json['isUrgent'] as bool?,
-      date:
-          json['date'] != null
-              ? (json['date'] is String
-                  ? DateTime.parse(json['date'])
-                  : json['date'] as DateTime)
-              : null,
-      time: json['time'] as String?,
-      issue: json['issue'] as String?,
-      status: json['status'] as String?,
-      isBookingcancel: json['isBookingcancel'] as bool?,
-      location: Location.fromJson(json['location']),
-      isWorkerAssign: json['isWorkerAssign'] as bool?,
-      serviceFee: (json['serviceFee'] as num).toDouble(),
-      taxFee: (json['taxFee'] as num).toDouble(),
-      totalFee: (json['totalFee'] as num).toDouble(),
+  factory BookingModel.fromMap(Map<String, dynamic> map) {
+    return BookingModel(
+      id: map['id'] ?? '',
+      audioUrl: map['audioUrl'],
+      issue: map['issue'] ?? '',
+      status: map['status'] ?? '',
+      uid: map['uid'] ?? '',
+      taxFee: (map['taxFee'] ?? 0).toDouble(),
+      time: map['time'] ?? '',
+      imageUrl: map['imageUrl'] ?? '',
+      isUrgent: map['isUrgent'] ?? false,
+      location: Location.fromJson(map['location'] ?? {}),
+      date: DateTime.tryParse(map['date'] ?? '') ?? DateTime.now(),
+      serviceFee: (map['serviceFee'] ?? 0).toDouble(),
+      totalFee: (map['totalFee'] ?? 0).toDouble(),
+      isWorkerAccept: map['isWorkerAccept'] ?? false,
+      createdAt: (map['createdAt'] as Timestamp).toDate(),
+      name: map['name'] ?? '',
+      isBookingcancel: map['isBookingcancel'] ?? false,
+      workerData: map['workerData'] != null
+          ? UserData.fromMap(map['workerData'])
+          : null,
     );
   }
 
@@ -74,7 +80,7 @@ class BookingData {
       'issue': issue,
       'isBookingcancel': isBookingcancel,
       'status': status,
-      'isWorkerAssign': isWorkerAssign,
+      'isWorkerAccept': isWorkerAccept,
       'location': location?.toJson(),
       'serviceFee': serviceFee,
       'taxFee': taxFee,
