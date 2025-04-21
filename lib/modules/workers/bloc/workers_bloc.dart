@@ -1,13 +1,18 @@
+import 'dart:async';
+import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:handyman_bbk_panel/helpers/collections.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
-
+import 'package:handyman_bbk_panel/services/locator_services.dart';
+import 'package:handyman_bbk_panel/services/storage_services.dart';
 part 'workers_event.dart';
 part 'workers_state.dart';
 
 class WorkersBloc extends Bloc<WorkersEvent, WorkersState> {
+  StreamSubscription<Position>? _positionStreamSubscription;
   WorkersBloc() : super(WorkersInitial()) {
     on<VerifyWorkerEvent>(_verifyWorker);
     on<DeactivateWorkerEvent>(_deactivateWorker);
@@ -16,6 +21,8 @@ class WorkersBloc extends Bloc<WorkersEvent, WorkersState> {
     on<AssignWorkerToAProjectEvent>(_assignWorkerToAProject);
     on<RejectWorkEvent>(_rejectWork);
     on<AcceptWorkEvent>(_acceptWork);
+    on<StartJobEvent>(_startJob);
+    on<EndWorkAndMarkAsCompletedEvent>(_endWorkAndMarkAsCompletedEvent);
   }
 
   void _verifyWorker(
@@ -104,12 +111,82 @@ class WorkersBloc extends Bloc<WorkersEvent, WorkersState> {
       emit(AcceptWorkLoading());
       await FirebaseCollections.bookings.doc(event.projectId).update({
         'isWorkerAccept': true,
-        'status':'S',
+        'status': 'S',
         'acceptedDateTime': FieldValue.serverTimestamp(),
       });
       emit(AcceptWorkSuccess());
     } catch (e) {
       emit(AcceptWorkFailure(error: e.toString()));
     }
+  }
+
+  void _startJob(StartJobEvent event, Emitter<WorkersState> emit) async {
+    try {
+      emit(StartJobLoading());
+      LocationResult locationResult = await LocationService().fetchLocation();
+      if (locationResult.status == LocationFetchStatus.success) {
+        await FirebaseCollections.bookings.doc(event.bookingId).update({
+          'status': 'W',
+        });
+        _startListeningLocation(event.bookingId);
+        emit(StartJobSuccess());
+      } else if (locationResult.status ==
+              LocationFetchStatus.permissionDenied ||
+          locationResult.status ==
+              LocationFetchStatus.permissionDeniedForever) {
+        emit(StartJobFailure(error: 'Location permission denied.'));
+      } else {
+        emit(StartJobFailure(
+            error: locationResult.error ?? 'Failed to fetch location.'));
+      }
+    } catch (e) {
+      emit(StartJobFailure(error: e.toString()));
+    }
+  }
+
+  void _endWorkAndMarkAsCompletedEvent(
+      EndWorkAndMarkAsCompletedEvent event, Emitter<WorkersState> emit) async {
+    try {
+      String? imageUrl;
+      emit(EndJobLoading());
+      if (event.afterImage != null) {
+        await StorageService.uploadFile(
+                filePath: event.afterImage!.path,
+                fileName: event.afterImage!.path.split('/').last)
+            .then((value) {
+          imageUrl = value;
+        });
+      }
+      await FirebaseCollections.bookings.doc(event.bookingId).update({
+        'status': 'C',
+        'afterImage': imageUrl,
+        'completedDateTime': FieldValue.serverTimestamp(),
+      });
+      _positionStreamSubscription?.cancel();
+      emit(EndJobSuccess());
+    } catch (e) {
+      emit(EndJobFailure(error: e.toString()));
+    }
+  }
+
+  // For get the realtime update movement of workers
+  void _startListeningLocation(String bookingId) {
+    _positionStreamSubscription?.cancel();
+    _positionStreamSubscription = Geolocator.getPositionStream(
+        locationSettings: LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 10,
+    )).listen((Position position) async {
+      double latitude = position.latitude;
+      double longitude = position.longitude;
+      try {
+        await FirebaseCollections.bookings.doc(bookingId).update({
+          'workerData.latitude': latitude,
+          'workerData.longitude': longitude,
+        });
+      } catch (e) {
+        print('Error updating location: $e');
+      }
+    });
   }
 }

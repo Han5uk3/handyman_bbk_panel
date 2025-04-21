@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
 import 'package:handyman_bbk_panel/common_widget/button.dart';
 import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
+import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
 import 'package:handyman_bbk_panel/services/auth_services.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
@@ -143,6 +144,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         verificationId: widget.verificationId,
         smsCode: currentText,
       );
+      await HiveHelper.putUID(userCredential.user?.uid ?? '');
       if (!mounted) return;
 
       if (userCredential.user != null) {

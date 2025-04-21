@@ -5,6 +5,7 @@ import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
 import 'package:handyman_bbk_panel/modules/home/home.dart';
 import 'package:handyman_bbk_panel/modules/login/login_page.dart';
 import 'package:handyman_bbk_panel/modules/profile/bloc/profile_bloc.dart';
+import 'package:handyman_bbk_panel/services/locator_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -46,6 +47,7 @@ class _SplashScreenState extends State<SplashScreen>
     _controller.forward();
     String savedLanguage = HiveHelper().getUserlanguage();
     context.read<ProfileBloc>().add(ChangeLocale(languageCode: savedLanguage));
+    LocationService().fetchLocation();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (HiveHelper.getUID() != null) {
         Navigator.pushAndRemoveUntil(

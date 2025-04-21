@@ -92,3 +92,22 @@ class AcceptWorkFailure extends WorkersState {
   @override
   List<Object> get props => [error];
 }
+
+class StartJobLoading extends WorkersState {}
+class StartJobSuccess extends WorkersState {}
+class StartJobFailure extends WorkersState {
+  final String error;
+  const StartJobFailure({required this.error});
+
+  @override
+  List<Object> get props => [error];
+}
+class EndJobLoading extends WorkersState {}
+class EndJobSuccess extends WorkersState {}
+class EndJobFailure extends WorkersState {
+  final String error;
+  const EndJobFailure({required this.error});
+
+  @override
+  List<Object> get props => [error];
+}

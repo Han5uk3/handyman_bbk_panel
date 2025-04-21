@@ -1,8 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:handyman_bbk_panel/common_widget/loader.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
 import 'package:handyman_bbk_panel/modules/Home/home_page.dart';
-import 'package:handyman_bbk_panel/modules/history/history_page.dart';
 import 'package:handyman_bbk_panel/modules/jobs/jobs_page.dart';
 import 'package:handyman_bbk_panel/modules/products/products_page.dart';
 import 'package:handyman_bbk_panel/modules/profile/profile_page.dart';
@@ -23,7 +24,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<UserData>(
-      stream: AppServices.getUserData(),
+      stream: AppServices.getUserData(uid: FirebaseAuth.instance.currentUser?.uid),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Scaffold(body: HandymanLoader());

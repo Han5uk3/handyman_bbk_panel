@@ -2,11 +2,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/firebase_options.dart';
+import 'package:handyman_bbk_panel/modules/home/bloc/location_bloc.dart';
 import 'package:handyman_bbk_panel/modules/login/bloc/login_bloc.dart';
 import 'package:handyman_bbk_panel/modules/products/bloc/products_bloc.dart';
 import 'package:handyman_bbk_panel/modules/profile/bloc/profile_bloc.dart';
 import 'package:handyman_bbk_panel/modules/splash%20screen/splash_screen.dart';
 import 'package:handyman_bbk_panel/modules/workers/bloc/workers_bloc.dart';
+import 'package:handyman_bbk_panel/services/locator_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -35,6 +37,9 @@ class MyApp extends StatelessWidget {
         BlocProvider<ProductsBloc>(create: (context) => ProductsBloc()),
         BlocProvider<WorkersBloc>(create: (context) => WorkersBloc()),
         BlocProvider<ProfileBloc>(create: (context) => ProfileBloc()),
+        BlocProvider<LocationBloc>(
+          create: (context) => LocationBloc(LocationService()),
+        ),
       ],
       child: BlocBuilder<ProfileBloc, ProfileState>(
         builder: (context, state) {

@@ -6,9 +6,9 @@ import 'package:handyman_bbk_panel/models/products_model.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
 
 class AppServices {
-  static final uid = HiveHelper.getUID();
+  static String? uid = HiveHelper.getUID();
 
-  static Stream<UserData> getUserData() {
+  static Stream<UserData> getUserData({String? uid}) {
     return FirebaseCollections.users.doc(uid).snapshots().map((event) {
       return UserData.fromMap(event.data() as Map<String, dynamic>);
     });
@@ -84,15 +84,25 @@ class AppServices {
   static Stream<List<BookingModel>> getBookingsStream({
     bool? isUrgent,
     String? status,
+    String? secondStatus,
   }) {
     Query query = FirebaseCollections.bookings;
+
     if (isUrgent != null) {
       query = query.where('isUrgent', isEqualTo: isUrgent);
     }
-    if (status != null) {
+
+    if (status != null && secondStatus != null) {
+      // If both status and secondStatus are provided, use `in` for an OR condition
+      query = query.where('status', whereIn: [status, secondStatus]);
+    } else if (status != null) {
+      // If only status is provided
       query = query.where('status', isEqualTo: status);
     }
+
+    // Uncomment the orderBy if you want to order by date
     // query = query.orderBy('date', descending: true);
+
     return query.snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;
@@ -104,7 +114,8 @@ class AppServices {
 
   static Stream<List<BookingModel>> getBookingsByWorkerId() {
     return FirebaseCollections.bookings
-        .where('workerData.uid', isEqualTo: uid).where('status', isEqualTo: "P")
+        .where('workerData.uid', isEqualTo: uid)
+        .where('status', isEqualTo: "P")
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {

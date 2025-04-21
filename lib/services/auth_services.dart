@@ -144,18 +144,20 @@ class AuthServices {
     await HiveHelper.putUID(uid);
     final userDoc = await FirebaseCollections.users.doc(uid).get();
     if (userDoc.exists) {
-      Navigator.pushReplacement(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => Home()),
+        (_) => false,
       );
     } else {
-      Navigator.pushReplacement(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
           builder: (context) => WorkerDetailPage(
             isProfile: false,
           ),
         ),
+        (_) => false,
       );
     }
   }
