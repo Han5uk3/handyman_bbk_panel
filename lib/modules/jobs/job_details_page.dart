@@ -6,6 +6,7 @@ import 'package:handyman_bbk_panel/common_widget/button.dart';
 import 'package:handyman_bbk_panel/common_widget/jobsummarycard.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/common_widget/loader.dart';
+import 'package:handyman_bbk_panel/common_widget/rating_display.dart';
 import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
 import 'package:handyman_bbk_panel/models/booking_data.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
@@ -22,10 +23,13 @@ import 'dart:io';
 class JobDetailsPage extends StatefulWidget {
   final BookingModel bookingModel;
   final UserData userData;
+
+  final bool isWorkerHistory;
   const JobDetailsPage({
     super.key,
     required this.bookingModel,
     required this.userData,
+    required this.isWorkerHistory,
   });
 
   @override
@@ -352,7 +356,21 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Container(
+            height: 30,
+            color: AppColor.green,
+            child: Center(
+              child: HandyLabel(
+                text: "Completed on 24 Feb",
+                isBold: false,
+                fontSize: 14,
+                textcolor: AppColor.white,
+              ),
+            ),
+          ),
           Jobsummarycard(
+            paymentStatus: true,
+            isInWorkerHistory: widget.isWorkerHistory,
             date: getformattedDate(widget.bookingModel.date),
             jobType: widget.bookingModel.name ?? "",
             price: widget.bookingModel.totalFee ?? 0,
@@ -368,29 +386,46 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                 HandyLabel(text: "Issue Details", isBold: true, fontSize: 16),
                 const SizedBox(height: 10),
                 SizedBox(
-                  height: 120,
                   child: Text(
                     widget.bookingModel.issue ?? "",
                     textAlign: TextAlign.justify,
                   ),
                 ),
-                const SizedBox(height: 20),
-                _buildVoiceNote(),
-                const SizedBox(height: 20),
-                _buildIssueImage(),
-                const SizedBox(height: 20),
+                widget.isWorkerHistory
+                    ? const SizedBox.shrink()
+                    : Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 20),
+                          _buildVoiceNote(),
+                          const SizedBox(height: 20),
+                          _buildIssueImage(),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
               ],
             ),
           ),
+          widget.isWorkerHistory
+              ? _buildBeforeAfterImageSection()
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      color: AppColor.lightGrey100,
+                      height: 15,
+                    ),
+                    _buildCustomerCard(),
+                  ],
+                ),
           Container(
             color: AppColor.lightGrey100,
             height: 15,
           ),
-          _buildCustomerCard(),
-          Container(
-            color: AppColor.lightGrey100,
-            height: 15,
-          ),
+          widget.isWorkerHistory
+              ? _buildReviewDisplaySection()
+              : const SizedBox.shrink(),
         ],
       ),
     );
@@ -803,6 +838,88 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
               color: AppColor.green,
             ),
           )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBeforeAfterImageSection() {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        spacing: 25,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              HandyLabel(text: "Before", isBold: true, fontSize: 16),
+              const SizedBox(height: 10),
+              CachedNetworkImage(
+                height: 100,
+                width: 150,
+                placeholder: (context, url) => HandymanLoader(),
+                errorWidget: (context, url, error) => Container(
+                  height: 100,
+                  width: 150,
+                  decoration: BoxDecoration(),
+                  child: Center(
+                    child: Icon(Icons.error),
+                  ),
+                ),
+                fit: BoxFit.cover,
+                imageUrl:
+                    "https://media.istockphoto.com/id/183953925/photo/young-plumber-fixing-a-sink-in-bathroom.jpg?s=612x612&w=0&k=20&c=Ps2U_U4_Z60mIZsuem-BoaHLlCjsT8wYWiXNWR-TCDA=",
+              )
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              HandyLabel(text: "After", isBold: true, fontSize: 16),
+              const SizedBox(height: 10),
+              CachedNetworkImage(
+                height: 100,
+                width: 150,
+                placeholder: (context, url) => HandymanLoader(),
+                errorWidget: (context, url, error) => Container(
+                  height: 100,
+                  width: 150,
+                  decoration: BoxDecoration(),
+                  child: Center(
+                    child: Icon(Icons.error),
+                  ),
+                ),
+                fit: BoxFit.cover,
+                imageUrl:
+                    "https://media.istockphoto.com/id/183953925/photo/young-plumber-fixing-a-sink-in-bathroom.jpg?s=612x612&w=0&k=20&c=Ps2U_U4_Z60mIZsuem-BoaHLlCjsT8wYWiXNWR-TCDA=",
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReviewDisplaySection() {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          HandyLabel(text: "Rating by Customer", isBold: true, fontSize: 16),
+          const SizedBox(height: 24),
+          RatingDisplay(rating: 4.2, reviewCount: 45, isInHistory: false),
+          SizedBox(height: 12),
+          HandyLabel(
+            text: "description",
+            isBold: false,
+            fontSize: 14,
+          ),
         ],
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:handyman_bbk_panel/common_widget/appbar.dart';
 
 import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/common_widget/location_history_display.dart';
@@ -10,6 +11,8 @@ class Jobsummarycard extends StatelessWidget {
   final double price;
   final String jobType;
   final String userLocation;
+  final bool isInWorkerHistory;
+  final bool paymentStatus;
 
   const Jobsummarycard({
     super.key,
@@ -18,6 +21,7 @@ class Jobsummarycard extends StatelessWidget {
     required this.price,
     required this.jobType,
     required this.userLocation,
+    required this.isInWorkerHistory, required this.paymentStatus,
   });
 
   @override
@@ -81,7 +85,7 @@ class Jobsummarycard extends StatelessWidget {
                   ),
                   Row(spacing: 3, children: [
                     Icon(
-                      Icons.calendar_today_outlined,
+                      Icons.schedule,
                       size: 18,
                     ),
                     HandyLabel(
@@ -95,15 +99,23 @@ class Jobsummarycard extends StatelessWidget {
                     height: 30,
                     color: AppColor.lightGrey500,
                   ),
-                  Row(spacing: 3, children: [
+                  Row(children: [
                     Icon(
-                      Icons.calendar_today_outlined,
+                      Icons.attach_money,
                       size: 18,
                     ),
                     HandyLabel(
-                      text: "\$ $price",
+                      text: "$price",
                       fontSize: 14,
-                      isBold: true,
+                      isBold: false,
+                    ),
+                    SizedBox(
+                      width: 4,
+                    ),
+                    HandyLabel(
+                      text: _getPaidtext(paymentStatus),
+                      textcolor: paymentStatus ? AppColor.green : AppColor.red,
+                      fontSize: 14,
                     ),
                   ])
                 ],
@@ -114,5 +126,9 @@ class Jobsummarycard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  _getPaidtext(bool paymentDone) {
+    return paymentDone ? "Paid" : "Unpaid";
   }
 }
