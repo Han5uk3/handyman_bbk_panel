@@ -168,7 +168,7 @@ class _JobCardState extends State<JobCard> {
                       maximumSize: WidgetStatePropertyAll(Size(60, 34)),
                       backgroundColor: WidgetStatePropertyAll(AppColor.green),
                     ),
-                    child: const Text(
+                    child: Text(
                       "Accept",
                       style: TextStyle(color: Colors.white, fontSize: 12),
                     ),

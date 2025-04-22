@@ -107,7 +107,7 @@ class _JobsPageState extends State<JobsPage>
     return StreamBuilder<List<BookingModel>>(
       stream: AppServices.getBookingsStream(
         isUrgent: true,
-        status: null,
+        status: 'P',
       ),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -201,7 +201,8 @@ class _JobsPageState extends State<JobsPage>
 
   Widget _scheduledTabContent() {
     return StreamBuilder<List<BookingModel>>(
-      stream: AppServices.getBookingsStream(isUrgent: false, status: "S",secondStatus: "W"),
+      stream: AppServices.getBookingsStream(
+          isUrgent: false, status: "S", secondStatus: "W"),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
