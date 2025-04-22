@@ -62,3 +62,18 @@ class AcceptWorkEvent extends WorkersEvent {
   @override
   List<Object> get props => [projectId];
 }
+
+class StartJobEvent extends WorkersEvent {
+  final String bookingId;
+  const StartJobEvent({required this.bookingId});
+  @override
+  List<Object> get props => [bookingId];
+}
+
+class EndWorkAndMarkAsCompletedEvent extends WorkersEvent {
+  final String bookingId;
+  final File? afterImage;
+  const EndWorkAndMarkAsCompletedEvent({required this.bookingId, this.afterImage});
+  @override
+  List<Object> get props => [bookingId];
+}

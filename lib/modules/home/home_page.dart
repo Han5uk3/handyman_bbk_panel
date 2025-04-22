@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +7,7 @@ import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/common_widget/svgicon.dart';
 import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
+import 'package:handyman_bbk_panel/modules/home/bloc/location_bloc.dart';
 import 'package:handyman_bbk_panel/modules/login/login_page.dart';
 import 'package:handyman_bbk_panel/modules/workers/bloc/workers_bloc.dart';
 import 'package:handyman_bbk_panel/services/app_services.dart';
@@ -31,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   Stream<int>? scheduledBookingsStream;
   Stream<int>? urgentBookingsStream;
   Stream<int>? productsStream;
+  late LocationBloc _locationBloc;
 
   @override
   void initState() {
@@ -41,6 +44,8 @@ class _HomePageState extends State<HomePage> {
       urgentBookingsStream = AppServices.getScheduleUrgentCount(isUrgent: true);
       productsStream = AppServices.getProductsCount();
     }
+    _locationBloc = BlocProvider.of<LocationBloc>(context);
+    _locationBloc.add(FetchLocation());
     super.initState();
   }
 
@@ -132,11 +137,13 @@ class _HomePageState extends State<HomePage> {
       builder: (context) => AdminLogoutPopup(
         onLogout: () async {
           await HiveHelper.removeUID();
+          await FirebaseAuth.instance.signOut();
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => LoginPage()),
             (route) => false,
           );
+          AppServices.uid = null;
         },
         onCancel: () {
           Navigator.of(context).pop();
@@ -160,7 +167,7 @@ class _HomePageState extends State<HomePage> {
                 Icons.language,
                 color: AppColor.white,
               ),
-              onPressed: ()=> Localization.showLanguageDialog(context),
+              onPressed: () => Localization.showLanguageDialog(context),
             ),
             IconButton(
               icon: Icon(
@@ -250,12 +257,12 @@ class _HomePageState extends State<HomePage> {
                                   if (value) {
                                     context.read<WorkersBloc>().add(
                                           SwitchToOnlineEvent(
-                                              workerId: AppServices.uid),
+                                              workerId: AppServices.uid ?? ""),
                                         );
                                   } else {
                                     context.read<WorkersBloc>().add(
                                           SwitchToOfflineEvent(
-                                              workerId: AppServices.uid),
+                                              workerId: AppServices.uid ?? ""),
                                         );
                                   }
                                 },

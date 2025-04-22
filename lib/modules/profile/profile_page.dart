@@ -10,6 +10,7 @@ import 'package:handyman_bbk_panel/modules/login/worker/worker_detail_page.dart'
 import 'package:handyman_bbk_panel/modules/profile/earnings_page.dart';
 
 import 'package:handyman_bbk_panel/modules/profile/terms_and_conditions_page.dart';
+import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -204,6 +205,7 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       await HiveHelper.removeUID();
       await FirebaseAuth.instance.signOut();
+      AppServices.uid = null;
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => LoginPage()),

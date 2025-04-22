@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
 import 'package:handyman_bbk_panel/common_widget/jobcard.dart';
 
-import 'package:handyman_bbk_panel/modules/jobs/job_details_page.dart';
-import 'package:intl/intl.dart';
-
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
 
@@ -29,18 +26,11 @@ class _HistoryPageState extends State<HistoryPage> {
     return ListView.builder(
       itemBuilder: (context, index) => GestureDetector(
         onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => JobDetailsPage(
-              isCompleted: true,
-              isHistory: true,
-              date: _getformattedDate(DateTime.now()),
-              jobType: "Plumbing",
-              jobID: "#101",
-              price: 110.00,
-              time: "12:00 PM",
-              isAccepted: true,
-            ),
-          ));
+          // Navigator.of(context).push(MaterialPageRoute(
+          //   builder: (context) => JobDetailsPage(
+          // bookingModel: ,
+          //   ),
+          // ));
         },
         child: JobCard(
             completedDate: DateTime.now(),
@@ -57,10 +47,5 @@ class _HistoryPageState extends State<HistoryPage> {
             paymentStatus: true),
       ),
     );
-  }
-
-  _getformattedDate(date) {
-    DateFormat dateFormat = DateFormat("dd MMM");
-    return dateFormat.format(date);
   }
 }

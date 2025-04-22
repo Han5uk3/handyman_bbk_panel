@@ -5,6 +5,7 @@ import 'package:handyman_bbk_panel/models/booking_data.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
 import 'package:handyman_bbk_panel/modules/jobs/job_details_page.dart';
 import 'package:handyman_bbk_panel/modules/workers/bloc/workers_bloc.dart';
+import 'package:handyman_bbk_panel/modules/workers/track_worker.dart';
 import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/sheets/workers_list_sheet.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
@@ -63,6 +64,8 @@ class _JobCardState extends State<JobCard> {
     if (widget.bookingData.isUrgent == true) {
       return true;
     } else if (widget.bookingData.status == "S") {
+      return true;
+    } else if (widget.bookingData.status == "W") {
       return true;
     } else {
       return widget.bookingData.status == "P";
@@ -137,7 +140,11 @@ class _JobCardState extends State<JobCard> {
             Expanded(
               flex: 6,
               child: Text(
-                (widget.bookingData.isUrgent ?? false) ? "Urgent" : "Scheduled",
+                widget.bookingData.status == "W"
+                    ? "Work in progress"
+                    : (widget.bookingData.isUrgent ?? false)
+                        ? "Urgent"
+                        : "Scheduled",
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: AppColor.black,
@@ -161,7 +168,7 @@ class _JobCardState extends State<JobCard> {
                       maximumSize: WidgetStatePropertyAll(Size(60, 34)),
                       backgroundColor: WidgetStatePropertyAll(AppColor.green),
                     ),
-                    child: const Text(
+                    child: Text(
                       "Accept",
                       style: TextStyle(color: Colors.white, fontSize: 12),
                     ),
@@ -187,17 +194,18 @@ class _JobCardState extends State<JobCard> {
                   ),
                 ),
               ]
-            ] else if (widget.bookingData.status == "S" &&
+            ] else if (widget.bookingData.status == "W" &&
                 (widget.bookingData.isWorkerAccept ?? false)) ...[
               Expanded(
                 flex: 3,
                 child: TextButton(
                   onPressed: () {
-                    // context.read<WorkersBloc>().add(
-                    //       CompleteWorkEvent(
-                    //         projectId: widget.bookingData.id ?? '',
-                    //       ),
-                    //     );
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TrackWorkerScreen(
+                              bookingId: widget.bookingData.id ?? ''),
+                        ));
                   },
                   style: const ButtonStyle(
                     backgroundColor: WidgetStatePropertyAll(AppColor.yellow),
@@ -231,7 +239,7 @@ class _JobCardState extends State<JobCard> {
                       widget.bookingData.workerData == null
                           ? "Assign"
                           : (widget.bookingData.isWorkerAccept ?? false)
-                              ? "Ongoing"
+                              ? "Accepted"
                               : "Waiting...",
                       style: TextStyle(color: Colors.white, fontSize: 12),
                     ),
@@ -251,18 +259,7 @@ class _JobCardState extends State<JobCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (isLoading)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-            )
-          else if (userData != null) ...[
+          if (userData != null) ...[
             Row(
               children: [
                 const Expanded(

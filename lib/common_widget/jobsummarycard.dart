@@ -9,18 +9,20 @@ class Jobsummarycard extends StatelessWidget {
   final String date;
   final double price;
   final String jobType;
+  final String userLocation;
 
-  const Jobsummarycard( {
+  const Jobsummarycard({
     super.key,
     required this.time,
     required this.date,
     required this.price,
     required this.jobType,
+    required this.userLocation,
   });
 
   @override
   Widget build(BuildContext context) {
-    return _buildBodyWidget(context, "userLocation");
+    return _buildBodyWidget(context, userLocation);
   }
 
   _buildBodyWidget(context, userLocation) {

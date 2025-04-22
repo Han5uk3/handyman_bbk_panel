@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
@@ -109,7 +107,7 @@ class _JobsPageState extends State<JobsPage>
     return StreamBuilder<List<BookingModel>>(
       stream: AppServices.getBookingsStream(
         isUrgent: true,
-        status: null,
+        status: 'P',
       ),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -162,7 +160,6 @@ class _JobsPageState extends State<JobsPage>
           : AppServices.getBookingsByWorkerId(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          log(snapshot.error.toString());
           return Center(child: Text('Error: ${snapshot.error}'));
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -182,7 +179,6 @@ class _JobsPageState extends State<JobsPage>
         }
 
         final scheduledJobs = snapshot.data!;
-        log(scheduledJobs.toString());
         return RefreshIndicator(
           onRefresh: () async {
             setState(() {});
@@ -206,9 +202,7 @@ class _JobsPageState extends State<JobsPage>
   Widget _scheduledTabContent() {
     return StreamBuilder<List<BookingModel>>(
       stream: AppServices.getBookingsStream(
-        isUrgent: false,
-        status: "S",
-      ),
+          isUrgent: false, status: "S", secondStatus: "W"),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
@@ -228,9 +222,6 @@ class _JobsPageState extends State<JobsPage>
             ),
           );
         }
-
-        log(snapshot.data.toString());
-
         final scheduledWork = snapshot.data!;
         return RefreshIndicator(
           onRefresh: () async {
@@ -241,8 +232,7 @@ class _JobsPageState extends State<JobsPage>
             itemCount: scheduledWork.length,
             itemBuilder: (context, index) {
               final job = scheduledWork[index];
-              return 
-              JobCard(
+              return JobCard(
                 bookingData: job,
                 isAdmin: widget.isAdmin,
               );
