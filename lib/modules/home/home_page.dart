@@ -249,12 +249,13 @@ class _HomePageState extends State<HomePage> {
                         return Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               HandyLabel(
                                 text: "Online",
                                 fontSize: 18,
-                                isBold: false,
+                                isBold: true,
                               ),
                               Switch(
                                 value: widget.userData.isUserOnline ?? false,
@@ -272,7 +273,9 @@ class _HomePageState extends State<HomePage> {
                                   }
                                 },
                                 activeColor: AppColor.white,
+                                inactiveThumbColor: AppColor.black,
                                 activeTrackColor: AppColor.green,
+                                inactiveTrackColor: AppColor.white,
                               ),
                             ],
                           ),
