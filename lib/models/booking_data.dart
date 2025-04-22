@@ -10,6 +10,7 @@ class BookingModel {
   final double? taxFee;
   final String? time;
   final String? imageUrl;
+  final String? imageAfterWork;
   final bool? isUrgent;
   final Location? location;
   final DateTime? date;
@@ -17,6 +18,7 @@ class BookingModel {
   final double? totalFee;
   final bool? isWorkerAccept;
   final DateTime? createdAt;
+  final DateTime? completedDateTime;
   final String? name;
   final bool? isBookingcancel;
   final UserData? workerData;
@@ -30,6 +32,7 @@ class BookingModel {
     this.taxFee,
     this.time,
     this.imageUrl,
+    this.imageAfterWork,
     this.isUrgent,
     this.location,
     this.date,
@@ -39,7 +42,8 @@ class BookingModel {
     this.createdAt,
     this.name,
     this.isBookingcancel,
-    this.workerData, 
+    this.completedDateTime,
+    this.workerData,
   });
 
   factory BookingModel.fromMap(Map<String, dynamic> map) {
@@ -52,6 +56,7 @@ class BookingModel {
       taxFee: (map['taxFee'] ?? 0).toDouble(),
       time: map['time'] ?? '',
       imageUrl: map['imageUrl'] ?? '',
+      imageAfterWork: map['afterImage'] ?? '',
       isUrgent: map['isUrgent'] ?? false,
       location: Location.fromJson(map['location'] ?? {}),
       date: DateTime.tryParse(map['date'] ?? '') ?? DateTime.now(),
@@ -59,6 +64,7 @@ class BookingModel {
       totalFee: (map['totalFee'] ?? 0).toDouble(),
       isWorkerAccept: map['isWorkerAccept'] ?? false,
       createdAt: (map['createdAt'] as Timestamp).toDate(),
+      completedDateTime: (map['completedDateTime'] as Timestamp).toDate(),
       name: map['name'] ?? '',
       isBookingcancel: map['isBookingcancel'] ?? false,
       workerData: map['workerData'] != null
@@ -73,6 +79,7 @@ class BookingModel {
       'uid': uid,
       'name': name,
       'imageUrl': imageUrl,
+      'imageAfterWork': imageAfterWork,
       'audioUrl': audioUrl,
       'isUrgent': isUrgent,
       'date': date?.toIso8601String(),

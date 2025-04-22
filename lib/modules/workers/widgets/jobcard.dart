@@ -14,11 +14,13 @@ import 'package:intl/intl.dart';
 class JobCard extends StatefulWidget {
   final BookingModel bookingData;
   final bool isAdmin;
+  final bool? isHistoryPage;
 
   const JobCard({
     super.key,
     required this.bookingData,
     this.isAdmin = false,
+    this.isHistoryPage = false,
   });
 
   @override
@@ -67,6 +69,8 @@ class _JobCardState extends State<JobCard> {
       return true;
     } else if (widget.bookingData.status == "W") {
       return true;
+    } else if (widget.bookingData.status == "C") {
+      return true;
     } else {
       return widget.bookingData.status == "P";
     }
@@ -93,7 +97,7 @@ class _JobCardState extends State<JobCard> {
               context,
               MaterialPageRoute(
                 builder: (context) => JobDetailsPage(
-                  isWorkerHistory: false,
+                  isWorkerHistory: widget.isHistoryPage ?? false,
                   bookingModel: widget.bookingData,
                   userData: streamUserData!,
                 ),
@@ -247,6 +251,10 @@ class _JobCardState extends State<JobCard> {
                   ),
                 ),
             ],
+            (widget.bookingData.status == "C" &&
+                    (widget.isHistoryPage ?? false))
+                ? buildStatus(widget.bookingData.status ?? "")
+                : SizedBox.shrink()
           ],
         ),
       ),
@@ -449,6 +457,27 @@ class _JobCardState extends State<JobCard> {
             projectId: projectId,
           );
         });
+  }
+
+  Widget buildStatus(
+    String status,
+  ) {
+    return Row(
+      spacing: 3,
+      children: [
+        CircleAvatar(
+          radius: 5,
+          backgroundColor: status == "C" ? AppColor.green : AppColor.red,
+        ),
+        HandyLabel(
+          textcolor: status == "C" ? AppColor.green : AppColor.red,
+          text: status == "C"
+              ? "Completed on ${getformattedDate(widget.bookingData.completedDateTime)}"
+              : "Cancelled",
+          fontSize: 14,
+        )
+      ],
+    );
   }
 }
 

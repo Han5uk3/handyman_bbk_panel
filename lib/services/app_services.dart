@@ -125,4 +125,19 @@ class AppServices {
       }).toList();
     });
   }
+
+  static Stream<List<BookingModel>> getHistoryBookingsByWorkerId() {
+    return FirebaseCollections.bookings
+        .where('workerData.uid', isEqualTo: uid)
+        .where('status', isEqualTo: "C")
+        // .where('isBookingcancel', isEqualTo: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        data['id'] = doc.id;
+        return BookingModel.fromMap(data);
+      }).toList();
+    });
+  }
 }
