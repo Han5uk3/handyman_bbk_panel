@@ -8,7 +8,7 @@ class JobCard extends StatelessWidget {
   final String customerName;
   final String description;
   final bool isinHistory;
-  final String jobID;
+
   final String jobType;
   final String address;
   final DateTime date;
@@ -23,7 +23,7 @@ class JobCard extends StatelessWidget {
     required this.customerName,
     required this.description,
     required this.date,
-    required this.jobID,
+  
     required this.jobType,
     required this.address,
     required this.time,
@@ -68,7 +68,7 @@ class JobCard extends StatelessWidget {
                         Expanded(
                           flex: isinHistory ? 0 : 6,
                           child: Text(
-                            "$jobID $jobType",
+                            "$jobType",
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                                 color: AppColor.black,
@@ -212,7 +212,7 @@ class JobCard extends StatelessWidget {
                     ),
                     Row(spacing: 3, children: [
                       Icon(
-                        Icons.calendar_today_outlined,
+                        Icons.schedule,
                         size: 18,
                       ),
                       HandyLabel(
@@ -226,15 +226,18 @@ class JobCard extends StatelessWidget {
                       height: 22,
                       color: AppColor.greyDark,
                     ),
-                    Row(spacing: 3, children: [
+                    Row(children: [
                       Icon(
-                        Icons.calendar_today_outlined,
+                        Icons.attach_money,
                         size: 18,
                       ),
                       HandyLabel(
-                        text: "\$ $price",
+                        text: "$price",
                         fontSize: 14,
                         isBold: false,
+                      ),
+                      SizedBox(
+                        width: 4,
                       ),
                       HandyLabel(
                         text: paymentStatus ? "Paid" : "Unpaid",

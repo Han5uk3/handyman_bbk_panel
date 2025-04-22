@@ -93,6 +93,7 @@ class _JobCardState extends State<JobCard> {
               context,
               MaterialPageRoute(
                 builder: (context) => JobDetailsPage(
+                  isWorkerHistory: false,
                   bookingModel: widget.bookingData,
                   userData: streamUserData!,
                 ),
