@@ -9,6 +9,7 @@ import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
 import 'package:handyman_bbk_panel/modules/home/bloc/location_bloc.dart';
 import 'package:handyman_bbk_panel/modules/login/login_page.dart';
+import 'package:handyman_bbk_panel/modules/notifications/notifications_page.dart';
 import 'package:handyman_bbk_panel/modules/workers/bloc/workers_bloc.dart';
 import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/sheets/localization_sheet.dart';
@@ -174,7 +175,11 @@ class _HomePageState extends State<HomePage> {
                 Icons.notifications,
                 color: AppColor.white,
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => NotificationsPage(),
+                ));
+              },
             ),
             widget.isAdmin
                 ? IconButton(
