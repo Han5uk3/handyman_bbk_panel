@@ -63,8 +63,8 @@ class Localization {
                 ),
               ),
               Positioned(
-                right: 10,
-                top: 10,
+                right: 16,
+                top: 41,
                 child: GestureDetector(
                   onTap: () {
                     Navigator.of(context).pop();
@@ -73,7 +73,7 @@ class Localization {
                     height: 30,
                     width: 30,
                     decoration: BoxDecoration(
-                      color: AppColor.lightGreen,
+                      color: AppColor.black,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(Icons.close, color: Colors.white),
