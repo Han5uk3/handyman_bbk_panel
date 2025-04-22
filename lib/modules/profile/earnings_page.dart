@@ -204,27 +204,37 @@ class _EarningsPageState extends State<EarningsPage> {
       String method, int value, void Function(void Function()) setModalState) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          HandyLabel(
-            text: method,
-            fontSize: 16,
-            isBold: false,
-          ),
-          Radio<int>(
-            activeColor: AppColor.green,
-            value: value,
-            groupValue: _selectedPayoutMethod,
-            onChanged: (int? newValue) {
-              if (newValue != null) {
-                setModalState(() {
-                  _selectedPayoutMethod = newValue;
-                });
-              }
-            },
-          ),
-        ],
+      child: GestureDetector(
+        onTap: () {
+          if (_selectedPayoutMethod != value) {
+            setModalState(() {
+              _selectedPayoutMethod = value;
+            });
+          }
+        },
+        child: Row(
+          children: [
+            Expanded(
+              child: HandyLabel(
+                text: method,
+                fontSize: 16,
+                isBold: false,
+              ),
+            ),
+            Radio<int>(
+              activeColor: AppColor.green,
+              value: value,
+              groupValue: _selectedPayoutMethod,
+              onChanged: (int? newValue) {
+                if (newValue != null) {
+                  setModalState(() {
+                    _selectedPayoutMethod = newValue;
+                  });
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
