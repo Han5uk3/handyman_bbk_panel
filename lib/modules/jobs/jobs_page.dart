@@ -23,7 +23,7 @@ class _JobsPageState extends State<JobsPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: widget.isAdmin ? 3 : 2, vsync: this);
     _tabController.addListener(_handleTabChange);
   }
 
@@ -94,21 +94,23 @@ class _JobsPageState extends State<JobsPage>
     return Expanded(
       child: TabBarView(
         controller: _tabController,
-        children: [
-          _pendingTabContent(),
-          _scheduledTabContent(),
-          _urgentTabContent(),
-        ],
+        children: widget.isAdmin
+            ? [
+                _pendingTabContent(),
+                _scheduledTabContent(),
+                _urgentTabContent(),
+              ]
+            : [
+                _scheduledTabContent(),
+                _urgentTabContent(),
+              ],
       ),
     );
   }
 
   Widget _urgentTabContent() {
     return StreamBuilder<List<BookingModel>>(
-      stream: AppServices.getBookingsStream(
-        isUrgent: true,
-        status: 'P',
-      ),
+      stream: AppServices.getUrgentBookingsForWorker(isAdmin: widget.isAdmin),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
@@ -154,7 +156,6 @@ class _JobsPageState extends State<JobsPage>
     return StreamBuilder<List<BookingModel>>(
       stream: widget.isAdmin
           ? AppServices.getBookingsStream(
-              isUrgent: false,
               status: "P",
             )
           : AppServices.getBookingsByWorkerId(),
@@ -202,7 +203,7 @@ class _JobsPageState extends State<JobsPage>
   Widget _scheduledTabContent() {
     return StreamBuilder<List<BookingModel>>(
       stream: AppServices.getBookingsStream(
-          isUrgent: false, status: "S", secondStatus: "W"),
+          isUrgent: false, status: "S", secondStatus: "A"),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
@@ -262,11 +263,16 @@ class _JobsPageState extends State<JobsPage>
         controller: _tabController,
         indicatorColor: widget.isAdmin ? AppColor.blue : AppColor.green,
         labelPadding: EdgeInsets.zero,
-        tabs: [
-          _customTab("Pending", 0),
-          _customTab("Scheduled", 1),
-          _customTab("Urgent", 2),
-        ],
+        tabs: widget.isAdmin
+            ? [
+                _customTab("Pending", 0),
+                _customTab("Scheduled", 1),
+                _customTab("Urgent", 2),
+              ]
+            : [
+                _customTab("Scheduled", 0),
+                _customTab("Urgent", 1),
+              ],
       ),
     );
   }

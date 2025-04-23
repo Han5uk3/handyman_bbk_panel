@@ -90,6 +90,8 @@ class _JobCardState extends State<JobCard> {
       return true;
     } else if (widget.bookingData.status == "C") {
       return true;
+    } else if (widget.bookingData.status == "A") {
+      return true;
     } else {
       return widget.bookingData.status == "P";
     }
@@ -112,15 +114,20 @@ class _JobCardState extends State<JobCard> {
         }
 
         return GestureDetector(
-          onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => JobDetailsPage(
-                  isWorkerHistory: widget.isHistoryPage ?? false,
-                  bookingModel: widget.bookingData,
-                  userData: streamUserData!,
-                ),
-              )),
+          onTap: (widget.bookingData.status != "A" &&
+                  widget.bookingData.status != "W")
+              ? () {}
+              : () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => JobDetailsPage(
+                          isWorkerHistory: widget.isHistoryPage ?? false,
+                          bookingModel: widget.bookingData,
+                          userData: streamUserData!,
+                        ),
+                      ));
+                },
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Container(
@@ -242,7 +249,9 @@ class _JobCardState extends State<JobCard> {
                 ),
               ),
             ] else ...[
-              if (widget.isAdmin && widget.bookingData.isUrgent != true)
+              if (widget.isAdmin ||
+                  widget.bookingData.isUrgent == true &&
+                      widget.bookingData.status == "no_workers")
                 Expanded(
                   flex: 3,
                   child: TextButton(
@@ -475,6 +484,7 @@ class _JobCardState extends State<JobCard> {
         builder: (context) {
           return WorkersListSheet(
             projectId: projectId,
+            isUrgentRequest: widget.bookingData.status == "no_workers",
           );
         });
   }

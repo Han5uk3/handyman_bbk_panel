@@ -11,10 +11,11 @@ import 'package:handyman_bbk_panel/styles/color.dart';
 
 class WorkersListSheet extends StatefulWidget {
   final String projectId;
-
+  final bool isUrgentRequest;
   const WorkersListSheet({
     super.key,
     required this.projectId,
+    this.isUrgentRequest = false,
   });
 
   @override
@@ -71,9 +72,9 @@ class _WorkersListSheetState extends State<WorkersListSheet> {
 
     context.read<WorkersBloc>().add(
           AssignWorkerToAProjectEvent(
-            projectId: widget.projectId,
-            workerData: selectedWorker,
-          ),
+              projectId: widget.projectId,
+              workerData: selectedWorker,
+              isUrgentRequest: widget.isUrgentRequest),
         );
   }
 
