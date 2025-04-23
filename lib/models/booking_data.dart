@@ -63,8 +63,12 @@ class BookingModel {
       serviceFee: (map['serviceFee'] ?? 0).toDouble(),
       totalFee: (map['totalFee'] ?? 0).toDouble(),
       isWorkerAccept: map['isWorkerAccept'] ?? false,
-      createdAt: (map['createdAt'] as Timestamp).toDate(),
-      completedDateTime: (map['completedDateTime'] as Timestamp).toDate(),
+      createdAt: map['createdAt'] != null
+          ? (map['createdAt'] as Timestamp).toDate()
+          : null,
+      completedDateTime: map['completedDateTime'] != null
+          ? (map['completedDateTime'] as Timestamp).toDate()
+          : null,
       name: map['name'] ?? '',
       isBookingcancel: map['isBookingcancel'] ?? false,
       workerData: map['workerData'] != null

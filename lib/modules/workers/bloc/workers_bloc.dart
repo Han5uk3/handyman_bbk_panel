@@ -109,11 +109,25 @@ class WorkersBloc extends Bloc<WorkersEvent, WorkersState> {
   void _acceptWork(AcceptWorkEvent event, Emitter<WorkersState> emit) async {
     try {
       emit(AcceptWorkLoading());
-      await FirebaseCollections.bookings.doc(event.projectId).update({
+
+      final bookingDoc =
+          await FirebaseCollections.bookings.doc(event.projectId).get();
+      final bookingData = bookingDoc.data() as Map<String, dynamic>?;
+
+      final updateData = {
         'isWorkerAccept': true,
         'status': 'S',
         'acceptedDateTime': FieldValue.serverTimestamp(),
-      });
+      };
+
+      if (bookingData == null || bookingData['workerData'] == null) {
+        updateData['workerData'] = event.workerData.toMap();
+      }
+
+      await FirebaseCollections.bookings
+          .doc(event.projectId)
+          .update(updateData);
+
       emit(AcceptWorkSuccess());
     } catch (e) {
       emit(AcceptWorkFailure(error: e.toString()));
@@ -169,7 +183,6 @@ class WorkersBloc extends Bloc<WorkersEvent, WorkersState> {
     }
   }
 
-  // For get the realtime update movement of workers
   void _startListeningLocation(String bookingId) {
     _positionStreamSubscription?.cancel();
     _positionStreamSubscription = Geolocator.getPositionStream(

@@ -165,6 +165,7 @@ class _JobCardState extends State<JobCard> {
                   child: TextButton(
                     onPressed: () => context.read<WorkersBloc>().add(
                           AcceptWorkEvent(
+                            workerData: widget.bookingData.workerData!,
                             projectId: widget.bookingData.id ?? '',
                           ),
                         ),
