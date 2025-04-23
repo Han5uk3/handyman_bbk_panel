@@ -109,7 +109,6 @@ class WorkersBloc extends Bloc<WorkersEvent, WorkersState> {
   void _acceptWork(AcceptWorkEvent event, Emitter<WorkersState> emit) async {
     try {
       emit(AcceptWorkLoading());
-
       final bookingDoc =
           await FirebaseCollections.bookings.doc(event.projectId).get();
       final bookingData = bookingDoc.data() as Map<String, dynamic>?;
