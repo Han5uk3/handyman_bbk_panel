@@ -42,7 +42,7 @@ class _HomeState extends State<Home> {
             isAdmin: isAdmin,
           ),
           isAdmin ? ProductsPage() : HistoryPage(),
-          isAdmin ? OrdersPage() : SizedBox.shrink(),
+          isAdmin ? OrdersPage() : ProfilePage(),
           isAdmin ? WorkersPage() : ProfilePage(),
         ];
         return Scaffold(
