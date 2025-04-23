@@ -29,12 +29,14 @@ class JobCard extends StatefulWidget {
 
 class _JobCardState extends State<JobCard> {
   UserData? userData;
+  UserData? workerData;
   bool isLoading = true;
   Stream<UserData?>? _userStream;
 
   @override
   void initState() {
     _setupUserDataStream();
+    _setupWorkerDataStream();
     super.initState();
   }
 
@@ -60,6 +62,23 @@ class _JobCardState extends State<JobCard> {
         isLoading = false;
       });
     }
+  }
+
+  void _setupWorkerDataStream() {
+    AppServices.getUserById(AppServices.uid ?? "").then((user) {
+      if (mounted) {
+        setState(() {
+          workerData = user;
+          isLoading = false;
+        });
+      }
+    }).catchError((_) {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
   }
 
   bool get _shouldDisplay {
@@ -165,7 +184,7 @@ class _JobCardState extends State<JobCard> {
                   child: TextButton(
                     onPressed: () => context.read<WorkersBloc>().add(
                           AcceptWorkEvent(
-                            workerData: widget.bookingData.workerData!,
+                            workerData: workerData ?? UserData(),
                             projectId: widget.bookingData.id ?? '',
                           ),
                         ),
