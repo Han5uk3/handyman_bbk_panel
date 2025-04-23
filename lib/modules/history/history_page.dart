@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
-import 'package:handyman_bbk_panel/common_widget/jobcard.dart';
+import 'package:handyman_bbk_panel/common_widget/loader.dart';
 import 'package:handyman_bbk_panel/models/booking_data.dart';
-import 'package:handyman_bbk_panel/models/userdata_models.dart';
-import 'package:handyman_bbk_panel/modules/jobs/job_details_page.dart';
+import 'package:handyman_bbk_panel/modules/workers/widgets/jobcard.dart';
+import 'package:handyman_bbk_panel/services/app_services.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -11,49 +11,6 @@ class HistoryPage extends StatefulWidget {
   @override
   State<HistoryPage> createState() => _HistoryPageState();
 }
-
-List<Map<String, dynamic>> historyItems = [
-  {
-    "completedDate": DateTime.now(),
-    "isinHistory": true,
-    "status": true,
-    "customerName": "Hansuke",
-    "description": "plumber needed",
-    "date": DateTime.now(),
-    "jobType": "Plumbing",
-    "address": "Karuvambram, Manjeri",
-    "time": "12:00 PM",
-    "price": 110.00,
-    "paymentStatus": true
-  },
-  {
-    "completedDate": DateTime.now(),
-    "isinHistory": true,
-    "status": false,
-    "customerName": "Hansuke",
-    "description": "plumber needed",
-    "date": DateTime.now(),
-    "jobType": "Plumbing",
-    "address": "Karuvambram, Manjeri",
-    "time": "12:50 PM",
-    "price": 110.00,
-    "paymentStatus": false
-  },
-  {
-    "completedDate": DateTime.now(),
-    "isinHistory": true,
-    "status": true,
-    "customerName": "Nasih",
-    "description": "plumber needed",
-    "date": DateTime.now(),
-    "jobID": "#101",
-    "jobType": "Plumbing",
-    "address": "Karuvambram, Manjeri",
-    "time": "12:00 PM",
-    "price": 110.00,
-    "paymentStatus": false
-  }
-];
 
 class _HistoryPageState extends State<HistoryPage> {
   @override
@@ -68,32 +25,35 @@ class _HistoryPageState extends State<HistoryPage> {
     );
   }
 
-  Widget _buildBody(context) {
-    return ListView.builder(
-      itemCount: historyItems.length,
-      itemBuilder: (context, index) => GestureDetector(
-        onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => JobDetailsPage(
-              isWorkerHistory: true,
-              bookingModel: BookingModel(),
-              userData: UserData(),
-            ),
-          ));
-        },
-        child: JobCard(
-            completedDate: historyItems[index]["completedDate"],
-            isinHistory: historyItems[index]["isinHistory"],
-            status: historyItems[index]["status"],
-            customerName: historyItems[index]["customerName"],
-            description: historyItems[index]["description"],
-            date: historyItems[index]["date"],
-            jobType: historyItems[index]["jobType"],
-            address: historyItems[index]["address"],
-            time: historyItems[index]["time"],
-            price: historyItems[index]["price"],
-            paymentStatus: historyItems[index]["paymentStatus"]),
-      ),
+  Widget _buildBody(BuildContext context) {
+    return StreamBuilder<List<BookingModel>>(
+      stream: AppServices.getHistoryBookingsByWorkerId(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return HandymanLoader();
+        }
+
+        if (snapshot.hasError) {
+          return Center(child: Text('Something went wrong: ${snapshot.error}'));
+        }
+
+        final historyList = snapshot.data ?? [];
+
+        if (historyList.isEmpty) {
+          return const Center(child: Text('No history bookings found.'));
+        }
+
+        return ListView.builder(
+          itemCount: historyList.length,
+          itemBuilder: (context, index) {
+            final booking = historyList[index];
+            return JobCard(
+              bookingData: booking,
+              isHistoryPage: true,
+            );
+          },
+        );
+      },
     );
   }
 }

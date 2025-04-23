@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
@@ -8,7 +9,9 @@ import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/common_widget/loader.dart';
 import 'package:handyman_bbk_panel/common_widget/rating_display.dart';
 import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
+import 'package:handyman_bbk_panel/helpers/collections.dart';
 import 'package:handyman_bbk_panel/models/booking_data.dart';
+import 'package:handyman_bbk_panel/models/review_model.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
 import 'package:handyman_bbk_panel/modules/workers/bloc/workers_bloc.dart';
 import 'package:handyman_bbk_panel/sheets/job_complete_sheet.dart';
@@ -23,7 +26,6 @@ import 'dart:io';
 class JobDetailsPage extends StatefulWidget {
   final BookingModel bookingModel;
   final UserData userData;
-
   final bool isWorkerHistory;
   const JobDetailsPage({
     super.key,
@@ -47,19 +49,40 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
   bool _isAudioInitialized = false;
   String? _cachedFilePath;
   bool _isjobStartLoading = false;
-
+  ReviewModel? reviewModel;
   Stream<PositionData>? _positionDataStream;
 
   @override
   void initState() {
-    super.initState();
     _initAudioPlayer();
+    if (widget.isWorkerHistory) {
+      _fetchReviewData();
+    }
+    super.initState();
   }
 
   @override
   void dispose() {
     _audioPlayer.dispose();
     super.dispose();
+  }
+
+  Future<void> _fetchReviewData() async {
+    if (widget.bookingModel.id == null) return;
+    try {
+      final QuerySnapshot reviewSnapshot = await FirebaseCollections.reviews
+          .where('bookingId', isEqualTo: widget.bookingModel.id)
+          .limit(1)
+          .get();
+      if (reviewSnapshot.docs.isNotEmpty) {
+        final doc = reviewSnapshot.docs.first;
+        reviewModel = ReviewModel.fromDocument(
+            doc.data() as Map<String, dynamic>, doc.id);
+        setState(() {});
+      }
+    } catch (e) {
+      debugPrint('Error fetching review data: $e');
+    }
   }
 
   Future<void> _initAudioPlayer() async {
@@ -316,8 +339,9 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
           appBar: handyAppBar("", context,
               isCenter: true, isneedtopop: true, iswhite: true),
           body: _buildBody(),
-          bottomNavigationBar:
-              ((widget.bookingModel.workerData?.isVerified ?? false) &&
+          bottomNavigationBar: widget.bookingModel.status == "C"
+              ? SizedBox.shrink()
+              : ((widget.bookingModel.workerData?.isVerified ?? false) &&
                       widget.bookingModel.workerData?.userType == "Worker")
                   ? Padding(
                       padding: EdgeInsets.fromLTRB(16, 5, 16, 28),
@@ -356,18 +380,20 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            height: 30,
-            color: AppColor.green,
-            child: Center(
-              child: HandyLabel(
-                text: "Completed on 24 Feb",
-                isBold: false,
-                fontSize: 14,
-                textcolor: AppColor.white,
-              ),
-            ),
-          ),
+          widget.isWorkerHistory
+              ? Container(
+                  height: 30,
+                  color: AppColor.green,
+                  child: Center(
+                    child: HandyLabel(
+                      text: "Completed on 24 Feb",
+                      isBold: false,
+                      fontSize: 14,
+                      textcolor: AppColor.white,
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(),
           Jobsummarycard(
             paymentStatus: true,
             isInWorkerHistory: widget.isWorkerHistory,
@@ -871,8 +897,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                   ),
                 ),
                 fit: BoxFit.cover,
-                imageUrl:
-                    "https://media.istockphoto.com/id/183953925/photo/young-plumber-fixing-a-sink-in-bathroom.jpg?s=612x612&w=0&k=20&c=Ps2U_U4_Z60mIZsuem-BoaHLlCjsT8wYWiXNWR-TCDA=",
+                imageUrl: widget.bookingModel.imageUrl ?? "",
               )
             ],
           ),
@@ -895,8 +920,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                   ),
                 ),
                 fit: BoxFit.cover,
-                imageUrl:
-                    "https://media.istockphoto.com/id/183953925/photo/young-plumber-fixing-a-sink-in-bathroom.jpg?s=612x612&w=0&k=20&c=Ps2U_U4_Z60mIZsuem-BoaHLlCjsT8wYWiXNWR-TCDA=",
+                imageUrl: widget.bookingModel.imageAfterWork ?? "",
               )
             ],
           ),
@@ -913,10 +937,10 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
         children: [
           HandyLabel(text: "Rating by Customer", isBold: true, fontSize: 16),
           const SizedBox(height: 24),
-          RatingDisplay(rating: 4.2, reviewCount: 45, isInHistory: false),
+          RatingDisplay(rating: reviewModel?.rating ?? 0.0, reviewCount: 0, isInHistory: true),
           SizedBox(height: 12),
           HandyLabel(
-            text: "description",
+            text: reviewModel?.review ?? "",
             isBold: false,
             fontSize: 14,
           ),
