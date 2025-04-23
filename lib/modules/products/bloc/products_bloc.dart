@@ -49,6 +49,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
           details: event.productModel.details,
           discount: event.productModel.discount,
           availability: event.productModel.availability,
+          category: event.productModel.category,
           image: imageUrl);
       log(productsModel.toMap().toString());
 

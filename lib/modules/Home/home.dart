@@ -5,6 +5,7 @@ import 'package:handyman_bbk_panel/models/userdata_models.dart';
 import 'package:handyman_bbk_panel/modules/Home/home_page.dart';
 import 'package:handyman_bbk_panel/modules/history/history_page.dart';
 import 'package:handyman_bbk_panel/modules/jobs/jobs_page.dart';
+import 'package:handyman_bbk_panel/modules/orders/orders_page.dart';
 import 'package:handyman_bbk_panel/modules/products/products_page.dart';
 import 'package:handyman_bbk_panel/modules/profile/profile_page.dart';
 import 'package:handyman_bbk_panel/modules/workers/workers_page.dart';
@@ -41,6 +42,7 @@ class _HomeState extends State<Home> {
             isAdmin: isAdmin,
           ),
           isAdmin ? ProductsPage() : HistoryPage(),
+          isAdmin ? OrdersPage() : SizedBox.shrink(),
           isAdmin ? WorkersPage() : ProfilePage(),
         ];
         return Scaffold(
@@ -80,8 +82,11 @@ class _HomeState extends State<Home> {
                             : Icons.history_outlined,
                         isAdmin ? 'Products' : 'History',
                       ),
+                      if (isAdmin)
+                        _bottomNavBarItem(
+                            3, Icons.history, Icons.history_outlined, "Orders"),
                       _bottomNavBarItem(
-                        3,
+                        isAdmin ? 4 : 3,
                         isAdmin ? Icons.people : Icons.person,
                         isAdmin
                             ? Icons.people_outline

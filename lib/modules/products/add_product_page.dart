@@ -31,6 +31,8 @@ class _AddProductPageState extends State<AddProductPage> {
   final TextEditingController _discountController = TextEditingController();
 
   final List<String> _availability = ['in stock', 'out of stock'];
+  final List<String> _category = ['Electricity', 'Plumbing'];
+  String _selectedCategory = 'Electricity';
   String _selectedAvailability = 'in stock';
   File? _imageFile;
 
@@ -92,6 +94,7 @@ class _AddProductPageState extends State<AddProductPage> {
               details: _detailsController.text,
               discount: _discountController.text,
               availability: _selectedAvailability,
+              category: _selectedCategory,
             ),
             productImage: _imageFile));
   }
@@ -113,6 +116,8 @@ class _AddProductPageState extends State<AddProductPage> {
       _detailsController.text = widget.productModel?.details ?? '';
       _discountController.text = widget.productModel?.discount ?? '';
       _selectedAvailability = widget.productModel?.availability ?? '';
+      _selectedAvailability = widget.productModel?.category ?? '';
+
       _imageUrl = widget.productModel?.image;
     }
     super.initState();
@@ -246,6 +251,19 @@ class _AddProductPageState extends State<AddProductPage> {
                   minLines: 4,
                 ),
               ),
+            ),
+          ),
+          _buildFormField(
+            label: "Category",
+            child: CustomDropdown(
+              items: _category,
+              hasBorder: true,
+              selectedValue: _selectedCategory,
+              onChanged: (value) {
+                setState(() {
+                  _selectedCategory = value;
+                });
+              },
             ),
           ),
           _buildFormField(

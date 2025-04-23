@@ -3,10 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
+import 'package:handyman_bbk_panel/common_widget/button.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/common_widget/svgicon.dart';
 import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
+import 'package:handyman_bbk_panel/modules/home/ad_page.dart';
 import 'package:handyman_bbk_panel/modules/home/bloc/location_bloc.dart';
 import 'package:handyman_bbk_panel/modules/login/login_page.dart';
 import 'package:handyman_bbk_panel/modules/notifications/notifications_page.dart';
@@ -249,12 +251,13 @@ class _HomePageState extends State<HomePage> {
                         return Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               HandyLabel(
                                 text: "Online",
                                 fontSize: 18,
-                                isBold: false,
+                                isBold: true,
                               ),
                               Switch(
                                 value: widget.userData.isUserOnline ?? false,
@@ -272,7 +275,9 @@ class _HomePageState extends State<HomePage> {
                                   }
                                 },
                                 activeColor: AppColor.white,
+                                inactiveThumbColor: AppColor.black,
                                 activeTrackColor: AppColor.green,
+                                inactiveTrackColor: AppColor.white,
                               ),
                             ],
                           ),
@@ -289,6 +294,15 @@ class _HomePageState extends State<HomePage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: HandymanButton(
+                    text: "Advertisements",
+                    onPressed: () {
+                      _showAdTypeAlertDialog();
+                    },
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: HandyLabel(
@@ -507,6 +521,91 @@ class _HomePageState extends State<HomePage> {
           ),
         );
       }, growable: true),
+    );
+  }
+
+  _showAdTypeAlertDialog() {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: AppColor.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 10),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  HandyLabel(
+                    text: "Select Ad Type",
+                    isBold: true,
+                    fontSize: 16,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                    borderRadius: BorderRadius.circular(20),
+                    child: Padding(
+                      padding: const EdgeInsets.all(2.5),
+                      child: Icon(
+                        size: 20,
+                        Icons.close,
+                        color: AppColor.black,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Divider(thickness: 1),
+              _buildOptions("Home", Icons.home, true),
+              Divider(thickness: 1),
+              _buildOptions("Products", Icons.shopping_bag, false),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildOptions(name, icon, type) {
+    return InkWell(
+      onTap: () {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => AdPage(isHomeBanner: type)));
+      },
+      child: SizedBox(
+        height: 65,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: Row(spacing: 3, children: [
+              Icon(
+                icon,
+                color: AppColor.black,
+              ),
+              Expanded(
+                child: HandyLabel(
+                  text: name,
+                  isBold: false,
+                  fontSize: 16,
+                ),
+              ),
+              Icon(
+                Icons.chevron_right,
+                color: AppColor.lightGrey700,
+              )
+            ]),
+          ),
+        ),
+      ),
     );
   }
 }
