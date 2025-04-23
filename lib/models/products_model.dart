@@ -5,15 +5,17 @@ class ProductsModel {
   final String? details;
   final String? discount;
   final String? availability;
+  final String? category;
   final String? image;
 
-  ProductsModel({
+  ProductsModel( {
     this.id,
     this.name,
     this.price,
     this.details,
     this.discount,
     this.availability,
+    this.category,
     this.image,
   });
 
@@ -25,6 +27,8 @@ class ProductsModel {
       details: map['details'] ?? '',
       discount: map['discount'] ?? '0',
       availability: map['availability'] ?? '',
+      category: map['category'] ?? '',
+
       image: map['image'] ?? 'No image selected',
     );
   }
@@ -37,6 +41,7 @@ class ProductsModel {
       'details': details,
       'discount': discount,
       'availability': availability,
+      'category': category,
       'image': image,
     };
   }
