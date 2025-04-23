@@ -455,7 +455,7 @@ class _JobCardState extends State<JobCard> {
             ),
             const SizedBox(width: 4),
             HandyLabel(
-              text: "\$ ${widget.bookingData.totalFee ?? 'N/A'}",
+              text: "SAR ${widget.bookingData.totalFee ?? 'N/A'}",
               fontSize: 14,
               isBold: true,
             ),

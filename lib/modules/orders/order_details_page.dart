@@ -57,7 +57,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                 textcolor: isPacked ? AppColor.greyDark : AppColor.black,
               ),
               HandyLabel(
-                text: "\$20",
+                text: "SAR 20",
                 isBold: true,
                 fontSize: 16,
                 textcolor: isPacked ? AppColor.greyDark : AppColor.black,

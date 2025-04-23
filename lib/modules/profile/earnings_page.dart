@@ -72,7 +72,7 @@ class _EarningsPageState extends State<EarningsPage> {
                         textcolor: AppColor.lightGrey600,
                       ),
                       HandyLabel(
-                        text: "\$500.00",
+                        text: "SAR 500.00",
                         isBold: true,
                       ),
                     ],
@@ -90,7 +90,7 @@ class _EarningsPageState extends State<EarningsPage> {
                     textcolor: AppColor.lightGrey600,
                   ),
                   HandyLabel(
-                    text: "\$100.00",
+                    text: "SAR 100.00",
                     isBold: true,
                   ),
                 ],
