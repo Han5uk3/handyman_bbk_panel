@@ -25,7 +25,7 @@ class AdPage extends StatefulWidget {
 
 class _AdPageState extends State<AdPage> {
   bool _isUploading = false;
-  Map<String, bool> _categoryUploading = {
+  final Map<String, bool> _categoryUploading = {
     'electrical': false,
     'plumbing': false,
   };
@@ -133,7 +133,7 @@ class _AdPageState extends State<AdPage> {
     // Only show FAB for home banner page
     if (widget.isHomeBanner) {
       return FloatingActionButton(
-        heroTag: "add",
+        heroTag: AppLocalizations.of(context)!.add,
         backgroundColor: AppColor.black,
         onPressed: () => _pickAndUploadImage(),
         child: Icon(
@@ -226,7 +226,7 @@ class _AdPageState extends State<AdPage> {
               Icon(Icons.error, color: Colors.red[300]),
               SizedBox(height: 8),
               Text(
-                'Failed to load image',
+                AppLocalizations.of(context)!.failedtoloadimage,
                 style: TextStyle(color: Colors.red[300]),
               ),
             ],
@@ -244,7 +244,7 @@ class _AdPageState extends State<AdPage> {
           Icon(Icons.image_not_supported, color: Colors.grey),
           SizedBox(height: 8),
           Text(
-            'No image available',
+            AppLocalizations.of(context)!.noimageavailable,
             style: TextStyle(color: Colors.grey),
           ),
         ],

@@ -411,6 +411,14 @@ class _WorkerInfoPageState extends State<WorkerInfoPage> {
   _getLocalizedtext(String? text) {
     if (text == "Male") {
       return AppLocalizations.of(context)!.male;
+    } else if (text == "Less than 1 year") {
+      return AppLocalizations.of(context)!.lessthan1year;
+    } else if (text == "1-3 year") {
+      return AppLocalizations.of(context)!.year1to3;
+    } else if (text == "3-5 years") {
+      return AppLocalizations.of(context)!.year3to5;
+    } else if (text == "5+ years") {
+      return AppLocalizations.of(context)!.year5plus;
     } else if (text == "Female") {
       return AppLocalizations.of(context)!.female;
     } else if (text == "Other") {
@@ -420,18 +428,5 @@ class _WorkerInfoPageState extends State<WorkerInfoPage> {
     } else if (text == "Plumbing") {
       return AppLocalizations.of(context)!.plumbing;
     }
-    else if(text == "Less than 1 year"){
-      return AppLocalizations.of(context)!.lessthan1year;
-    }
-    else if(text == "1-3 year"){
-      return AppLocalizations.of(context)!.year1to3;
-    }
-    else if(text == "3-5 years"){
-      return AppLocalizations.of(context)!.year3to5;
-    }
-    else if(text == "5+ years"){
-      return AppLocalizations.of(context)!.year5plus;
-    }
-  
   }
 }

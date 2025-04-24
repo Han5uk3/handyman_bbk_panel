@@ -326,6 +326,8 @@
     "searchworker":"بحث عن عامل",
     "chooseworker":"اختر عامل",
     "km":"كم",
+    "noimageavailable":"لا توجد صور متاحة",
+    "failedtoloadimage":"فشل في تحميل الصورة",
     "back":"عودة",
     "paid":"مدفوع",
     "unpaid":"غير مدفوع",

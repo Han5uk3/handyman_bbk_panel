@@ -337,6 +337,8 @@
     "choose":"Choose",
     "paid":"Paid",
     "unpaid":"Unpaid",
+    "noimageavailable":"No image available",
+    "failedtoloadimage":"Failed to load image",
     
 
 
