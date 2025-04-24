@@ -9,6 +9,10 @@ class FirebaseCollections {
       firestore.collection(CollectionPath.products);
   static CollectionReference reviews =
       firestore.collection(CollectionPath.reviews);
+  static CollectionReference orders =
+      firestore.collection(CollectionPath.orders);
+  static CollectionReference banners =
+      firestore.collection(CollectionPath.banners);
 }
 
 class CollectionPath {
@@ -16,4 +20,6 @@ class CollectionPath {
   static const String bookings = 'bookings';
   static const String products = 'products';
   static const String reviews = 'reviews';
+  static const String orders = 'orders';
+  static const String banners = 'banners';
 }

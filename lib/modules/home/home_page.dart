@@ -8,7 +8,7 @@ import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/common_widget/svgicon.dart';
 import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
-import 'package:handyman_bbk_panel/modules/home/ad_page.dart';
+import 'package:handyman_bbk_panel/modules/banners/ad_page.dart';
 import 'package:handyman_bbk_panel/modules/home/bloc/location_bloc.dart';
 import 'package:handyman_bbk_panel/modules/login/login_page.dart';
 import 'package:handyman_bbk_panel/modules/notifications/notifications_page.dart';

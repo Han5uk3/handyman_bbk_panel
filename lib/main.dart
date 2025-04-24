@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/firebase_options.dart';
+import 'package:handyman_bbk_panel/modules/banners/bloc/banner_bloc.dart';
 import 'package:handyman_bbk_panel/modules/home/bloc/location_bloc.dart';
 import 'package:handyman_bbk_panel/modules/login/bloc/login_bloc.dart';
 import 'package:handyman_bbk_panel/modules/products/bloc/products_bloc.dart';
@@ -39,6 +40,9 @@ class MyApp extends StatelessWidget {
         BlocProvider<ProfileBloc>(create: (context) => ProfileBloc()),
         BlocProvider<LocationBloc>(
           create: (context) => LocationBloc(LocationService()),
+        ),
+        BlocProvider<BannerBloc>(
+          create: (context) => BannerBloc(),
         ),
       ],
       child: BlocBuilder<ProfileBloc, ProfileState>(
