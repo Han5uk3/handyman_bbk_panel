@@ -14,6 +14,7 @@ import 'package:handyman_bbk_panel/modules/products/bloc/products_bloc.dart';
 import 'package:handyman_bbk_panel/sheets/delete_product_sheet.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddProductPage extends StatefulWidget {
   final bool isEdit;
@@ -30,8 +31,8 @@ class _AddProductPageState extends State<AddProductPage> {
   final TextEditingController _detailsController = TextEditingController();
   final TextEditingController _discountController = TextEditingController();
 
-  final List<String> _availability = ['in stock', 'out of stock'];
-  final List<String> _category = ['Electricity', 'Plumbing'];
+  late Map<String, String> _categoryMap;
+  late Map<String, String> _availabilityMap;
   String _selectedCategory = 'Electricity';
   String _selectedAvailability = 'in stock';
   File? _imageFile;
@@ -63,22 +64,23 @@ class _AddProductPageState extends State<AddProductPage> {
 
   void _logProductData() {
     if (_nameController.text.isEmpty) {
-      _showErrorSnackBar('Please enter product name');
+      _showErrorSnackBar(AppLocalizations.of(context)!.pleaseenterproductname);
       return;
     }
 
     if (_priceController.text.isEmpty) {
-      _showErrorSnackBar('Please enter price');
+      _showErrorSnackBar(AppLocalizations.of(context)!.pleaseenterprice);
       return;
     }
 
     if (_detailsController.text.isEmpty) {
-      _showErrorSnackBar('Please enter product details');
+      _showErrorSnackBar(
+          AppLocalizations.of(context)!.pleaseenterproductdetails);
       return;
     }
 
     if (_imageFile == null && !widget.isEdit) {
-      _showErrorSnackBar('Please select an image');
+      _showErrorSnackBar(AppLocalizations.of(context)!.pleaseselectanimage);
       return;
     }
 
@@ -110,17 +112,27 @@ class _AddProductPageState extends State<AddProductPage> {
 
   @override
   void initState() {
+    super.initState();
+
+    _categoryMap = {
+      'Electricity': AppLocalizations.of(context)!.electricity,
+      'Plumbing': AppLocalizations.of(context)!.plumbing,
+    };
+
+    _availabilityMap = {
+      'in stock': AppLocalizations.of(context)!.instock,
+      'out of stock': AppLocalizations.of(context)!.outofstock,
+    };
+
     if (widget.isEdit) {
       _nameController.text = widget.productModel?.name ?? "";
       _priceController.text = widget.productModel?.price ?? "";
       _detailsController.text = widget.productModel?.details ?? '';
       _discountController.text = widget.productModel?.discount ?? '';
-      _selectedAvailability = widget.productModel?.availability ?? '';
-      _selectedAvailability = widget.productModel?.category ?? '';
-
+      _selectedAvailability = widget.productModel?.availability ?? 'in stock';
+      _selectedCategory = widget.productModel?.category ?? 'Electricity';
       _imageUrl = widget.productModel?.image;
     }
-    super.initState();
   }
 
   @override
@@ -131,7 +143,7 @@ class _AddProductPageState extends State<AddProductPage> {
           Navigator.pop(context);
           HandySnackBar.show(
               context: context,
-              message: "Product added successfully",
+              message: AppLocalizations.of(context)!.productaddedsuccessfully,
               isTrue: true);
           return;
         }
@@ -145,7 +157,7 @@ class _AddProductPageState extends State<AddProductPage> {
           Navigator.pop(context);
           HandySnackBar.show(
               context: context,
-              message: "Product deleted successfully",
+              message: AppLocalizations.of(context)!.productdeletedsuccessfully,
               isTrue: true);
           return;
         }
@@ -158,7 +170,7 @@ class _AddProductPageState extends State<AddProductPage> {
           Navigator.pop(context);
           HandySnackBar.show(
               context: context,
-              message: "Product updated successfully",
+              message: AppLocalizations.of(context)!.productupdatedsuccessfully,
               isTrue: true);
           return;
         }
@@ -174,7 +186,9 @@ class _AddProductPageState extends State<AddProductPage> {
             return Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
               child: HandymanButton(
-                text: widget.isEdit ? "Save Changes" : "Add Product",
+                text: widget.isEdit
+                    ? AppLocalizations.of(context)!.savechanges
+                    : AppLocalizations.of(context)!.addproduct,
                 isLoading: state is ProductAddingLoadingState ||
                     state is UpdateProductLoadingState,
                 onPressed: _logProductData,
@@ -185,7 +199,7 @@ class _AddProductPageState extends State<AddProductPage> {
         appBar: handyAppBar(
             widget.isEdit
                 ? (widget.productModel?.name ?? "")
-                : "Add New Product",
+                : AppLocalizations.of(context)!.addnewproduct,
             context,
             actions: widget.isEdit
                 ? [
@@ -217,35 +231,36 @@ class _AddProductPageState extends State<AddProductPage> {
           IgnorePointer(
             ignoring: widget.isEdit,
             child: _buildFormField(
-              label: "Product Name",
+              label: AppLocalizations.of(context)!.productname,
               child: HandyTextField(
-                  hintText: "Enter Product Name", controller: _nameController),
+                  hintText: AppLocalizations.of(context)!.enterproductname,
+                  controller: _nameController),
             ),
           ),
           _buildFormField(
-            label: "Upload Image",
+            label: AppLocalizations.of(context)!.uploadImage,
             child: IgnorePointer(
                 ignoring: widget.isEdit, child: _buildImagePicker()),
           ),
           _buildFormField(
-            label: "Price",
+            label: AppLocalizations.of(context)!.price,
             child: IgnorePointer(
               ignoring: widget.isEdit,
               child: HandyTextField(
-                hintText: "Enter Price",
+                hintText: AppLocalizations.of(context)!.enterprice,
                 controller: _priceController,
                 keyboardType: TextInputType.number,
               ),
             ),
           ),
           _buildFormField(
-            label: "Item Details",
+            label: AppLocalizations.of(context)!.details,
             child: IgnorePointer(
               ignoring: widget.isEdit,
               child: SizedBox(
                 height: 120,
                 child: HandyTextField(
-                  hintText: "Enter Item Details",
+                  hintText: AppLocalizations.of(context)!.enteritemdetails,
                   controller: _detailsController,
                   maxlines: 9,
                   minLines: 4,
@@ -254,35 +269,39 @@ class _AddProductPageState extends State<AddProductPage> {
             ),
           ),
           _buildFormField(
-            label: "Category",
+            label: AppLocalizations.of(context)!.category,
             child: CustomDropdown(
-              items: _category,
+              items: _categoryMap.values.toList(),
               hasBorder: true,
-              selectedValue: _selectedCategory,
+              selectedValue: _categoryMap[_selectedCategory],
               onChanged: (value) {
                 setState(() {
-                  _selectedCategory = value;
+                  _selectedCategory = _categoryMap.entries
+                      .firstWhere((entry) => entry.value == value)
+                      .key; // Store English
                 });
               },
             ),
           ),
           _buildFormField(
-            label: "Availability",
+            label: AppLocalizations.of(context)!.availability,
             child: CustomDropdown(
-              items: _availability,
+              items: _availabilityMap.values.toList(),
               hasBorder: true,
-              selectedValue: _selectedAvailability,
+              selectedValue: _availabilityMap[_selectedAvailability],
               onChanged: (value) {
                 setState(() {
-                  _selectedAvailability = value;
+                  _selectedAvailability = _availabilityMap.entries
+                      .firstWhere((entry) => entry.value == value)
+                      .key;
                 });
               },
             ),
           ),
           _buildFormField(
-            label: "Discounts (optional)",
+            label: AppLocalizations.of(context)!.discount,
             child: HandyTextField(
-              hintText: "Enter discount percentage",
+              hintText: AppLocalizations.of(context)!.enterdiscountpercentage,
               controller: _discountController,
               keyboardType: TextInputType.number,
             ),

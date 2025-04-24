@@ -8,7 +8,7 @@ import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
 import 'package:handyman_bbk_panel/modules/login/login_page.dart';
 import 'package:handyman_bbk_panel/modules/login/worker/worker_detail_page.dart';
 import 'package:handyman_bbk_panel/modules/profile/earnings_page.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:handyman_bbk_panel/modules/profile/terms_and_conditions_page.dart';
 import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
@@ -27,13 +27,14 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: handyAppBar('Profile', context, isneedtopop: false),
+      appBar: handyAppBar(AppLocalizations.of(context)!.profile, context,
+          isneedtopop: false),
       body: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
           children: [
             _buildProfileTile(
-              label: "My Profile",
+              label: AppLocalizations.of(context)!.myprofile,
               path: "assets/icons/profileIcons/profilePerson.svg",
               color: AppColor.lightPurple,
               onTap: () {
@@ -45,7 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
               },
             ),
             _buildProfileTile(
-              label: "Earnings",
+              label: AppLocalizations.of(context)!.earnings,
               path: "assets/icons/profileIcons/profileEarnings.svg",
               color: AppColor.lightYellow,
               onTap: () {
@@ -57,7 +58,7 @@ class _ProfilePageState extends State<ProfilePage> {
               },
             ),
             _buildProfileTile(
-              label: "Terms & Conditions",
+              label: AppLocalizations.of(context)!.termsAndConditions,
               path: "assets/icons/profileIcons/T&C.svg",
               color: AppColor.lightGreen,
               onTap: () {
@@ -69,7 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
               },
             ),
             _buildProfileTile(
-              label: "Delete Account",
+              label: AppLocalizations.of(context)!.deleteaccount,
               path: "assets/icons/profileIcons/deleteprofile.svg",
               color: AppColor.lightRed,
               onTap: () {
@@ -77,7 +78,7 @@ class _ProfilePageState extends State<ProfilePage> {
               },
             ),
             _buildProfileTile(
-              label: "Logout",
+              label: AppLocalizations.of(context)!.logout,
               path: "assets/icons/profileIcons/logout.svg",
               color: AppColor.lightPink,
               onTap: () {
@@ -132,7 +133,9 @@ class _ProfilePageState extends State<ProfilePage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                toggler ? "Delete Profile" : "Logout",
+                toggler
+                    ? AppLocalizations.of(context)!.deleteaccount
+                    : AppLocalizations.of(context)!.logout,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
@@ -143,8 +146,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 height: toggler ? 40 : 40,
                 child: Text(
                   toggler
-                      ? "Are you sure you want to delete your account?"
-                      : "Are you sure you want to logout?",
+                      ? AppLocalizations.of(context)!
+                          .areyousureyouwanttodeleteyouraccount
+                      : AppLocalizations.of(context)!.areyousureyouwanttologout,
                   style: TextStyle(fontSize: 16),
                 ),
               ),
@@ -159,7 +163,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Expanded(
                     child: HandymanOutlineButton(
                       borderThickness: 1.0,
-                      text: "Cancel",
+                      text: AppLocalizations.of(context)!.cancel,
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -169,7 +173,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   Expanded(
                     child: HandymanButton(
-                      text: toggler ? "Delete Account" : "Logout",
+                      text: toggler
+                          ? AppLocalizations.of(context)!.deleteaccount
+                          : AppLocalizations.of(context)!.logout,
                       onPressed: () => toggler ? () {} : _logout(context),
                       color: AppColor.red,
                       textColor: AppColor.white,

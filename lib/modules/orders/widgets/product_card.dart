@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:handyman_bbk_panel/models/products_model.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 
 class ProductCard extends StatelessWidget {
@@ -80,7 +80,7 @@ class ProductCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 6),
-                  _buildAvailabilityBadge(products.availability ?? ''),
+                  _buildAvailabilityBadge(products.availability ?? '', context),
                   Text(
                     "${products.price}",
                     style: const TextStyle(
@@ -116,7 +116,7 @@ class ProductCard extends StatelessWidget {
     );
   }
 
-  Widget _buildAvailabilityBadge(String availability) {
+  Widget _buildAvailabilityBadge(String availability, context) {
     final isInStock = availability.toLowerCase() == "in stock";
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
@@ -125,7 +125,7 @@ class ProductCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
-        availability,
+        _getLocalizedName(availability, context),
         style: TextStyle(
           color: isInStock ? AppColor.green : Colors.red[700],
           fontSize: 10,
@@ -133,5 +133,17 @@ class ProductCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  _getLocalizedName(String text, context) {
+    AppLocalizations locn = AppLocalizations.of(context)!;
+    switch (text) {
+      case "in stock":
+        return locn.instock;
+      case "out of stock":
+        return locn.outofstock;
+      default:
+        return text;
+    }
   }
 }

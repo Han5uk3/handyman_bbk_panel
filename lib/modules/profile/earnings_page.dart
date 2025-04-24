@@ -5,6 +5,7 @@ import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/common_widget/outline_button.dart';
 import 'package:handyman_bbk_panel/common_widget/svgicon.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EarningsPage extends StatefulWidget {
   const EarningsPage({super.key});
@@ -15,8 +16,6 @@ class EarningsPage extends StatefulWidget {
 
 int _selectedPayoutMethod = 0;
 
-List<String> payoutMethods = ["PayPal", "UPI", "Bank Transfer"];
-
 class _EarningsPageState extends State<EarningsPage> {
   @override
   Widget build(BuildContext context) {
@@ -24,12 +23,12 @@ class _EarningsPageState extends State<EarningsPage> {
       bottomNavigationBar: Padding(
         padding: EdgeInsets.fromLTRB(16, 5, 16, 28),
         child: HandymanButton(
-            text: "Payout Available Balance",
+            text: AppLocalizations.of(context)!.payoutavailalebalance,
             onPressed: () {
               _showPayoutMethodBottomSheet(context);
             }),
       ),
-      appBar: handyAppBar("Earnings", context,
+      appBar: handyAppBar(AppLocalizations.of(context)!.earnings, context,
           isCenter: true, iswhite: true, isneedtopop: true),
       body: _buildBody(),
     );
@@ -67,7 +66,7 @@ class _EarningsPageState extends State<EarningsPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       HandyLabel(
-                        text: "Total Earnings",
+                        text: AppLocalizations.of(context)!.totalearnings,
                         fontSize: 14,
                         textcolor: AppColor.lightGrey600,
                       ),
@@ -85,12 +84,12 @@ class _EarningsPageState extends State<EarningsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   HandyLabel(
-                    text: "Available Balance",
+                    text: AppLocalizations.of(context)!.availablebalance,
                     fontSize: 14,
                     textcolor: AppColor.lightGrey600,
                   ),
                   HandyLabel(
-                    text: "SAR 100.00",
+                    text: "${AppLocalizations.of(context)!.sar} 100.00",
                     isBold: true,
                   ),
                 ],
@@ -103,6 +102,11 @@ class _EarningsPageState extends State<EarningsPage> {
   }
 
   void _showPayoutMethodBottomSheet(BuildContext context) {
+    List<String> payoutMethods = [
+      AppLocalizations.of(context)!.paypal,
+      AppLocalizations.of(context)!.upi,
+      AppLocalizations.of(context)!.banktransfer,
+    ];
     showModalBottomSheet(
       backgroundColor: AppColor.white,
       context: context,
@@ -138,7 +142,7 @@ class _EarningsPageState extends State<EarningsPage> {
                           padding: const EdgeInsets.only(
                               left: 16, right: 16, top: 16, bottom: 6),
                           child: HandyLabel(
-                            text: "Payout",
+                            text: AppLocalizations.of(context)!.payout,
                             isBold: true,
                             fontSize: 18,
                           ),
@@ -148,7 +152,8 @@ class _EarningsPageState extends State<EarningsPage> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 10),
                           child: HandyLabel(
-                            text: "Choose Payout Method",
+                            text: AppLocalizations.of(context)!
+                                .choosepayoutmethod,
                             isBold: false,
                             fontSize: 16,
                           ),
@@ -174,7 +179,7 @@ class _EarningsPageState extends State<EarningsPage> {
                                   onPressed: () {
                                     Navigator.pop(context);
                                   },
-                                  text: "Cancel",
+                                  text: AppLocalizations.of(context)!.cancel,
                                 ),
                               ),
                               SizedBox(width: 12),
@@ -182,7 +187,7 @@ class _EarningsPageState extends State<EarningsPage> {
                                 child: HandymanButton(
                                   onPressed:
                                       () {}, //depending on payout method, show different content in bottom sheet
-                                  text: "Next",
+                                  text: AppLocalizations.of(context)!.next,
                                 ),
                               ),
                             ],

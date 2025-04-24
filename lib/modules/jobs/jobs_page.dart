@@ -7,6 +7,7 @@ import 'package:handyman_bbk_panel/modules/workers/widgets/jobcard.dart';
 import 'package:handyman_bbk_panel/models/booking_data.dart';
 import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class JobsPage extends StatefulWidget {
   final bool isAdmin;
@@ -46,7 +47,9 @@ class _JobsPageState extends State<JobsPage>
       listener: (context, state) {
         if (state is RejectWorkSuccess) {
           HandySnackBar.show(
-              context: context, message: "Rejected", isTrue: false);
+              context: context,
+              message: AppLocalizations.of(context)!.rejected,
+              isTrue: false);
           return;
         }
         if (state is RejectWorkFailure) {
@@ -56,7 +59,9 @@ class _JobsPageState extends State<JobsPage>
         }
         if (state is AcceptWorkSuccess) {
           HandySnackBar.show(
-              context: context, message: "Accepted", isTrue: true);
+              context: context,
+              message: AppLocalizations.of(context)!.accepted,
+              isTrue: true);
           return;
         }
         if (state is AcceptWorkFailure) {
@@ -67,7 +72,7 @@ class _JobsPageState extends State<JobsPage>
       },
       child: Scaffold(
         appBar: handyAppBar(
-          widget.isAdmin ? "Admin Jobs Assign" : "Jobs",
+          AppLocalizations.of(context)!.jobs,
           context,
           isCenter: true,
           isneedtopop: false,
@@ -113,7 +118,9 @@ class _JobsPageState extends State<JobsPage>
       stream: AppServices.getUrgentBookingsForWorker(isAdmin: widget.isAdmin),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(
+              child: Text(
+                  '${AppLocalizations.of(context)!.error}: ${snapshot.error}'));
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return Center(
@@ -122,8 +129,8 @@ class _JobsPageState extends State<JobsPage>
               children: [
                 Icon(Icons.info_outline, size: 48, color: AppColor.greyDark),
                 const SizedBox(height: 16),
-                const Text(
-                  'No urgent jobs available',
+                Text(
+                  AppLocalizations.of(context)!.nourgentjobsavailable,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ],
@@ -161,7 +168,9 @@ class _JobsPageState extends State<JobsPage>
           : AppServices.getBookingsByWorkerId(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(
+              child: Text(
+                  '${AppLocalizations.of(context)!.error}: ${snapshot.error}'));
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return Center(
@@ -170,8 +179,8 @@ class _JobsPageState extends State<JobsPage>
               children: [
                 Icon(Icons.calendar_today, size: 48, color: AppColor.greyDark),
                 const SizedBox(height: 16),
-                const Text(
-                  'No pending jobs available',
+                Text(
+                  AppLocalizations.of(context)!.nopendingjobsavailable,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ],
@@ -206,7 +215,9 @@ class _JobsPageState extends State<JobsPage>
           isUrgent: false, status: "S", secondStatus: "A"),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(
+              child: Text(
+                  '${AppLocalizations.of(context)!.error}: ${snapshot.error}'));
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return Center(
@@ -215,8 +226,8 @@ class _JobsPageState extends State<JobsPage>
               children: [
                 Icon(Icons.engineering, size: 48, color: AppColor.greyDark),
                 const SizedBox(height: 16),
-                const Text(
-                  'No scheduled jobs available',
+                Text(
+                  AppLocalizations.of(context)!.noscheduledjobsavailable,
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ],
@@ -265,13 +276,13 @@ class _JobsPageState extends State<JobsPage>
         labelPadding: EdgeInsets.zero,
         tabs: widget.isAdmin
             ? [
-                _customTab("Pending", 0),
-                _customTab("Scheduled", 1),
-                _customTab("Urgent", 2),
+                _customTab(AppLocalizations.of(context)!.pending, 0),
+                _customTab(AppLocalizations.of(context)!.scheduled, 1),
+                _customTab(AppLocalizations.of(context)!.urgent, 2),
               ]
             : [
-                _customTab("Scheduled", 0),
-                _customTab("Urgent", 1),
+                _customTab(AppLocalizations.of(context)!.scheduled, 0),
+                _customTab(AppLocalizations.of(context)!.urgent, 1),
               ],
       ),
     );

@@ -4,6 +4,7 @@ import 'package:handyman_bbk_panel/common_widget/loader.dart';
 import 'package:handyman_bbk_panel/models/booking_data.dart';
 import 'package:handyman_bbk_panel/modules/workers/widgets/jobcard.dart';
 import 'package:handyman_bbk_panel/services/app_services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
@@ -17,7 +18,7 @@ class _HistoryPageState extends State<HistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: handyAppBar(
-        "History",
+        AppLocalizations.of(context)!.history,
         context,
         iswhite: true,
       ),
@@ -34,13 +35,17 @@ class _HistoryPageState extends State<HistoryPage> {
         }
 
         if (snapshot.hasError) {
-          return Center(child: Text('Something went wrong: ${snapshot.error}'));
+          return Center(
+              child: Text(
+                  '${AppLocalizations.of(context)!.somethingwentwrong}: ${snapshot.error}'));
         }
 
         final historyList = snapshot.data ?? [];
 
         if (historyList.isEmpty) {
-          return const Center(child: Text('No history bookings found.'));
+          return Center(
+              child: Text(
+                  AppLocalizations.of(context)!.nobookinghistoryavailable));
         }
 
         return ListView.builder(

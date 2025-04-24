@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
@@ -33,7 +34,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: handyAppBar("Notifications", context,
+      appBar: handyAppBar(AppLocalizations.of(context)!.notifications, context,
           isCenter: true, isneedtopop: true, iswhite: true),
       body: _buildBody(context),
     );
@@ -59,7 +60,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 ),
                 Text(
                   textAlign: TextAlign.left,
-                  'Mark as read',
+                  AppLocalizations.of(context)!.markAsRead,
                   style: TextStyle(color: AppColor.white, fontSize: 16),
                 ),
               ],
