@@ -7,6 +7,7 @@ import 'package:handyman_bbk_panel/modules/login/login_page.dart';
 import 'package:handyman_bbk_panel/modules/profile/bloc/profile_bloc.dart';
 import 'package:handyman_bbk_panel/services/locator_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -112,8 +113,8 @@ class _SplashScreenState extends State<SplashScreen>
                         child: loadsvg('assets/images/logo.svg'),
                       ),
                       const SizedBox(height: 40),
-                      const Text(
-                        'Welcome',
+                      Text(
+                        AppLocalizations.of(context)!.welcome,
                         style: TextStyle(
                           color: AppColor.white,
                           fontSize: 32,

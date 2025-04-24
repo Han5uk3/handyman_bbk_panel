@@ -13,6 +13,7 @@ import 'package:handyman_bbk_panel/common_widget/loader.dart';
 import 'package:handyman_bbk_panel/helpers/collections.dart';
 import 'package:handyman_bbk_panel/models/booking_data.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TrackWorkerScreen extends StatefulWidget {
   final String bookingId;
@@ -57,34 +58,34 @@ class _TrackWorkerScreenState extends State<TrackWorkerScreen> {
         .doc(widget.bookingId)
         .snapshots()
         .listen((snapshot) async {
-          if (!snapshot.exists) return;
-          final data = snapshot.data() as Map<String, dynamic>;
-          if (data.isEmpty) return;
-          bookingData = BookingModel.fromMap(data);
-          if (bookingData?.location != null &&
-              bookingData?.workerData?.latitude != null &&
-              bookingData?.workerData?.longitude != null) {
-            userLatLng = LatLng(
-              bookingData?.location!.latitude ?? 0.0,
-              bookingData?.location!.longitude ?? 0.0,
-            );
-            workerLatLng = LatLng(
-              bookingData?.workerData!.latitude ?? 0.0,
-              bookingData?.workerData!.longitude ?? 0.0,
-            );
+      if (!snapshot.exists) return;
+      final data = snapshot.data() as Map<String, dynamic>;
+      if (data.isEmpty) return;
+      bookingData = BookingModel.fromMap(data);
+      if (bookingData?.location != null &&
+          bookingData?.workerData?.latitude != null &&
+          bookingData?.workerData?.longitude != null) {
+        userLatLng = LatLng(
+          bookingData?.location!.latitude ?? 0.0,
+          bookingData?.location!.longitude ?? 0.0,
+        );
+        workerLatLng = LatLng(
+          bookingData?.workerData!.latitude ?? 0.0,
+          bookingData?.workerData!.longitude ?? 0.0,
+        );
 
-            _updateMarkers();
-            await _drawPolyline();
+        _updateMarkers();
+        await _drawPolyline();
 
-            if (workerLatLng != null && userLatLng != null) {
-              _moveCameraToFitBounds();
-            }
+        if (workerLatLng != null && userLatLng != null) {
+          _moveCameraToFitBounds();
+        }
 
-            setState(() {
-              _isLoading = false;
-            });
-          }
+        setState(() {
+          _isLoading = false;
         });
+      }
+    });
   }
 
   void _updateMarkers() {
@@ -96,7 +97,8 @@ class _TrackWorkerScreenState extends State<TrackWorkerScreen> {
           markerId: const MarkerId('user'),
           position: userLatLng!,
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-          infoWindow: const InfoWindow(title: "Your Location"),
+          infoWindow:
+              InfoWindow(title: AppLocalizations.of(context)!.yourLocation),
         ),
       );
     }
@@ -109,7 +111,8 @@ class _TrackWorkerScreenState extends State<TrackWorkerScreen> {
           icon: BitmapDescriptor.defaultMarkerWithHue(
             BitmapDescriptor.hueGreen,
           ),
-          infoWindow: const InfoWindow(title: "Worker Location"),
+          infoWindow:
+              InfoWindow(title: AppLocalizations.of(context)!.workerLocation),
         ),
       );
     }
@@ -170,8 +173,7 @@ class _TrackWorkerScreenState extends State<TrackWorkerScreen> {
     const double p = 0.017453292519943295;
     const double r = 6371;
 
-    final double a =
-        0.5 -
+    final double a = 0.5 -
         Math.cos((lat2 - lat1) * p) / 2 +
         Math.cos(lat1 * p) *
             Math.cos(lat2 * p) *
@@ -204,7 +206,8 @@ class _TrackWorkerScreenState extends State<TrackWorkerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: handyAppBar("Track Worker", context,isneedtopop: true,isCenter: true),
+      appBar: handyAppBar(AppLocalizations.of(context)!.trackWorker, context,
+          isneedtopop: true, isCenter: true),
       body: Stack(
         children: [
           GoogleMap(
@@ -272,7 +275,7 @@ class _TrackWorkerScreenState extends State<TrackWorkerScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   HandyLabel(
-                    text: "Worker",
+                    text: AppLocalizations.of(context)!.worker,
                     fontSize: 14,
                     isBold: false,
                     textcolor: AppColor.lightGrey300,
@@ -294,42 +297,13 @@ class _TrackWorkerScreenState extends State<TrackWorkerScreen> {
           ),
           Divider(color: AppColor.lightGrey400, thickness: 1),
           Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              HandyLabel(text: "4.0", isBold: true, fontSize: 16),
-              Expanded(
-                child: RatingBar.builder(
-                  allowHalfRating: true,
-                  ignoreGestures: true,
-                  initialRating: 4.0,
-                  minRating: 0.0,
-                  direction: Axis.horizontal,
-                  unratedColor: AppColor.lightGrey300,
-                  itemCount: 5,
-                  itemSize: 24,
-                  itemPadding: const EdgeInsets.symmetric(horizontal: 2.0),
-                  itemBuilder:
-                      (context, _) => Icon(Icons.star, color: AppColor.yellow),
-                  onRatingUpdate: (value) {},
-                ),
-              ),
-              HandyLabel(
-                text: "4 Reviews",
-                fontSize: 14,
-                isBold: false,
-                textcolor: AppColor.lightGrey300,
-              ),
-            ],
-          ),
-          Divider(color: AppColor.lightGrey400, thickness: 1),
-          Row(
-            spacing: 15,
             children: [
               Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 spacing: 15,
                 children: [
                   HandyLabel(
-                    text: "Estimated Time of Arrival",
+                    text: AppLocalizations.of(context)!.estimatedTimeOfArrival,
                     fontSize: 14,
                     isBold: false,
                     textcolor: AppColor.lightGrey600,
@@ -343,9 +317,10 @@ class _TrackWorkerScreenState extends State<TrackWorkerScreen> {
                 ],
               ),
               Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   HandyLabel(
-                    text: "Distance to reach",
+                    text: AppLocalizations.of(context)!.distanceToReach,
                     fontSize: 14,
                     isBold: false,
                     textcolor: AppColor.lightGrey600,

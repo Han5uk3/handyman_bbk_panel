@@ -66,24 +66,24 @@ class TermsAndConditionsPage extends StatelessWidget {
                 AppLocalizations.of(context)!.updatesandnotificationsdesc,
               ),
               _buildtermscontent(
-                "11. Modifications",
-                "We may update or revise these Terms at any time. If we make significant changes, we will notify users through the app or by other means. Continued use of Handyman after changes are made constitutes your acceptance of the updated Terms.",
+                "11. ${AppLocalizations.of(context)!.modifications}",
+                AppLocalizations.of(context)!.modificationsdesc,
               ),
               _buildtermscontent(
-                "12. Governing Law",
-                "These Terms and Conditions are governed by and interpreted according to the laws of Saudi Arabia. Any disputes will be resolved in accordance with these laws.",
+                "12. ${AppLocalizations.of(context)!.governinglaw}",
+                AppLocalizations.of(context)!.governinglawdesc,
               ),
               _buildtermscontent(
-                "13. Contact",
-                "For questions or concerns about these Terms, please reach out to our team: ",
+                "13. ${AppLocalizations.of(context)!.contact}",
+                AppLocalizations.of(context)!.contactdesc,
               ),
               SizedBox(height: 12),
               Text(
-                "Email: [email]",
+                "${AppLocalizations.of(context)!.email}: [email]",
                 style: TextStyle(color: AppColor.lightGrey500, fontSize: 14),
               ),
               Text(
-                "Phone: [phone number]",
+                "${AppLocalizations.of(context)!.phone}: [phone number]",
                 style: TextStyle(color: AppColor.lightGrey500, fontSize: 14),
               ),
               SizedBox(height: 80),

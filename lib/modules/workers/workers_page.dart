@@ -8,6 +8,7 @@ import 'package:handyman_bbk_panel/modules/workers/worker_info_page.dart';
 import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 import 'dart:async';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class WorkersPage extends StatefulWidget {
   const WorkersPage({super.key});
@@ -78,7 +79,7 @@ class _WorkersPageState extends State<WorkersPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: handyAppBar("Workers", context,
+      appBar: handyAppBar(AppLocalizations.of(context)!.workers, context,
           actions: [
             IconButton(
               onPressed: () {},
@@ -130,8 +131,8 @@ class _WorkersPageState extends State<WorkersPage>
         indicatorColor: AppColor.green,
         labelPadding: EdgeInsets.zero,
         tabs: [
-          _customTab("New", 0),
-          _customTab("Active", 1),
+          _customTab(AppLocalizations.of(context)!.latest, 0),
+          _customTab(AppLocalizations.of(context)!.active, 1),
         ],
       ),
     );
@@ -167,10 +168,10 @@ class _WorkersPageState extends State<WorkersPage>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('No new workers available'),
+            Text(AppLocalizations.of(context)!.nonewworkersavailable),
             TextButton(
               onPressed: _refreshWorkers,
-              child: const Text('Refresh'),
+              child: Text(AppLocalizations.of(context)!.refresh),
             ),
           ],
         ),
@@ -226,13 +227,14 @@ class _WorkersPageState extends State<WorkersPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   HandyLabel(
-                    text: worker.name ?? "Unknown",
+                    text: worker.name ?? AppLocalizations.of(context)!.unknown,
                     isBold: true,
                     fontSize: 16,
                   ),
                   const SizedBox(height: 10),
                   HandyLabel(
-                    text: worker.experience ?? "No occupation specified",
+                    text: worker.experience ??
+                        AppLocalizations.of(context)!.experienceunspecified,
                     isBold: false,
                     fontSize: 14,
                   ),
@@ -258,10 +260,10 @@ class _WorkersPageState extends State<WorkersPage>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('No active workers available'),
+            Text(AppLocalizations.of(context)!.noactiveworkersavailable),
             TextButton(
               onPressed: _refreshWorkers,
-              child: const Text('Refresh'),
+              child: Text(AppLocalizations.of(context)!.refresh),
             ),
           ],
         ),
@@ -325,7 +327,8 @@ class _WorkersPageState extends State<WorkersPage>
                           Row(
                             children: [
                               HandyLabel(
-                                text: worker.name ?? "Unknown",
+                                text: worker.name ??
+                                    AppLocalizations.of(context)!.unknown,
                                 isBold: true,
                                 fontSize: 16,
                               ),
@@ -336,8 +339,9 @@ class _WorkersPageState extends State<WorkersPage>
                           ),
                           const SizedBox(height: 10),
                           HandyLabel(
-                            text:
-                                worker.experience ?? "No occupation specified",
+                            text: worker.experience ??
+                                AppLocalizations.of(context)!
+                                    .experienceunspecified,
                             isBold: false,
                             fontSize: 14,
                           ),
@@ -367,9 +371,9 @@ class _WorkersPageState extends State<WorkersPage>
                 ),
                 const Divider(thickness: 1),
                 const SizedBox(height: 10),
-                _detailRow("Total Jobs", "0"),
+                _detailRow(AppLocalizations.of(context)!.totaljobs, "0"),
                 const SizedBox(height: 10),
-                _detailRow("Jobs In Queue", "0"),
+                _detailRow(AppLocalizations.of(context)!.jobsinqueue, "0"),
                 const SizedBox(height: 10),
                 const Divider(thickness: 1),
                 Row(
@@ -397,8 +401,8 @@ class _WorkersPageState extends State<WorkersPage>
                         onRatingUpdate: (rating) {},
                       ),
                     ),
-                    const HandyLabel(
-                      text: "0 Reviews",
+                    HandyLabel(
+                      text: "0 ${AppLocalizations.of(context)!.reviews}",
                       isBold: false,
                       fontSize: 16,
                     )
@@ -422,7 +426,9 @@ class _WorkersPageState extends State<WorkersPage>
         ),
         const SizedBox(width: 5),
         HandyLabel(
-          text: isOnline ? "Available" : "Offline",
+          text: isOnline
+              ? AppLocalizations.of(context)!.available
+              : AppLocalizations.of(context)!.offline,
           textcolor: isOnline ? AppColor.green : AppColor.greyDark,
         )
       ],
