@@ -82,10 +82,24 @@ class WorkersBloc extends Bloc<WorkersEvent, WorkersState> {
       AssignWorkerToAProjectEvent event, Emitter<WorkersState> emit) async {
     try {
       emit(AssignWorkerToAProjectLoading());
-      await FirebaseCollections.bookings.doc(event.projectId).update({
+
+      final updateData = {
         'workerData': event.workerData.toMap(),
+        'status': 'S',
         'assignedDateTime': FieldValue.serverTimestamp(),
-      });
+      };
+
+      if (event.isUrgentRequest) {
+        updateData.addAll({
+          'status': 'U',
+          'visibleToWorkers': [event.workerData.uid],
+        });
+      }
+
+      await FirebaseCollections.bookings
+          .doc(event.projectId)
+          .update(updateData);
+
       emit(AssignWorkerToAProjectSuccess());
     } catch (e) {
       emit(AssignWorkerToAProjectFailure(error: e.toString()));
@@ -97,6 +111,7 @@ class WorkersBloc extends Bloc<WorkersEvent, WorkersState> {
       emit(RejectWorkLoading());
       await FirebaseCollections.bookings.doc(event.projectId).update({
         'status': 'P',
+        'isWorkerAccept': false,
         'workerData': null,
         'assignedDateTime': null,
       });
@@ -115,7 +130,7 @@ class WorkersBloc extends Bloc<WorkersEvent, WorkersState> {
 
       final updateData = {
         'isWorkerAccept': true,
-        'status': 'S',
+        'status': 'A',
         'acceptedDateTime': FieldValue.serverTimestamp(),
       };
 

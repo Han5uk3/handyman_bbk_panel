@@ -937,7 +937,10 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
         children: [
           HandyLabel(text: "Rating by Customer", isBold: true, fontSize: 16),
           const SizedBox(height: 24),
-          RatingDisplay(rating: reviewModel?.rating ?? 0.0, reviewCount: 0, isInHistory: true),
+          RatingDisplay(
+              rating: reviewModel?.rating ?? 0.0,
+              reviewCount: 0,
+              isInHistory: true),
           SizedBox(height: 12),
           HandyLabel(
             text: reviewModel?.review ?? "",

@@ -41,12 +41,14 @@ class SwitchToOfflineEvent extends WorkersEvent {
 class AssignWorkerToAProjectEvent extends WorkersEvent {
   final UserData workerData;
   final String projectId;
+  final bool isUrgentRequest;
   const AssignWorkerToAProjectEvent({
     required this.workerData,
     required this.projectId,
+    this.isUrgentRequest = false,
   });
   @override
-  List<Object> get props => [workerData, projectId];
+  List<Object> get props => [workerData, projectId, isUrgentRequest];
 }
 
 class RejectWorkEvent extends WorkersEvent {

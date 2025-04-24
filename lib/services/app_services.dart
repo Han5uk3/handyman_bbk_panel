@@ -21,7 +21,7 @@ class AppServices {
         .map((event) => event.docs.length);
   }
 
-  static Stream<int> getScheduleUrgentCount({bool? isUrgent}) {
+  static Stream<int> getScheduleUrgentCount({bool isUrgent = false}) {
     return FirebaseCollections.bookings
         .where("isUrgent", isEqualTo: isUrgent)
         .snapshots()
@@ -112,18 +112,37 @@ class AppServices {
     });
   }
 
+  static Stream<List<BookingModel>> getUrgentBookingsForWorker(
+      {bool isAdmin = false}) {
+    var query = FirebaseCollections.bookings.where('isUrgent', isEqualTo: true);
+
+    if (isAdmin) {
+      query = query.where('status', whereIn: ['no_workers', 'U', 'A', 'W']);
+    } else {
+      query = query.where('status', whereIn: ['U', 'A', 'W']).where(
+          'visibleToWorkers',
+          arrayContains: uid);
+    }
+
+    return query.snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return BookingModel.fromMap(doc.data() as Map<String, dynamic>);
+      }).toList();
+    });
+  }
+
   static Stream<List<BookingModel>> getBookingsByWorkerId() {
     return FirebaseCollections.bookings
         .where('workerData.uid', isEqualTo: uid)
-        .where('status', isEqualTo: "P")
+        .where('status', whereIn: ["P", "W"])
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        data['id'] = doc.id;
-        return BookingModel.fromMap(data);
-      }).toList();
-    });
+          return snapshot.docs.map((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            data['id'] = doc.id;
+            return BookingModel.fromMap(data);
+          }).toList();
+        });
   }
 
   static Stream<List<BookingModel>> getHistoryBookingsByWorkerId() {
@@ -139,5 +158,28 @@ class AppServices {
         return BookingModel.fromMap(data);
       }).toList();
     });
+  }
+
+  static Stream<int> getWorkerTotalJobsCount() {
+    return FirebaseCollections.bookings
+        .where('workerData.uid', isEqualTo: uid)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.length);
+  }
+
+  static Stream<int> getWorkerUrgentJobsCount() {
+    return FirebaseCollections.bookings
+        .where('workerData.uid', isEqualTo: uid)
+        .where('isUrgent', isEqualTo: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.length);
+  }
+
+  static Stream<int> getWorkerScheduledJobsCount() {
+    return FirebaseCollections.bookings
+        .where('workerData.uid', isEqualTo: uid)
+        .where('isUrgent', isEqualTo: false)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.length);
   }
 }
