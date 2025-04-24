@@ -10,6 +10,7 @@ import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
 import 'package:handyman_bbk_panel/modules/workers/bloc/workers_bloc.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class WorkerInfoPage extends StatefulWidget {
   final UserData workerData;
@@ -31,7 +32,9 @@ class _WorkerInfoPageState extends State<WorkerInfoPage> {
             isLoading = false;
           });
           HandySnackBar.show(
-              context: context, message: "Verified Successfully", isTrue: true);
+              context: context,
+              message: AppLocalizations.of(context)!.verifiedsuccessfully,
+              isTrue: true);
           Navigator.pop(context);
           return;
         }
@@ -49,7 +52,7 @@ class _WorkerInfoPageState extends State<WorkerInfoPage> {
           });
           HandySnackBar.show(
               context: context,
-              message: "Deactivated Successfully",
+              message: AppLocalizations.of(context)!.deactivatedsuccessfully,
               isTrue: true);
           Navigator.pop(context);
           return;
@@ -80,8 +83,8 @@ class _WorkerInfoPageState extends State<WorkerInfoPage> {
             child: HandymanButton(
               isLoading: isLoading,
               text: !(widget.workerData.isVerified ?? false)
-                  ? "Verify ID"
-                  : "De-activate Worker",
+                  ? AppLocalizations.of(context)!.verifyid
+                  : AppLocalizations.of(context)!.deactivateworker,
               onPressed: !(widget.workerData.isVerified ?? false)
                   ? () => context.read<WorkersBloc>().add(
                       VerifyWorkerEvent(workerId: widget.workerData.uid ?? ""))
@@ -93,8 +96,12 @@ class _WorkerInfoPageState extends State<WorkerInfoPage> {
             ),
           ),
           appBar: handyAppBar(
-              widget.workerData.name ?? "Worker Details", context,
-              isneedtopop: true, isCenter: true, iswhite: true),
+              widget.workerData.name ??
+                  AppLocalizations.of(context)!.workerDetails,
+              context,
+              isneedtopop: true,
+              isCenter: true,
+              iswhite: true),
           body: _buildBody(context),
         );
       },
@@ -147,14 +154,15 @@ class _WorkerInfoPageState extends State<WorkerInfoPage> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const HandyLabel(
-                  text: "Worker",
+                HandyLabel(
+                  text: AppLocalizations.of(context)!.worker,
                   isBold: false,
                   fontSize: 16,
                 ),
                 const SizedBox(height: 10),
                 HandyLabel(
-                  text: widget.workerData.name ?? "No Name",
+                  text: widget.workerData.name ??
+                      AppLocalizations.of(context)!.unknown,
                   isBold: true,
                   fontSize: 18,
                 ),
@@ -187,19 +195,32 @@ class _WorkerInfoPageState extends State<WorkerInfoPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 16),
-          _detailRow("Gender", widget.workerData.gender ?? "Not specified"),
+          _detailRow(
+              AppLocalizations.of(context)!.gender,
+              _getLocalizedtext(widget.workerData.gender) ??
+                  AppLocalizations.of(context)!.notSpecified),
           const SizedBox(height: 8),
           _detailRow(
-              "Service Type", widget.workerData.service ?? "Not specified"),
+              AppLocalizations.of(context)!.servicetype,
+              _getLocalizedtext(widget.workerData.service) ??
+                  AppLocalizations.of(context)!.notSpecified),
           const SizedBox(height: 8),
-          _detailRow("Years of Experience",
-              widget.workerData.experience ?? "Not specified"),
+          _detailRow(
+              AppLocalizations.of(context)!.yearsofexperience,
+              _getLocalizedtext(widget.workerData.experience) ??
+                  AppLocalizations.of(context)!.notSpecified),
           const SizedBox(height: 8),
-          _detailRow("Email ID", widget.workerData.email ?? "Not specified"),
+          _detailRow(
+              AppLocalizations.of(context)!.email,
+              widget.workerData.email ??
+                  AppLocalizations.of(context)!.notSpecified),
           const SizedBox(height: 8),
-          _detailRow("Address", widget.workerData.address ?? "Not specified"),
+          _detailRow(
+              AppLocalizations.of(context)!.address,
+              widget.workerData.address ??
+                  AppLocalizations.of(context)!.notSpecified),
           const SizedBox(height: 8),
-          _detailRow("ID Proof", ""),
+          _detailRow(AppLocalizations.of(context)!.idproof, ""),
           const SizedBox(height: 13),
           if (widget.workerData.idProof != null &&
               widget.workerData.idProof!.isNotEmpty)
@@ -230,8 +251,8 @@ class _WorkerInfoPageState extends State<WorkerInfoPage> {
                 color: AppColor.lightGrey200,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: const Center(
-                child: Text("No ID proof available"),
+              child: Center(
+                child: Text(AppLocalizations.of(context)!.noidproofavailable),
               ),
             ),
           const Divider(thickness: 1, height: 32),
@@ -296,7 +317,7 @@ class _WorkerInfoPageState extends State<WorkerInfoPage> {
         ),
         HandyLabel(
           textcolor: AppColor.lightGrey500,
-          text: content ?? "Not available",
+          text: content ?? AppLocalizations.of(context)!.notavailable,
           isBold: false,
           fontSize: 14,
         ),
@@ -337,7 +358,7 @@ class _WorkerInfoPageState extends State<WorkerInfoPage> {
                 ),
               ),
               HandyLabel(
-                text: "${0} Reviews",
+                text: "${0} ${AppLocalizations.of(context)!.reviews}",
                 isBold: false,
                 fontSize: 16,
               ),
@@ -355,8 +376,8 @@ class _WorkerInfoPageState extends State<WorkerInfoPage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const HandyLabel(
-                  text: "ID Proof",
+                HandyLabel(
+                  text: AppLocalizations.of(context)!.idproof,
                   isBold: true,
                   fontSize: 16,
                 ),
@@ -385,5 +406,32 @@ class _WorkerInfoPageState extends State<WorkerInfoPage> {
         ],
       ),
     );
+  }
+
+  _getLocalizedtext(String? text) {
+    if (text == "Male") {
+      return AppLocalizations.of(context)!.male;
+    } else if (text == "Female") {
+      return AppLocalizations.of(context)!.female;
+    } else if (text == "Other") {
+      return AppLocalizations.of(context)!.other;
+    } else if (text == "Electrical") {
+      return AppLocalizations.of(context)!.electrical;
+    } else if (text == "Plumbing") {
+      return AppLocalizations.of(context)!.plumbing;
+    }
+    else if(text == "Less than 1 year"){
+      return AppLocalizations.of(context)!.lessthan1year;
+    }
+    else if(text == "1-3 year"){
+      return AppLocalizations.of(context)!.year1to3;
+    }
+    else if(text == "3-5 years"){
+      return AppLocalizations.of(context)!.year3to5;
+    }
+    else if(text == "5+ years"){
+      return AppLocalizations.of(context)!.year5plus;
+    }
+  
   }
 }
