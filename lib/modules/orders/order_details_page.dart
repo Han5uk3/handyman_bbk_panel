@@ -6,6 +6,7 @@ import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/models/products_model.dart';
 import 'package:handyman_bbk_panel/modules/orders/widgets/product_card.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class OrderDetailsPage extends StatefulWidget {
   const OrderDetailsPage({super.key});
@@ -51,13 +52,13 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               HandyLabel(
-                text: "Total Cost: ",
+                text: "${AppLocalizations.of(context)!.totalcost}: ",
                 isBold: true,
                 fontSize: 16,
                 textcolor: isPacked ? AppColor.greyDark : AppColor.black,
               ),
               HandyLabel(
-                text: "SAR 20",
+                text: "${AppLocalizations.of(context)!.sar} 20",
                 isBold: true,
                 fontSize: 16,
                 textcolor: isPacked ? AppColor.greyDark : AppColor.black,
@@ -68,7 +69,9 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             ignoring: isPacked,
             child: HandymanButton(
                 color: isPacked ? AppColor.greyDark : AppColor.black,
-                text: isPacked ? "Packed" : "Pack",
+                text: isPacked
+                    ? AppLocalizations.of(context)!.packed
+                    : AppLocalizations.of(context)!.pack,
                 onPressed: () {
                   setState(() {
                     isPicked = true;

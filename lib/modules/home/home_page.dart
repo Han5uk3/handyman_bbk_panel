@@ -17,11 +17,12 @@ import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/sheets/localization_sheet.dart';
 import 'package:handyman_bbk_panel/sheets/logout_sheet.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   final bool isAdmin;
   final UserData userData;
-  
+
   const HomePage({super.key, required this.isAdmin, required this.userData});
 
   @override
@@ -78,14 +79,16 @@ class _HomePageState extends State<HomePage> {
     if (widget.isAdmin) {
       _workersCountStream = AppServices.getWorkersCount();
       _scheduledBookingsStream = AppServices.getScheduleUrgentCount();
-      _urgentBookingsStream = AppServices.getScheduleUrgentCount(isUrgent: true);
+      _urgentBookingsStream =
+          AppServices.getScheduleUrgentCount(isUrgent: true);
       _productsStream = AppServices.getProductsCount();
     } else {
       _workersCountStream = AppServices.getWorkerTotalJobsCount();
       _scheduledBookingsStream = AppServices.getWorkerScheduledJobsCount();
       _urgentBookingsStream = AppServices.getWorkerUrgentJobsCount();
       // For worker, productsStream is actually earnings
-      _productsStream = AppServices.getProductsCount(); // This is a placeholder for earnings stream
+      _productsStream = AppServices
+          .getProductsCount(); // This is a placeholder for earnings stream
     }
   }
 
@@ -119,16 +122,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _navigateToAdPage(bool isHomeBanner) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => AdPage(isHomeBanner: isHomeBanner))
-    );
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => AdPage(isHomeBanner: isHomeBanner)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: handyAppBar(
-        widget.isAdmin ? "Dashboard" : "Welcome ${widget.userData.name}",
+        widget.isAdmin
+            ? AppLocalizations.of(context)!.dashboard
+            : "${AppLocalizations.of(context)!.welcome} ${widget.userData.name}",
         context,
         isCenter: false,
         iswhite: false,
@@ -141,7 +145,8 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             icon: const Icon(Icons.notifications, color: AppColor.white),
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const NotificationsPage()),
+              MaterialPageRoute(
+                  builder: (context) => const NotificationsPage()),
             ),
           ),
           if (widget.isAdmin)
@@ -152,17 +157,18 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: (widget.userData.isVerified ?? false)
-        ? _buildBody()
-        : _buildWaitingForVerification(),
+          ? _buildBody()
+          : _buildWaitingForVerification(),
     );
   }
 
   Widget _buildWaitingForVerification() {
-    return const Center(
+    return Center(
       child: Padding(
         padding: EdgeInsets.all(16.0),
         child: HandyLabel(
-          text: "Please wait for admin to verify your account",
+          text: AppLocalizations.of(context)!
+              .pleasewaitforadmintoverifyyouraccount,
           fontSize: 14,
         ),
       ),
@@ -199,15 +205,15 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const HandyLabel(
-                  text: "Dashboard",
+                HandyLabel(
+                  text: AppLocalizations.of(context)!.dashboard,
                   fontSize: 14,
                   isBold: false,
                 ),
                 Icon(
                   _showGrid
-                    ? CupertinoIcons.chevron_up
-                    : CupertinoIcons.chevron_down,
+                      ? CupertinoIcons.chevron_up
+                      : CupertinoIcons.chevron_down,
                   size: 14,
                   color: AppColor.black,
                 ),
@@ -225,8 +231,8 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const HandyLabel(
-                  text: "Online",
+                HandyLabel(
+                  text: AppLocalizations.of(context)!.online,
                   fontSize: 18,
                   isBold: true,
                 ),
@@ -235,7 +241,7 @@ class _HomePageState extends State<HomePage> {
                   onChanged: (value) {
                     final workersBloc = context.read<WorkersBloc>();
                     final workerId = AppServices.uid ?? "";
-                    
+
                     if (value) {
                       workersBloc.add(SwitchToOnlineEvent(workerId: workerId));
                     } else {
@@ -279,28 +285,28 @@ class _HomePageState extends State<HomePage> {
         case 0:
           return _buildStreamCard(
             stream: _workersCountStream,
-            title: "Total Workers",
+            title: AppLocalizations.of(context)!.totalworkers,
             color: AppColor.yellow,
             icon: "assets/icons/worker.svg",
           );
         case 1:
           return _buildStreamCard(
             stream: _productsStream,
-            title: "Products Listed",
+            title: AppLocalizations.of(context)!.productslisted,
             color: AppColor.purple,
             icon: "assets/icons/power_drill.svg",
           );
         case 2:
           return _buildStreamCard(
             stream: _scheduledBookingsStream,
-            title: "Scheduled",
+            title: AppLocalizations.of(context)!.scheduled,
             color: AppColor.pink,
             icon: "assets/icons/calendar_clock.svg",
           );
         case 3:
           return _buildStreamCard(
             stream: _urgentBookingsStream,
-            title: "Urgent",
+            title: AppLocalizations.of(context)!.urgent,
             color: AppColor.skyBlue,
             icon: "assets/icons/urgent.svg",
           );
@@ -312,29 +318,30 @@ class _HomePageState extends State<HomePage> {
         case 0:
           return _buildStreamCard(
             stream: _workersCountStream,
-            title: "Total Jobs",
+            title: AppLocalizations.of(context)!.totaljobs,
             color: AppColor.yellow,
             icon: "assets/icons/worker.svg",
           );
         case 1:
           return _buildStreamCard(
             stream: _productsStream,
-            title: "Earnings",
+            title: AppLocalizations.of(context)!.earnings,
             color: AppColor.green,
             icon: "assets/icons/earnings.svg",
-            formatter: (dynamic value) => "\$${(value as num).toStringAsFixed(2)}",
+            formatter: (dynamic value) =>
+                "${AppLocalizations.of(context)!.sar} ${(value as num).toStringAsFixed(2)}",
           );
         case 2:
           return _buildStreamCard(
             stream: _urgentBookingsStream,
-            title: "Urgent",
+            title: AppLocalizations.of(context)!.urgent,
             color: AppColor.skyBlue,
             icon: "assets/icons/urgent.svg",
           );
         case 3:
           return _buildStreamCard(
             stream: _scheduledBookingsStream,
-            title: "Scheduled",
+            title: AppLocalizations.of(context)!.scheduled,
             color: AppColor.pink,
             icon: "assets/icons/calendar_clock.svg",
           );
@@ -356,13 +363,15 @@ class _HomePageState extends State<HomePage> {
       builder: (context, snapshot) {
         String count;
         if (snapshot.hasData) {
-          count = formatter != null 
-            ? formatter(snapshot.data as T)
-            : snapshot.data.toString();
+          count = formatter != null
+              ? formatter(snapshot.data as T)
+              : snapshot.data.toString();
         } else {
-          count = title == "Earnings" ? "\$0" : "0";
+          count = title == AppLocalizations.of(context)!.earnings
+              ? "${AppLocalizations.of(context)!.sar} 0"
+              : "0";
         }
-        
+
         return _buildGridCard(
           title: title,
           count: count,
@@ -382,7 +391,7 @@ class _HomePageState extends State<HomePage> {
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side:  BorderSide(color: AppColor.lightGrey200),
+        side: BorderSide(color: AppColor.lightGrey200),
       ),
       elevation: 0,
       color: AppColor.white,
@@ -431,14 +440,14 @@ class _HomePageState extends State<HomePage> {
         Padding(
           padding: const EdgeInsets.all(16),
           child: HandymanButton(
-            text: "Advertisements",
+            text: AppLocalizations.of(context)!.advertisements,
             onPressed: _showAdTypeAlertDialog,
           ),
         ),
-        const Padding(
+        Padding(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: HandyLabel(
-            text: "Top Workers",
+            text: AppLocalizations.of(context)!.topworkers,
             fontSize: 18,
             isBold: true,
           ),
@@ -499,7 +508,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               Text(
-                "${worker["jobcount"]} jobs",
+                "${worker["jobcount"]} ${AppLocalizations.of(context)!.jobs}",
                 style: TextStyle(color: AppColor.lightGrey700),
               )
             ],
@@ -527,8 +536,8 @@ class _HomePageState extends State<HomePage> {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const HandyLabel(
-                    text: "Select Ad Type",
+                  HandyLabel(
+                    text: AppLocalizations.of(context)!.selectadtype,
                     isBold: true,
                     fontSize: 16,
                   ),
@@ -548,9 +557,11 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 10),
               const Divider(thickness: 1),
-              _buildAdOption("Home", Icons.home, true),
+              _buildAdOption(
+                  AppLocalizations.of(context)!.home, Icons.home, true),
               const Divider(thickness: 1),
-              _buildAdOption("Products", Icons.shopping_bag, false),
+              _buildAdOption(AppLocalizations.of(context)!.products,
+                  Icons.shopping_bag, false),
             ],
           ),
         );

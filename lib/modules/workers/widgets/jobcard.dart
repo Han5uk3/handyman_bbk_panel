@@ -10,6 +10,7 @@ import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/sheets/workers_list_sheet.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class JobCard extends StatefulWidget {
   final BookingModel bookingData;
@@ -172,10 +173,10 @@ class _JobCardState extends State<JobCard> {
               flex: 6,
               child: Text(
                 widget.bookingData.status == "W"
-                    ? "Work in progress"
+                    ? AppLocalizations.of(context)!.workinprogress
                     : (widget.bookingData.isUrgent ?? false)
-                        ? "Urgent"
-                        : "Scheduled",
+                        ? AppLocalizations.of(context)!.urgent
+                        : AppLocalizations.of(context)!.scheduled,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: AppColor.black,
@@ -201,7 +202,7 @@ class _JobCardState extends State<JobCard> {
                       backgroundColor: WidgetStatePropertyAll(AppColor.green),
                     ),
                     child: Text(
-                      "Accept",
+                      AppLocalizations.of(context)!.accept,
                       style: TextStyle(color: Colors.white, fontSize: 12),
                     ),
                   ),
@@ -219,8 +220,8 @@ class _JobCardState extends State<JobCard> {
                       maximumSize: WidgetStatePropertyAll(Size(60, 34)),
                       backgroundColor: WidgetStatePropertyAll(AppColor.red),
                     ),
-                    child: const Text(
-                      "Reject",
+                    child: Text(
+                      AppLocalizations.of(context)!.reject,
                       style: TextStyle(color: Colors.white, fontSize: 12),
                     ),
                   ),
@@ -242,8 +243,8 @@ class _JobCardState extends State<JobCard> {
                   style: const ButtonStyle(
                     backgroundColor: WidgetStatePropertyAll(AppColor.yellow),
                   ),
-                  child: const Text(
-                    "Track",
+                  child: Text(
+                    AppLocalizations.of(context)!.track,
                     style: TextStyle(color: Colors.white, fontSize: 12),
                   ),
                 ),
@@ -271,10 +272,10 @@ class _JobCardState extends State<JobCard> {
                     ),
                     child: Text(
                       widget.bookingData.workerData == null
-                          ? "Assign"
+                          ? AppLocalizations.of(context)!.assign
                           : (widget.bookingData.isWorkerAccept ?? false)
-                              ? "Accepted"
-                              : "Waiting...",
+                              ? AppLocalizations.of(context)!.accepted
+                              : AppLocalizations.of(context)!.waiting,
                       style: TextStyle(color: Colors.white, fontSize: 12),
                     ),
                   ),
@@ -300,9 +301,9 @@ class _JobCardState extends State<JobCard> {
           if (userData != null) ...[
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: HandyLabel(
-                    text: "Customer Name:",
+                    text: "${AppLocalizations.of(context)!.customername}:",
                     fontSize: 14,
                   ),
                 ),
@@ -314,9 +315,9 @@ class _JobCardState extends State<JobCard> {
             ),
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: HandyLabel(
-                    text: "Phone:",
+                    text: "${AppLocalizations.of(context)!.phone}:",
                     fontSize: 14,
                   ),
                 ),
@@ -328,9 +329,9 @@ class _JobCardState extends State<JobCard> {
             ),
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: HandyLabel(
-                    text: "Email:",
+                    text: "${AppLocalizations.of(context)!.email}:",
                     fontSize: 14,
                   ),
                 ),
@@ -341,16 +342,16 @@ class _JobCardState extends State<JobCard> {
               ],
             ),
           ] else
-            const HandyLabel(
-              text: "No user data available",
+            HandyLabel(
+              text: AppLocalizations.of(context)!.nouserdataavailable,
               fontSize: 14,
             ),
           const SizedBox(height: 10),
           Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: HandyLabel(
-                  text: "Address:",
+                  text: "${AppLocalizations.of(context)!.address}:",
                   fontSize: 14,
                 ),
               ),
@@ -368,8 +369,8 @@ class _JobCardState extends State<JobCard> {
             ],
           ),
           const SizedBox(height: 10),
-          const HandyLabel(
-            text: "Issue Details",
+          HandyLabel(
+            text: AppLocalizations.of(context)!.issueDetails,
             fontSize: 14,
             isBold: true,
           ),
@@ -409,7 +410,8 @@ class _JobCardState extends State<JobCard> {
             ),
           const SizedBox(height: 5),
           Text(
-            widget.bookingData.issue ?? 'No description',
+            widget.bookingData.issue ??
+                AppLocalizations.of(context)!.nodescriptionprovided,
             textAlign: TextAlign.justify,
           ),
         ],
@@ -464,7 +466,8 @@ class _JobCardState extends State<JobCard> {
             ),
             const SizedBox(width: 4),
             HandyLabel(
-              text: "SAR ${widget.bookingData.totalFee ?? 'N/A'}",
+              text:
+                  "${AppLocalizations.of(context)!.sar} ${widget.bookingData.totalFee ?? 'N/A'}",
               fontSize: 14,
               isBold: true,
             ),
@@ -502,8 +505,8 @@ class _JobCardState extends State<JobCard> {
         HandyLabel(
           textcolor: status == "C" ? AppColor.green : AppColor.red,
           text: status == "C"
-              ? "Completed on ${getformattedDate(widget.bookingData.completedDateTime)}"
-              : "Cancelled",
+              ? "${AppLocalizations.of(context)!.completedon} ${getformattedDate(widget.bookingData.completedDateTime)}"
+              : AppLocalizations.of(context)!.cancelled,
           fontSize: 14,
         )
       ],

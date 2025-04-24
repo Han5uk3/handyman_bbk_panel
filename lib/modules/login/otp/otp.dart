@@ -6,6 +6,7 @@ import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
 import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
 import 'package:handyman_bbk_panel/services/auth_services.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   final String phoneNumber;
@@ -82,7 +83,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
           HandySnackBar.show(
             context: context,
-            message: "OTP resent successfully",
+            message: AppLocalizations.of(context)!.otpresentsuccessfully,
             isTrue: true,
           );
         },
@@ -95,7 +96,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
           HandySnackBar.show(
             context: context,
-            message: error.message ?? "Failed to resend OTP",
+            message:
+                error.message ?? AppLocalizations.of(context)!.failedtosendOTP,
             isTrue: false,
           );
         },
@@ -108,7 +110,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       }
       HandySnackBar.show(
         context: context,
-        message: "An unexpected error occurred",
+        message: AppLocalizations.of(context)!.anunexpectederroroccurred,
         isTrue: false,
       );
     }
@@ -125,7 +127,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
       HandySnackBar.show(
         context: context,
-        message: "Please enter a valid 6-digit OTP",
+        message: AppLocalizations.of(context)!.invalidotp,
         isTrue: false,
       );
       return;
@@ -162,7 +164,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         errorController.add(ErrorAnimationType.shake);
         HandySnackBar.show(
           context: context,
-          message: "Invalid OTP. Please try again.",
+          message: AppLocalizations.of(context)!.invalidOTPPleasetryagain,
           isTrue: false,
         );
       }
@@ -175,7 +177,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
       }
       HandySnackBar.show(
         context: context,
-        message: "Failed to verify OTP: ${e.toString()}",
+        message:
+            "${AppLocalizations.of(context)!.failedverifyotp}: ${e.toString()}",
         isTrue: false,
       );
     }
@@ -185,7 +188,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: handyAppBar("Verify Phone Number", context, isneedtopop: true),
+      appBar: handyAppBar( AppLocalizations.of(context)!.verifymobile, context, isneedtopop: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -194,7 +197,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
             const SizedBox(height: 20),
             RichText(
               text: TextSpan(
-                text: 'OTP has been sent to ',
+                text: AppLocalizations.of(context)!.otpHasBeenSentTo,
                 style: const TextStyle(color: Colors.grey, fontSize: 16),
                 children: [
                   TextSpan(
@@ -261,10 +264,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               onTap: resendSeconds > 0 || isResending ? null : resendOTP,
               child: Text(
                 isResending
-                    ? "Sending OTP..."
+                    ?  AppLocalizations.of(context)!.sendingOtp
                     : (resendSeconds > 0
-                        ? "Resend OTP in 00:${resendSeconds.toString().padLeft(2, '0')} s"
-                        : "Resend OTP"),
+                        ? "${ AppLocalizations.of(context)!.resendotpin} 00:${resendSeconds.toString().padLeft(2, '0')} s"
+                        :  AppLocalizations.of(context)!.resendotp),
                 style: TextStyle(
                   color: resendSeconds > 0 || isResending
                       ? Colors.grey
@@ -278,7 +281,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
             SizedBox(
               width: double.infinity,
               child: HandymanButton(
-                text: isVerifying ? "Verifying..." : "Verify",
+                text: isVerifying ?  AppLocalizations.of(context)!.verifying :  AppLocalizations.of(context)!.verify,
                 onPressed: isVerifying ? () {} : verifyOTP,
                 color: Colors.black,
                 textColor: Colors.white,

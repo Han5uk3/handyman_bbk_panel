@@ -8,6 +8,7 @@ import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AdPage extends StatefulWidget {
   const AdPage({super.key, required this.isHomeBanner});
@@ -65,7 +66,9 @@ class _AdPageState extends State<AdPage> {
             )
           : SizedBox.shrink(),
       appBar: handyAppBar(
-        widget.isHomeBanner ? "Home Ads" : "Product Ads",
+        widget.isHomeBanner
+            ? AppLocalizations.of(context)!.homeads
+            : AppLocalizations.of(context)!.productads,
         context,
         isCenter: true,
         isneedtopop: true,
@@ -137,13 +140,13 @@ class _AdPageState extends State<AdPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'No advertisements found',
+              AppLocalizations.of(context)!.noadvertisementsfound,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
             Text(
-              'Click the button below to add a new banner.',
+              AppLocalizations.of(context)!.clickthebuttonbelowtoaddanewbanner,
               style: TextStyle(fontSize: 16, color: Colors.grey),
               textAlign: TextAlign.center,
             ),
@@ -160,7 +163,7 @@ class _AdPageState extends State<AdPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           HandyLabel(
-            text: "Electricity Advertisement",
+            text: AppLocalizations.of(context)!.electricity,
             fontSize: 18,
             isBold: true,
           ),
@@ -172,7 +175,7 @@ class _AdPageState extends State<AdPage> {
             height: 25,
           ),
           HandyLabel(
-            text: "Plumbing Advertisement",
+            text: AppLocalizations.of(context)!.plumbing,
             isBold: true,
             fontSize: 18,
           ),
@@ -205,7 +208,8 @@ class _AdPageState extends State<AdPage> {
                   children: [
                     Icon(Icons.add_photo_alternate_rounded, size: 40),
                     HandyLabel(
-                      text: "Click here to upload Image",
+                      text:
+                          AppLocalizations.of(context)!.clickheretouploadimage,
                       fontSize: 14,
                     )
                   ],

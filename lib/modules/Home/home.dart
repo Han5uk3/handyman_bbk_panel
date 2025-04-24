@@ -11,6 +11,7 @@ import 'package:handyman_bbk_panel/modules/profile/profile_page.dart';
 import 'package:handyman_bbk_panel/modules/workers/workers_page.dart';
 import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -70,28 +71,38 @@ class _HomeState extends State<Home> {
                     showUnselectedLabels: true,
                     type: BottomNavigationBarType.fixed,
                     items: [
+                      _bottomNavBarItem(0, Icons.home, Icons.home_outlined,
+                          AppLocalizations.of(context)!.dashboard),
                       _bottomNavBarItem(
-                          0, Icons.home, Icons.home_outlined, 'Dashboard'),
-                      _bottomNavBarItem(
-                          1, Icons.handyman, Icons.handyman_outlined, 'Jobs'),
+                          1,
+                          Icons.handyman,
+                          Icons.handyman_outlined,
+                          AppLocalizations.of(context)!.jobs),
                       _bottomNavBarItem(
                         2,
                         isAdmin ? Icons.inventory : Icons.history,
                         isAdmin
                             ? Icons.inventory_2_outlined
                             : Icons.history_outlined,
-                        isAdmin ? 'Products' : 'History',
+                        isAdmin
+                            ? AppLocalizations.of(context)!.products
+                            : AppLocalizations.of(context)!.history,
                       ),
                       if (isAdmin)
                         _bottomNavBarItem(
-                            3, Icons.history, Icons.history_outlined, "Orders"),
+                            3,
+                            Icons.history,
+                            Icons.history_outlined,
+                            AppLocalizations.of(context)!.orders),
                       _bottomNavBarItem(
                         isAdmin ? 4 : 3,
                         isAdmin ? Icons.people : Icons.person,
                         isAdmin
                             ? Icons.people_outline
                             : Icons.person_2_outlined,
-                        isAdmin ? 'Workers' : 'Profile',
+                        isAdmin
+                            ? AppLocalizations.of(context)!.workers
+                            : AppLocalizations.of(context)!.profile,
                       ),
                     ],
                   ),
