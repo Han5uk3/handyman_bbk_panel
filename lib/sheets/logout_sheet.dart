@@ -1,9 +1,8 @@
 // ignore_for_file: library_private_types_in_public_api
 
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class AdminLogoutPopup extends StatefulWidget {
   final Function() onLogout;
   final Function() onCancel;
@@ -82,8 +81,8 @@ class _AdminLogoutPopupState extends State<AdminLogoutPopup> with SingleTickerPr
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'Logout',
+                 Text(
+                  AppLocalizations.of(context)!.logout,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -91,8 +90,8 @@ class _AdminLogoutPopupState extends State<AdminLogoutPopup> with SingleTickerPr
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Are you sure you want to logout from the admin panel?',
+               Text(
+                  AppLocalizations.of(context)!.areyousureyouwanttologoutfromtheadminpanel,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
@@ -116,8 +115,8 @@ class _AdminLogoutPopupState extends State<AdminLogoutPopup> with SingleTickerPr
                             side: BorderSide(color: Colors.grey.shade300),
                           ),
                         ),
-                        child: const Text(
-                          'Cancel',
+                        child:  Text(
+                          AppLocalizations.of(context)!.cancel,
                           style: TextStyle(
                             fontSize: 16,
                             color: Color(0xFF666666),
@@ -140,8 +139,8 @@ class _AdminLogoutPopupState extends State<AdminLogoutPopup> with SingleTickerPr
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text(
-                          'Logout',
+                        child: Text(
+                          AppLocalizations.of(context)!.logout,
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,

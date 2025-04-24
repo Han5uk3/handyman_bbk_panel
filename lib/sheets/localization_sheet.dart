@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/common_widget/svgicon.dart';
 import 'package:handyman_bbk_panel/modules/profile/bloc/profile_bloc.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Localization {
   static void showLanguageDialog(BuildContext context) {
@@ -36,7 +37,7 @@ class Localization {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "Choose Language",
+                      AppLocalizations.of(context)!.chooselanguage,
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w600,

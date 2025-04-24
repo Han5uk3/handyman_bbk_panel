@@ -8,6 +8,7 @@ import 'package:handyman_bbk_panel/helpers/collections.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
 import 'package:handyman_bbk_panel/modules/workers/bloc/workers_bloc.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class WorkersListSheet extends StatefulWidget {
   final String projectId;
@@ -62,7 +63,7 @@ class _WorkersListSheetState extends State<WorkersListSheet> {
     if (selectedWorkerIndex == null) {
       HandySnackBar.show(
         context: context,
-        message: "Please select a worker.",
+        message: AppLocalizations.of(context)!.pleaseselectaworker,
         isTrue: false,
       );
       return;
@@ -88,7 +89,7 @@ class _WorkersListSheetState extends State<WorkersListSheet> {
           Navigator.pop(context);
           HandySnackBar.show(
             context: context,
-            message: "Worker Assigned Successfully",
+            message: AppLocalizations.of(context)!.workerassignedsuccessfully,
             isTrue: true,
           );
         } else if (state is AssignWorkerToAProjectFailure) {
@@ -117,12 +118,13 @@ class _WorkersListSheetState extends State<WorkersListSheet> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const SizedBox(height: 16),
-                    _buildTitle("Search Worker"),
+                    _buildTitle(AppLocalizations.of(context)!.searchworker),
                     const SizedBox(height: 8),
                     const Divider(thickness: 1),
                     _buildSearchBar(),
                     const SizedBox(height: 15),
-                    _buildTitle("Choose Worker", color: AppColor.green),
+                    _buildTitle(AppLocalizations.of(context)!.chooseworker,
+                        color: AppColor.green),
                     const SizedBox(height: 10),
                     _buildWorkersList(),
                     const SizedBox(height: 10),
@@ -168,7 +170,7 @@ class _WorkersListSheetState extends State<WorkersListSheet> {
             borderRadius: BorderRadius.all(Radius.circular(12)),
           ),
         ),
-        hintText: "Search Worker",
+        hintText: AppLocalizations.of(context)!.searchworker,
         hintStyle: const WidgetStatePropertyAll(
           TextStyle(color: AppColor.greyDark),
         ),
@@ -208,14 +210,14 @@ class _WorkersListSheetState extends State<WorkersListSheet> {
         children: [
           Expanded(
             child: HandymanOutlineButton(
-              text: "Cancel",
+              text: AppLocalizations.of(context)!.cancel,
               onPressed: () => Navigator.pop(context),
             ),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: HandymanButton(
-              text: "Assign",
+              text: AppLocalizations.of(context)!.assign,
               isLoading: isLoading,
               onPressed: () => _assignWorker(context),
             ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class RatingDisplay extends StatelessWidget {
   final double rating;
   final int reviewCount;
@@ -39,7 +39,7 @@ class RatingDisplay extends StatelessWidget {
         Spacer(),
         !isInHistory
             ? HandyLabel(
-                text: "$reviewCount ratings",
+                text: "$reviewCount ${AppLocalizations.of(context)!.reviews}",
                 isBold: false,
                 fontSize: 14,
               )

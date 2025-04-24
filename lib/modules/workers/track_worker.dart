@@ -4,7 +4,6 @@ import 'dart:math' as Math;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
@@ -158,7 +157,8 @@ class _TrackWorkerScreenState extends State<TrackWorkerScreen> {
       durationInMinutes = (totalDistance / 40) * 60;
       log(durationInMinutes?.toString() ?? "0");
 
-      distanceText = "${totalDistance.toStringAsFixed(1)} km";
+      distanceText =
+          "${totalDistance.toStringAsFixed(1)} ${AppLocalizations.of(context)!.km}";
 
       setState(() {});
     }

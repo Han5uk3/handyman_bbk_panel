@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 PreferredSizeWidget handyAppBar(
   String title,
   BuildContext context, {
@@ -44,7 +44,7 @@ PreferredSizeWidget handyAppBar(
               children: [
                 Icon(CupertinoIcons.back, color: AppColor.blue),
                 Text(
-                  "Back",
+                  AppLocalizations.of(context)!.back,
                   style: TextStyle(color: AppColor.blue, fontSize: 16),
                 ),
               ],

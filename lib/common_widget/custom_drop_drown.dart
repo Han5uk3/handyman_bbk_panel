@@ -1,7 +1,9 @@
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CustomDropdown extends StatefulWidget {
   CustomDropdown(
@@ -155,7 +157,7 @@ class _CustomDropdownState extends State<CustomDropdown>
                 child: HandyLabel(
                   fontSize: 12,
                   text: widget.selectedValue == ""
-                      ? "Choose"
+                      ? AppLocalizations.of(context)!.choose
                       : widget.selectedValue!,
                   textcolor: AppColor.black,
                   isBold: false,

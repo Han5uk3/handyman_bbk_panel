@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
 import 'package:handyman_bbk_panel/modules/workers/bloc/workers_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class JobCompletionBottomSheet extends StatefulWidget {
   final String bookingId;
@@ -37,7 +38,8 @@ class _JobCompletionBottomSheetState extends State<JobCompletionBottomSheet> {
     if (_afterImage == null) {
       HandySnackBar.show(
           context: context,
-          message: 'Please upload an image before completing.',
+          message:
+              AppLocalizations.of(context)!.pleaseuploadanimagebeforecompleting,
           isTrue: false);
       return;
     }
@@ -61,7 +63,9 @@ class _JobCompletionBottomSheetState extends State<JobCompletionBottomSheet> {
         if (state is EndJobSuccess) {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Job completed successfully!')),
+            SnackBar(
+                content: Text(
+                    AppLocalizations.of(context)!.jobcompletedsuccessfully)),
           );
         } else if (state is EndJobFailure) {
           setState(() {
@@ -69,7 +73,8 @@ class _JobCompletionBottomSheetState extends State<JobCompletionBottomSheet> {
           });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text('Failed to complete job. Please try again.')),
+                content:
+                    Text(AppLocalizations.of(context)!.failedtocompletejob)),
           );
         }
       },
@@ -89,7 +94,7 @@ class _JobCompletionBottomSheetState extends State<JobCompletionBottomSheet> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Complete the Job',
+                AppLocalizations.of(context)!.completethejob,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 20),
@@ -111,7 +116,10 @@ class _JobCompletionBottomSheetState extends State<JobCompletionBottomSheet> {
                               Icon(Icons.upload_file,
                                   size: 40, color: Colors.grey),
                               SizedBox(height: 10),
-                              Text('Upload After-Work Image'),
+                              Text(
+                                AppLocalizations.of(context)!
+                                    .uploadafterworkimage,
+                              ),
                             ],
                           ),
                         ),
@@ -172,10 +180,12 @@ class _JobCompletionBottomSheetState extends State<JobCompletionBottomSheet> {
                             ),
                           ),
                           SizedBox(width: 10),
-                          Text('Processing...'),
+                          Text(
+                            AppLocalizations.of(context)!.processing,
+                          ),
                         ],
                       )
-                    : Text('Complete'),
+                    : Text(AppLocalizations.of(context)!.complete),
               ),
             ],
           ),
