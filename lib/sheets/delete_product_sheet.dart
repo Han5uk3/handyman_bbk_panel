@@ -5,6 +5,7 @@ import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/common_widget/outline_button.dart';
 import 'package:handyman_bbk_panel/modules/products/bloc/products_bloc.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DeleteProductSheet extends StatelessWidget {
   final String productId;
@@ -24,7 +25,7 @@ class DeleteProductSheet extends StatelessWidget {
                   padding:
                       const EdgeInsets.only(left: 16, right: 16, bottom: 10),
                   child: HandyLabel(
-                    text: "Delete Product",
+                    text: AppLocalizations.of(context)!.deleteproduct,
                     isBold: true,
                     fontSize: 16,
                   ),
@@ -37,12 +38,12 @@ class DeleteProductSheet extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       HandyLabel(
-                          text: "Are you sure you want to delete this product?",
+                          text: AppLocalizations.of(context)!.areyousureyouwanttodeletethisproduct,
                           isBold: false,
                           fontSize: 14),
                       HandyLabel(
                           text:
-                              "Note: This will remove the product from listing.",
+                              AppLocalizations.of(context)!.thiswillremovetheproductfromlisting,
                           isBold: false,
                           textcolor: AppColor.red,
                           fontSize: 14),
@@ -56,7 +57,7 @@ class DeleteProductSheet extends StatelessWidget {
                   child: Row(children: [
                     Expanded(
                       child: HandymanOutlineButton(
-                        text: "Cancel",
+                        text: AppLocalizations.of(context)!.cancel,
                         textColor: AppColor.red,
                         borderColor: AppColor.red,
                         onPressed: () => Navigator.pop(context),
@@ -66,7 +67,7 @@ class DeleteProductSheet extends StatelessWidget {
                     Expanded(
                         child: HandymanButton(
                       color: AppColor.red,
-                      text: "Delete",
+                      text: AppLocalizations.of(context)!.delete,
                       isLoading: state is ProductDeletingLoadingState,
                       onPressed: () => context
                           .read<ProductsBloc>()
