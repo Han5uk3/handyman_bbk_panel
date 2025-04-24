@@ -7,6 +7,7 @@ import 'package:handyman_bbk_panel/models/products_model.dart';
 import 'package:handyman_bbk_panel/modules/products/add_product_page.dart';
 import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
@@ -24,42 +25,10 @@ class _ProductsPageState extends State<ProductsPage> {
     super.dispose();
   }
 
-  List<Map<String, dynamic>> productData = [
-    {
-      "title": "MCB/Fuse Repair",
-      "price": "5.00",
-      "status": true,
-      "image": "assets/images/image.png"
-    },
-    {
-      "title": "MCB/Fuse Repair",
-      "price": "5.00",
-      "status": false,
-      "image": "assets/images/image.png"
-    },
-    {
-      "title": "MCB/Fuse Repair",
-      "price": "5.00",
-      "status": true,
-      "image": "assets/images/image.png"
-    },
-    {
-      "title": "MCB/Fuse Repair",
-      "price": "5.00",
-      "status": true,
-      "image": "assets/images/image.png"
-    },
-    {
-      "title": "MCB/Fuse Repair",
-      "price": "5.00",
-      "status": false,
-      "image": "assets/images/image.png"
-    },
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: handyAppBar("Products", context,
+      appBar: handyAppBar(AppLocalizations.of(context)!.products, context,
           isCenter: true,
           isneedtopop: false,
           iswhite: true,
@@ -95,10 +64,13 @@ class _ProductsPageState extends State<ProductsPage> {
           return HandymanLoader();
         }
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(
+              child: Text(
+                  '${AppLocalizations.of(context)!.error}: ${snapshot.error}'));
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('No products available'));
+          return Center(
+              child: Text(AppLocalizations.of(context)!.noproductsavailable));
         }
         final products = snapshot.data!;
         return ListView.builder(
@@ -156,7 +128,8 @@ class _ProductsPageState extends State<ProductsPage> {
                           textcolor: AppColor.greyDark,
                         ),
                         HandyLabel(
-                          text: "SAR ${productData.price}",
+                          text:
+                              "${AppLocalizations.of(context)!.sar}: ${productData.price}",
                           isBold: true,
                           fontSize: 16,
                         ),
@@ -179,6 +152,7 @@ class _ProductsPageState extends State<ProductsPage> {
       padding: EdgeInsets.all(4),
       child: Center(
         child: Row(
+          spacing: 3,
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -187,7 +161,9 @@ class _ProductsPageState extends State<ProductsPage> {
               backgroundColor: status ? AppColor.green : AppColor.red,
             ),
             HandyLabel(
-              text: status ? " in stock" : " out of stock",
+              text: status
+                  ? AppLocalizations.of(context)!.instock
+                  : AppLocalizations.of(context)!.outofstock,
               isBold: false,
               fontSize: 12,
               textcolor: status ? AppColor.green : AppColor.red,
