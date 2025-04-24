@@ -156,7 +156,7 @@ class _ProductsPageState extends State<ProductsPage> {
                           textcolor: AppColor.greyDark,
                         ),
                         HandyLabel(
-                          text: "\$${productData.price}",
+                          text: "SAR ${productData.price}",
                           isBold: true,
                           fontSize: 16,
                         ),

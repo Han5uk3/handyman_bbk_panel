@@ -6,6 +6,7 @@ import 'package:handyman_bbk_panel/common_widget/svgicon.dart';
 import 'package:handyman_bbk_panel/modules/login/otp/otp.dart';
 import 'package:handyman_bbk_panel/services/auth_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -100,9 +101,10 @@ class _LoginPageState extends State<LoginPage> {
               controller: _phoneController,
               maxLength: 10,
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 counterText: "",
-                hintText: 'Enter 10 digit mobile number',
+                hintText:
+                    AppLocalizations.of(context)!.enter10digitmobilenumber,
                 prefixText: '+91 - ',
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(
@@ -127,8 +129,8 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
-                'I agree with the Terms & Conditions',
+              Text(
+                AppLocalizations.of(context)!.iAgreeWithTheTermsAndConditions,
                 style: TextStyle(color: Colors.black),
               ),
             ],
@@ -166,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               SizedBox(width: 12),
                               Text(
-                                "Sending OTP...",
+                                AppLocalizations.of(context)!.sendingOtp,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
@@ -175,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
                             ],
                           )
                         : Text(
-                            "Get OTP",
+                            AppLocalizations.of(context)!.getOtp,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
@@ -187,12 +189,13 @@ class _LoginPageState extends State<LoginPage> {
             ],
           ),
           const SizedBox(height: 30),
-          const Row(
+          Row(
             children: [
               Expanded(child: Divider()),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Text('OR', style: TextStyle(color: AppColor.greyDark)),
+                child: Text(AppLocalizations.of(context)!.or,
+                    style: TextStyle(color: AppColor.greyDark)),
               ),
               Expanded(child: Divider()),
             ],
@@ -249,7 +252,7 @@ class _LoginPageState extends State<LoginPage> {
               // Subtle success feedback
               HandySnackBar.show(
                 context: context,
-                message: "OTP sent successfully",
+                message: AppLocalizations.of(context)!.oTPsentsuccessfully,
                 isTrue: true,
               );
 
@@ -291,7 +294,8 @@ class _LoginPageState extends State<LoginPage> {
 
               HandySnackBar.show(
                 context: context,
-                message: error.message ?? "Failed to send OTP",
+                message: error.message ??
+                    AppLocalizations.of(context)!.failedtosendOTP,
                 isTrue: false,
               );
             },
@@ -303,21 +307,21 @@ class _LoginPageState extends State<LoginPage> {
 
           HandySnackBar.show(
             context: context,
-            message: "An unexpected error occurred",
+            message: AppLocalizations.of(context)!.anunexpectederroroccurred,
             isTrue: false,
           );
         }
       } else {
         HandySnackBar.show(
           context: context,
-          message: "Please accept our terms and conditions",
+          message: AppLocalizations.of(context)!.pleaseacceptterms,
           isTrue: false,
         );
       }
     } else {
       HandySnackBar.show(
         context: context,
-        message: "Enter valid mobile number",
+        message: AppLocalizations.of(context)!.entervalidmobilenumber,
         isTrue: false,
       );
     }
@@ -357,7 +361,9 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(width: 15),
             Text(
-              "Continue with $title",
+              title == "Apple"
+                  ? AppLocalizations.of(context)!.applelogin
+                  : AppLocalizations.of(context)!.googlelogin,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
