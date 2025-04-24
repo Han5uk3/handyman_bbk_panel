@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:handyman_bbk_panel/helpers/collections.dart';
 import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
 import 'package:handyman_bbk_panel/models/booking_data.dart';
+import 'package:handyman_bbk_panel/models/orders_model.dart';
 import 'package:handyman_bbk_panel/models/products_model.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
 
@@ -181,5 +182,15 @@ class AppServices {
         .where('isUrgent', isEqualTo: false)
         .snapshots()
         .map((snapshot) => snapshot.docs.length);
+  }
+
+  static Stream<List<OrdersModel>> getAllOrders() {
+    return FirebaseCollections.orders.snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        data['id'] = doc.id;
+        return OrdersModel.fromJson(data);
+      }).toList();
+    });
   }
 }

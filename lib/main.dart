@@ -5,6 +5,7 @@ import 'package:handyman_bbk_panel/firebase_options.dart';
 import 'package:handyman_bbk_panel/modules/banners/bloc/banner_bloc.dart';
 import 'package:handyman_bbk_panel/modules/home/bloc/location_bloc.dart';
 import 'package:handyman_bbk_panel/modules/login/bloc/login_bloc.dart';
+import 'package:handyman_bbk_panel/modules/orders/bloc/orders_bloc.dart';
 import 'package:handyman_bbk_panel/modules/products/bloc/products_bloc.dart';
 import 'package:handyman_bbk_panel/modules/profile/bloc/profile_bloc.dart';
 import 'package:handyman_bbk_panel/modules/splash%20screen/splash_screen.dart';
@@ -43,6 +44,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<BannerBloc>(
           create: (context) => BannerBloc(),
+        ),
+        BlocProvider<OrdersBloc>(
+          create: (context) => OrdersBloc(),
         ),
       ],
       child: BlocBuilder<ProfileBloc, ProfileState>(
