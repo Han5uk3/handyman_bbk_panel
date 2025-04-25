@@ -39,6 +39,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>We need access to your camera to take pictures.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need access to your microphone to enable voice communication features.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>We need your location to show your position on map</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

@@ -29,7 +29,7 @@ class WorkersBloc extends Bloc<WorkersEvent, WorkersState> {
       VerifyWorkerEvent event, Emitter<WorkersState> emit) async {
     try {
       emit(WorkersVerificationLoading());
-      await FirebaseCollections.users.doc(event.workerId).update({
+      await FirebaseCollections.workers.doc(event.workerId).update({
         'isVerified': true,
       });
       emit(WorkersVerificationSuccess());
@@ -42,7 +42,7 @@ class WorkersBloc extends Bloc<WorkersEvent, WorkersState> {
       DeactivateWorkerEvent event, Emitter<WorkersState> emit) async {
     try {
       emit(WorkersVerificationLoading());
-      await FirebaseCollections.users.doc(event.workerId).update({
+      await FirebaseCollections.workers.doc(event.workerId).update({
         'isVerified': false,
         'isUserOnline': false,
       });
@@ -56,7 +56,7 @@ class WorkersBloc extends Bloc<WorkersEvent, WorkersState> {
       SwitchToOnlineEvent event, Emitter<WorkersState> emit) async {
     try {
       emit(SwitchToOnlineLoading());
-      await FirebaseCollections.users.doc(event.workerId).update({
+      await FirebaseCollections.workers.doc(event.workerId).update({
         'isUserOnline': true,
       });
       emit(SwitchToOnlineSuccess());
@@ -69,7 +69,7 @@ class WorkersBloc extends Bloc<WorkersEvent, WorkersState> {
       SwitchToOfflineEvent event, Emitter<WorkersState> emit) async {
     try {
       emit(SwitchToOfflineLoading());
-      await FirebaseCollections.users.doc(event.workerId).update({
+      await FirebaseCollections.workers.doc(event.workerId).update({
         'isUserOnline': false,
       });
       emit(SwitchToOfflineSuccess());

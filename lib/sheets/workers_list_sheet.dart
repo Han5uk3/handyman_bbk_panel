@@ -36,7 +36,7 @@ class _WorkersListSheetState extends State<WorkersListSheet> {
   }
 
   void _fetchWorkers() {
-    FirebaseCollections.users.snapshots().listen((snapshot) {
+    FirebaseCollections.workers.snapshots().listen((snapshot) {
       final workers = snapshot.docs
           .map((doc) => UserData.fromMap(doc.data() as Map<String, dynamic>))
           .where((user) => user.userType == "Worker")

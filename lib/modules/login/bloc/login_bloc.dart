@@ -24,19 +24,19 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       String? idProofUrl;
       if (event.idProof != null) {
         idProofUrl = await StorageService.uploadFile(
-          mainPath: "users/$uid",
+          mainPath: "workers/$uid",
           filePath: event.idProof!.path,
           fileName: "${uid}_${DateTime.now().millisecondsSinceEpoch}",
         );
       }
       if (event.profilePic != null) {
         profilePicUrl = await StorageService.uploadFile(
-          mainPath: "users/$uid",
+          mainPath: "workers/$uid",
           filePath: event.profilePic!.path,
           fileName: "${uid}_${DateTime.now().millisecondsSinceEpoch}",
         );
       }
-      await FirebaseCollections.users
+      await FirebaseCollections.workers
           .doc(uid)
           .set({
             ...event.userData.toMap(),
