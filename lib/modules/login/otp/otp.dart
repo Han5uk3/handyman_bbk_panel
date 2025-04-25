@@ -201,7 +201,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 style: const TextStyle(color: Colors.grey, fontSize: 16),
                 children: [
                   TextSpan(
-                    text: "+91 - ${widget.phoneNumber}",
+                    text: "+966 - ${widget.phoneNumber}",
                     style: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,

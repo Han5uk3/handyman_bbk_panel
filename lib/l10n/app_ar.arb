@@ -122,7 +122,7 @@
     "ccv":"رمز الأمان",
     "add": "إضافة",
     "areYouSureWantToDeleteYourProfileWithServiceNow": "هل أنت متأكد أنك تريد حذف ملفك الشخصي من الخدمة الآن؟",
-    "enter10digitmobilenumber":"أدخل رقم الهاتف المكوّن من 10 أرقام",
+    "enter9digitmobilenumber":"أدخل رقم الهاتف المكوّن من 9 أرقام",
     "oTPSentsuccessfully":"تم ارسال الكود بنجاح",
     "failedtosendOTP":"فشل في ارسال الكود",
     "anunexpectederroroccurred":"حدث خطاء غير متوقع",

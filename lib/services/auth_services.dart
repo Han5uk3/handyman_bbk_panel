@@ -68,7 +68,7 @@ class AuthServices {
     required Function(FirebaseAuthException e) onError,
   }) async {
     await _auth.verifyPhoneNumber(
-      phoneNumber: "+91$phoneNumber",
+      phoneNumber: "+966$phoneNumber",
       timeout: const Duration(seconds: 60),
       verificationCompleted: (PhoneAuthCredential credential) async {
         await _auth.signInWithCredential(credential);
@@ -93,7 +93,7 @@ class AuthServices {
     required Function(FirebaseAuthException e) onError,
   }) async {
     await _auth.verifyPhoneNumber(
-      phoneNumber: "+91$phoneNumber",
+      phoneNumber: "+966$phoneNumber",
       forceResendingToken: resendToken,
       timeout: const Duration(seconds: 60),
       verificationCompleted: (PhoneAuthCredential credential) async {
