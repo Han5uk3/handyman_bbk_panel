@@ -249,7 +249,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _sendOTP() async {
     final phone = _phoneController.text.trim();
 
-    if (phone.length == 10 && RegExp(r'^[0-9]{10}$').hasMatch(phone)) {
+    if (phone.length == 9 && RegExp(r'^[0-9]{9}$').hasMatch(phone)) {
       if (_isChecked) {
         setState(() {
           isLoading = true;

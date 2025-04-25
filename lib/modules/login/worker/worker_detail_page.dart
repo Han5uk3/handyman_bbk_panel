@@ -87,7 +87,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
     }
     if (AuthServices.phoneNumber != null ||
         (AuthServices.phoneNumber?.isNotEmpty ?? false)) {
-      phoneController.text = AuthServices.phoneNumber!.substring(3);
+      phoneController.text = AuthServices.phoneNumber!.substring(4);
     }
   }
 
@@ -136,7 +136,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
     } else if (phoneController.text.isEmpty) {
       _showValidationError("Please enter mobile number");
       return false;
-    } else if (phoneController.text.length < 10) {
+    } else if (phoneController.text.length < 9) {
       _showValidationError("Please enter a valid mobile number");
       return false;
     } else if (emailController.text.isEmpty) {
@@ -213,7 +213,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
     return Scaffold(
       appBar: handyAppBar(widget.isProfile ? "Profile" : "Register", context,
           isCenter: true,
-          isneedtopop: true,
+          isneedtopop: widget.isProfile ? true : false,
           actions: widget.isProfile
               ? [
                   TextButton(
