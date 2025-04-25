@@ -71,7 +71,7 @@ class _EarningsPageState extends State<EarningsPage> {
                         textcolor: AppColor.lightGrey600,
                       ),
                       HandyLabel(
-                        text: "SAR 500.00",
+                        text: "${AppLocalizations.of(context)!.sar} 500.00",
                         isBold: true,
                       ),
                     ],

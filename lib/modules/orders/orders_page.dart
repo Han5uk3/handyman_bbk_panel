@@ -8,6 +8,7 @@ import 'package:handyman_bbk_panel/models/userdata_models.dart';
 import 'package:handyman_bbk_panel/modules/orders/order_details_page.dart';
 import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class OrdersPage extends StatefulWidget {
   const OrdersPage({super.key});
@@ -21,7 +22,7 @@ class _OrdersPageState extends State<OrdersPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: handyAppBar(
-        "Orders",
+        AppLocalizations.of(context)!.orders,
         context,
         isneedtopop: false,
       ),
@@ -38,11 +39,14 @@ class _OrdersPageState extends State<OrdersPage> {
         }
 
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(
+              child: Text(
+                  '${AppLocalizations.of(context)!.error}: ${snapshot.error}'));
         }
 
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('No orders found'));
+          return Center(
+              child: Text(AppLocalizations.of(context)!.noordersavailable));
         }
 
         final orders = snapshot.data!;
@@ -72,7 +76,8 @@ class _OrdersPageState extends State<OrdersPage> {
         }
 
         final userData = snapshot.data;
-        final customerName = userData?.name ?? 'Unknown Customer';
+        final customerName =
+            userData?.name ?? AppLocalizations.of(context)!.unknowncustomer;
 
         String dateStr = 'N/A';
         String timeStr = 'N/A';
@@ -139,7 +144,7 @@ class _OrdersPageState extends State<OrdersPage> {
                     const SizedBox(height: 12),
                     HandyLabel(
                       text:
-                          "\$${order.totalPrice?.toStringAsFixed(2) ?? '0.00'}",
+                          "${AppLocalizations.of(context)!.sar}${order.totalPrice?.toStringAsFixed(2) ?? '0.00'}",
                       isBold: true,
                       fontSize: 14,
                     ),
