@@ -24,7 +24,46 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  // Handle background notifications
+}
+
+void setupForegroundMessageHandler() {
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+    if (message.notification != null) {
+      await _showNotification(message.notification!);
+    }
+  });
+}
+
+Future<void> _showNotification(RemoteNotification notification) async {
+  const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    'handyman_channel',
+    'Handyman Notifications',
+    channelDescription: 'Notifications related to handyman tasks and updates',
+    importance: Importance.max,
+    priority: Priority.high,
+  );
+
+  const NotificationDetails platformDetails = NotificationDetails(
+    android: androidDetails,
+  );
+
+  await flutterLocalNotificationsPlugin.show(
+    notification.hashCode,
+    notification.title,
+    notification.body,
+    platformDetails,
+  );
+}
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  await _initializeNotifications();
+  await Hive.initFlutter();
+  await Hive.openBox(myBox);
+  final savedLocale = ProfileBloc.getSavedLocale();
+  runApp(MyApp(initialLocale: savedLocale));
 }
 
 Future<void> _initializeNotifications() async {
@@ -32,30 +71,11 @@ Future<void> _initializeNotifications() async {
       AndroidInitializationSettings('@mipmap/ic_launcher');
   final DarwinInitializationSettings initializationSettingsDarwin =
       DarwinInitializationSettings();
-  var initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsDarwin);
-  flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  // Setup foreground message handler
-  setupForegroundMessageHandler();
-}
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-  // Initialize notifications
-  await _initializeNotifications();
-
-  // Initialize Hive storage
-  await Hive.initFlutter();
-  await Hive.openBox(myBox);
-
-  // Get saved locale
-  final savedLocale = ProfileBloc.getSavedLocale();
-
-  runApp(MyApp(initialLocale: savedLocale));
+  final InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+    iOS: initializationSettingsDarwin,
+  );
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 }
 
 class MyApp extends StatelessWidget {
@@ -104,36 +124,4 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-}
-
-// Setup foreground message handler
-void setupForegroundMessageHandler() {
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-    if (message.notification != null) {
-      // Show notification when the app is in the foreground
-      await _showNotification(message.notification!);
-    }
-  });
-}
-
-// Show local notification
-Future<void> _showNotification(RemoteNotification notification) async {
-  const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-    'handyman_channel', // Channel ID
-    'Handyman Notifications', // Channel Name
-    channelDescription: 'Notifications related to handyman tasks and updates',
-    importance: Importance.max,
-    priority: Priority.high,
-  );
-
-  const NotificationDetails platformDetails = NotificationDetails(
-    android: androidDetails,
-  );
-
-  await flutterLocalNotificationsPlugin.show(
-    notification.hashCode,
-    notification.title,
-    notification.body,
-    platformDetails,
-  );
 }
