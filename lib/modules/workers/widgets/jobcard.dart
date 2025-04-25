@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
@@ -44,7 +46,7 @@ class _JobCardState extends State<JobCard> {
   void _setupUserDataStream() {
     if (widget.bookingData.uid != null && widget.bookingData.uid!.isNotEmpty) {
       _userStream = AppServices.getUserStream(widget.bookingData.uid!);
-      AppServices.getUserById(widget.bookingData.uid!).then((user) {
+      AppServices.getUserById(uid: widget.bookingData.uid!).then((user) {
         if (mounted) {
           setState(() {
             userData = user;
@@ -66,7 +68,8 @@ class _JobCardState extends State<JobCard> {
   }
 
   void _setupWorkerDataStream() {
-    AppServices.getUserById(AppServices.uid ?? "").then((user) {
+    AppServices.getUserById(uid: AppServices.uid ?? "", isWorkerData: true)
+        .then((user) {
       if (mounted) {
         setState(() {
           workerData = user;
@@ -106,8 +109,8 @@ class _JobCardState extends State<JobCard> {
 
     return StreamBuilder<UserData?>(
       stream: _userStream,
-      initialData: userData,
       builder: (context, snapshot) {
+        log(snapshot.data.toString());
         final UserData? streamUserData = snapshot.data;
 
         if (streamUserData != null && streamUserData != userData) {
@@ -125,7 +128,7 @@ class _JobCardState extends State<JobCard> {
                         builder: (context) => JobDetailsPage(
                           isWorkerHistory: widget.isHistoryPage ?? false,
                           bookingModel: widget.bookingData,
-                          userData: streamUserData!,
+                          userData: userData!,
                         ),
                       ));
                 },

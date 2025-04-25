@@ -57,11 +57,21 @@ class AppServices {
         .toList());
   }
 
-  static Future<UserData?> getUserById(String uid) async {
+  static Future<UserData?> getUserById(
+      {String? uid, bool isWorkerData = false}) async {
     try {
+      if (isWorkerData) {
+        final DocumentSnapshot doc =
+            await FirebaseCollections.workers.doc(uid).get();
+        if (doc.exists) {
+          final data = doc.data() as Map<String, dynamic>;
+          return UserData.fromMap(data);
+        } else {
+          return null;
+        }
+      }
       final DocumentSnapshot doc =
           await FirebaseCollections.users.doc(uid).get();
-
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;
         return UserData.fromMap(data);
@@ -74,7 +84,7 @@ class AppServices {
   }
 
   static Stream<UserData?> getUserStream(String uid) {
-    return FirebaseCollections.workers.doc(uid).snapshots().map((snapshot) {
+    return FirebaseCollections.users.doc(uid).snapshots().map((snapshot) {
       if (snapshot.exists) {
         return UserData.fromMap(snapshot.data() as Map<String, dynamic>);
       } else {
