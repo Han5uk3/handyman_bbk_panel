@@ -188,7 +188,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: handyAppBar( AppLocalizations.of(context)!.verifymobile, context, isneedtopop: true),
+      appBar: handyAppBar(AppLocalizations.of(context)!.verifymobile, context,
+          isneedtopop: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -201,7 +202,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 style: const TextStyle(color: Colors.grey, fontSize: 16),
                 children: [
                   TextSpan(
-                    text: "+966 - ${widget.phoneNumber}",
+                    text: " +966 - ${widget.phoneNumber}",
                     style: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -264,10 +265,10 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               onTap: resendSeconds > 0 || isResending ? null : resendOTP,
               child: Text(
                 isResending
-                    ?  AppLocalizations.of(context)!.sendingOtp
+                    ? AppLocalizations.of(context)!.sendingOtp
                     : (resendSeconds > 0
-                        ? "${ AppLocalizations.of(context)!.resendotpin} 00:${resendSeconds.toString().padLeft(2, '0')} s"
-                        :  AppLocalizations.of(context)!.resendotp),
+                        ? "${AppLocalizations.of(context)!.resendotpin} 00:${resendSeconds.toString().padLeft(2, '0')} s"
+                        : AppLocalizations.of(context)!.resendotp),
                 style: TextStyle(
                   color: resendSeconds > 0 || isResending
                       ? Colors.grey
@@ -281,7 +282,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
             SizedBox(
               width: double.infinity,
               child: HandymanButton(
-                text: isVerifying ?  AppLocalizations.of(context)!.verifying :  AppLocalizations.of(context)!.verify,
+                text: isVerifying
+                    ? AppLocalizations.of(context)!.verifying
+                    : AppLocalizations.of(context)!.verify,
                 onPressed: isVerifying ? () {} : verifyOTP,
                 color: Colors.black,
                 textColor: Colors.white,
