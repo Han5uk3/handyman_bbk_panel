@@ -16,6 +16,7 @@ import 'package:handyman_bbk_panel/modules/login/bloc/login_bloc.dart';
 import 'package:handyman_bbk_panel/services/auth_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class WorkerDetailPage extends StatefulWidget {
   const WorkerDetailPage({super.key, required this.isProfile});
@@ -34,8 +35,8 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
 
   String? selectedTitle;
   String? selectedPhoneCode = '+966';
-  String selectedGender = 'Male';
-  String selectedService = 'Plumbing';
+  String? selectedGender = 'Male';
+  String? selectedService = 'Plumbing';
   String? selectedExperience = 'Less than 1 year';
   DateTime selectedDate = DateTime.now();
 
@@ -44,17 +45,12 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
 
   bool isEdit = false;
   bool isLoading = false;
+  late Map<String, String> genderOptions;
+  late Map<String, String> serviceOptions;
+  late Map<String, String> experienceOptions;
 
   final titleOptions = ['Mr.', 'Ms.', 'Mrs.', 'Dr.'];
   final phoneCodeOptions = ['+966', '+965', "+91"];
-  final genderOptions = ['Male', 'Female', 'Other'];
-  final serviceOptions = ['Plumbing', 'Electrical'];
-  final experienceOptions = [
-    'Less than 1 year',
-    '1-3 years',
-    '3-5 years',
-    '5+ years'
-  ];
 
   final emailRegExp = RegExp(
     r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+"
@@ -65,12 +61,28 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   @override
   void initState() {
     super.initState();
+    serviceOptions = {
+      'Electricity': AppLocalizations.of(context)!.electricity,
+      'Plumbing': AppLocalizations.of(context)!.plumbing,
+    };
+
+    genderOptions = {
+      'Male': AppLocalizations.of(context)!.male,
+      'Female': AppLocalizations.of(context)!.female,
+      'Other': AppLocalizations.of(context)!.other,
+    };
+    experienceOptions = {
+      'Less than 1 year': AppLocalizations.of(context)!.lessthan1year,
+      '1-3 years': AppLocalizations.of(context)!.year1to3,
+      '3-5 years': AppLocalizations.of(context)!.year3to5,
+      '5+ years': AppLocalizations.of(context)!.year5plus,
+    };
 
     selectedTitle = titleOptions.first;
     selectedPhoneCode = phoneCodeOptions.first;
-    selectedGender = genderOptions.first;
-    selectedService = serviceOptions.first;
-    selectedExperience = experienceOptions.first;
+    selectedGender = genderOptions[selectedGender];
+    selectedService = serviceOptions[selectedService];
+    selectedExperience = experienceOptions[selectedExperience];
 
     if (!widget.isProfile) {
       isEdit = true;
@@ -120,7 +132,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
     } catch (e) {
       HandySnackBar.shower(
         context: context,
-        message: "Error picking image: $e",
+        message: "${AppLocalizations.of(context)!.errorpickingimage}: $e",
         isTrue: false,
       );
     }
@@ -131,25 +143,29 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
 
   bool _validateForm() {
     if (nameController.text.isEmpty) {
-      _showValidationError("Please enter name");
+      _showValidationError(AppLocalizations.of(context)!.pleaseenteryourname);
       return false;
     } else if (phoneController.text.isEmpty) {
-      _showValidationError("Please enter mobile number");
+      _showValidationError(
+          AppLocalizations.of(context)!.pleaseenteryourmobilenumber);
       return false;
     } else if (phoneController.text.length < 9) {
-      _showValidationError("Please enter a valid mobile number");
+      _showValidationError(
+          AppLocalizations.of(context)!.entervalidmobilenumber);
       return false;
     } else if (emailController.text.isEmpty) {
-      _showValidationError("Please enter email");
+      _showValidationError(AppLocalizations.of(context)!.pleaseeenteryouremail);
       return false;
     } else if (!emailRegExp.hasMatch(emailController.text)) {
-      _showValidationError("Please enter a valid email");
+      _showValidationError(
+          AppLocalizations.of(context)!.pleaseenteravalidemail);
       return false;
     } else if (locationController.text.isEmpty) {
-      _showValidationError("Please enter location");
+      _showValidationError(
+          AppLocalizations.of(context)!.pleaseenteryourlocation);
       return false;
     } else if (_idImageFile == null) {
-      _showValidationError("Please upload ID proof");
+      _showValidationError(AppLocalizations.of(context)!.pleaseuploadidproof);
       return false;
     }
     return true;
@@ -201,7 +217,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
     HandySnackBar.show(
       context: context,
       isTrue: true,
-      message: "Profile updated successfully",
+      message: AppLocalizations.of(context)!.profileupdatedsuccessfully,
     );
     setState(() {
       isEdit = false;
@@ -211,7 +227,11 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: handyAppBar(widget.isProfile ? "Profile" : "Register", context,
+      appBar: handyAppBar(
+          widget.isProfile
+              ? AppLocalizations.of(context)!.profile
+              : AppLocalizations.of(context)!.register,
+          context,
           isCenter: true,
           isneedtopop: widget.isProfile ? true : false,
           actions: widget.isProfile
@@ -225,7 +245,9 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
                               });
                             },
                       child: Text(
-                        isEdit ? "Save" : "Edit",
+                        isEdit
+                            ? AppLocalizations.of(context)!.save
+                            : AppLocalizations.of(context)!.edit,
                         style: TextStyle(color: AppColor.blue, fontSize: 16),
                       ))
                 ]
@@ -235,7 +257,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
           : Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 26),
               child: HandymanButton(
-                text: "Submit Registration",
+                text: AppLocalizations.of(context)!.submitregistration,
                 onPressed: _handleSubmitRegistration,
                 isLoading: isLoading,
               ),
@@ -261,7 +283,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
                 (route) => false);
             HandySnackBar.show(
               context: context,
-              message: "Registration successful",
+              message: AppLocalizations.of(context)!.registrationsuccessful,
               isTrue: true,
             );
             setState(() {
@@ -346,13 +368,13 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         HandyLabel(
-          text: "Name",
+          text: AppLocalizations.of(context)!.name,
           isBold: true,
           fontSize: 16,
         ),
         const SizedBox(height: 8),
         _buildDropDownTextField(
-          "Enter Your Name",
+          AppLocalizations.of(context)!.enteryourname,
           nameController,
           titleOptions,
           (value) => setState(() => selectedTitle = value),
@@ -362,13 +384,13 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
         ),
         const SizedBox(height: 15),
         HandyLabel(
-          text: "Mobile Number",
+          text: AppLocalizations.of(context)!.mobileNumber,
           isBold: true,
           fontSize: 16,
         ),
         const SizedBox(height: 8),
         _buildDropDownTextField(
-          "Enter Mobile Number",
+          AppLocalizations.of(context)!.entermobilenumber,
           phoneController,
           phoneCodeOptions,
           (value) => setState(() => selectedPhoneCode = value),
@@ -384,14 +406,17 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
           children: [
             Expanded(
               child: HandyLabel(
-                text: "Gender",
+                text: AppLocalizations.of(context)!.gender,
                 isBold: true,
                 fontSize: 16,
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: HandyLabel(text: "D.O.B", isBold: true, fontSize: 16),
+              child: HandyLabel(
+                  text: AppLocalizations.of(context)!.dateofbirth,
+                  isBold: true,
+                  fontSize: 16),
             ),
           ],
         ),
@@ -400,13 +425,16 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
           children: [
             Expanded(
               child: CustomDropdown(
-                items: genderOptions,
-                hasBorder: true,
-                selectedValue: selectedGender,
-                onChanged: (value) => setState(
-                  () => selectedGender = value,
-                ),
-              ),
+                  items: genderOptions.values.toList(),
+                  hasBorder: true,
+                  selectedValue: genderOptions[selectedGender],
+                  onChanged: (value) {
+                    setState(() {
+                      selectedGender = genderOptions.entries
+                          .firstWhere((entry) => entry.value == value)
+                          .key; // Store English
+                    });
+                  }),
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -415,17 +443,23 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
           ],
         ),
         const SizedBox(height: 15),
-        HandyLabel(text: "Email ID", isBold: true, fontSize: 16),
+        HandyLabel(
+            text: AppLocalizations.of(context)!.emailid,
+            isBold: true,
+            fontSize: 16),
         const SizedBox(height: 8),
         HandyTextField(
-          hintText: "Email ID",
+          hintText: AppLocalizations.of(context)!.emailid,
           controller: emailController,
           borderColor: AppColor.lightGrey300,
           textcolor: AppColor.greyDark,
           keyboardType: TextInputType.emailAddress,
         ),
         const SizedBox(height: 15),
-        HandyLabel(text: "Address", isBold: true, fontSize: 16),
+        HandyLabel(
+            text: AppLocalizations.of(context)!.address,
+            isBold: true,
+            fontSize: 16),
         const SizedBox(height: 8),
         _buildLocationPicker(),
       ],
@@ -436,27 +470,39 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        HandyLabel(text: "Service", isBold: true, fontSize: 16),
+        HandyLabel(
+            text: AppLocalizations.of(context)!.service,
+            isBold: true,
+            fontSize: 16),
         const SizedBox(height: 8),
         CustomDropdown(
-          items: serviceOptions,
-          hasBorder: true,
-          selectedValue: selectedService,
-          onChanged: (value) => setState(
-            () => selectedService = value,
-          ),
-        ),
+            items: serviceOptions.values.toList(),
+            hasBorder: true,
+            selectedValue: serviceOptions[selectedService],
+            onChanged: (value) {
+              setState(() {
+                selectedService = serviceOptions.entries
+                    .firstWhere((entry) => entry.value == value)
+                    .key; // Store English
+              });
+            }),
         const SizedBox(height: 15),
-        HandyLabel(text: "Experience", isBold: true, fontSize: 16),
+        HandyLabel(
+            text: AppLocalizations.of(context)!.experience,
+            isBold: true,
+            fontSize: 16),
         const SizedBox(height: 8),
         CustomDropdown(
-          items: experienceOptions,
-          hasBorder: true,
-          selectedValue: selectedExperience,
-          onChanged: (value) => setState(
-            () => selectedExperience = value,
-          ),
-        ),
+            items: experienceOptions.values.toList(),
+            hasBorder: true,
+            selectedValue: experienceOptions[selectedExperience],
+            onChanged: (value) {
+              setState(() {
+                selectedExperience = experienceOptions.entries
+                    .firstWhere((entry) => entry.value == value)
+                    .key; // Store English
+              });
+            }),
       ],
     );
   }
@@ -466,7 +512,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         HandyLabel(
-          text: 'Upload ID Proof',
+          text: AppLocalizations.of(context)!.uploadidproof,
           isBold: true,
           fontSize: 16,
         ),
@@ -544,7 +590,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
                             color: AppColor.lightGrey400, size: 40),
                         const SizedBox(height: 8),
                         Text(
-                          "Upload ID Proof",
+                          AppLocalizations.of(context)!.uploadidproof,
                           style: TextStyle(
                             color: AppColor.lightGrey400,
                             fontSize: 12,
@@ -668,23 +714,26 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
         children: [
           Expanded(
             child: HandyTextField(
-              hintText: "Enter Address",
+              hintText: AppLocalizations.of(context)!.enteraddress,
               controller: locationController,
               borderColor: AppColor.transparent,
             ),
           ),
-          IconButton(
-            onPressed: () {
-              HandySnackBar.show(
-                context: context,
-                message: "Location picker would open here",
-                isTrue: true,
-              );
-            },
-            iconSize: 20,
-            icon: Icon(
-              Icons.location_on_outlined,
-              color: AppColor.black,
+          IgnorePointer(
+            ignoring: true,
+            child: IconButton(
+              onPressed: () {
+                HandySnackBar.show(
+                  context: context,
+                  message: "Location picker would open here",
+                  isTrue: true,
+                );
+              },
+              iconSize: 20,
+              icon: Icon(
+                Icons.location_on_outlined,
+                color: AppColor.black,
+              ),
             ),
           )
         ],
