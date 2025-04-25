@@ -205,6 +205,8 @@
     "customername":"Customer Name",
     "workinprogress":"Work in progress",
     "dashboard":"Dashboard",
+    "noordersavailable":"No orders available",
+    "unknowncustomer":"Unknown customer",
     "issueDetails":"Issue Details",
     "nodescriptionprovided":"No description provided",
     "workerDetails":"Worker Details",
