@@ -27,20 +27,25 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final reducedKeyboardInset = MediaQuery.of(context).viewInsets.bottom * 0.1;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false, // prevent Scaffold from resizing
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-          // Fixed-size background that doesn't resize
-          Container(
-            decoration: BoxDecoration(color: AppColor.shammaam),
-            child: SizedBox(
-              height: screenHeight,
-              width: double.infinity,
+          AnimatedPositioned(
+            duration: Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+            top: -reducedKeyboardInset,
+            left: 0,
+            right: 0,
+            bottom: -160,
+            child: Container(
+              width: screenWidth,
+              decoration: BoxDecoration(color: AppColor.shammaam),
               child: Padding(
-                padding: const EdgeInsets.only(top: 70),
+                padding: const EdgeInsets.only(top: 90),
                 child: SvgPicture.asset(
                   "assets/images/loginimage.svg",
                   fit: BoxFit.fill,
@@ -48,17 +53,26 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-
-          // Foreground scrollable content that handles keyboard properly
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [_imageView(), _loginForm()],
-              ),
+          SingleChildScrollView(
+            reverse: true,
+            physics: NeverScrollableScrollPhysics(),
+            padding: EdgeInsets.only(bottom: reducedKeyboardInset),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnimatedPadding(
+                  padding: EdgeInsets.only(top: reducedKeyboardInset + 60),
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeOut,
+                  child: _imageView(context),
+                ),
+                AnimatedPadding(
+                  padding: EdgeInsets.only(top: 0),
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeOut,
+                  child: _loginForm(context),
+                ),
+              ],
             ),
           ),
         ],
@@ -66,18 +80,18 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _imageView() {
+  Widget _imageView(BuildContext context) {
     return Container(
       color: AppColor.transparent,
       width: MediaQuery.of(context).size.width,
       height:
-          MediaQuery.of(context).size.height * (Platform.isIOS ? 0.42 : 0.43),
-      padding: EdgeInsets.fromLTRB(90, 0, 90, 90),
+          MediaQuery.of(context).size.height * (Platform.isIOS ? 0.35 : 0.35),
+      padding: EdgeInsets.fromLTRB(90, 90, 90, 90),
       child: Center(child: loadsvg("assets/images/logo.svg")),
     );
   }
 
-  Widget _loginForm() {
+  Widget _loginForm(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.transparent,
