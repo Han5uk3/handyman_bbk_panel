@@ -10,8 +10,13 @@ import 'package:handyman_bbk_panel/models/userdata_models.dart';
 class AppServices {
   static String? uid = HiveHelper.getUID();
 
-  static Stream<UserData> getUserData({String? uid}) {
-    return FirebaseCollections.workers.doc(uid).snapshots().map((event) {
+  static Stream<UserData> getUserData({String? uid,bool? isFromPanel}) {
+    if(isFromPanel ?? false){
+      return FirebaseCollections.workers.doc(uid).snapshots().map((event) {
+        return UserData.fromMap(event.data() as Map<String, dynamic>);
+      });
+    }
+    return FirebaseCollections.users.doc(uid).snapshots().map((event) {
       return UserData.fromMap(event.data() as Map<String, dynamic>);
     });
   }

@@ -34,7 +34,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return StreamBuilder<UserData>(
       stream:
-          AppServices.getUserData(uid: FirebaseAuth.instance.currentUser?.uid),
+          AppServices.getUserData(uid: FirebaseAuth.instance.currentUser?.uid,isFromPanel: true),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Scaffold(body: HandymanLoader());
