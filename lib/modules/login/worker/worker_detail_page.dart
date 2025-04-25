@@ -87,7 +87,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
     }
     if (AuthServices.phoneNumber != null ||
         (AuthServices.phoneNumber?.isNotEmpty ?? false)) {
-      phoneController.text = AuthServices.phoneNumber ?? '';
+      phoneController.text = AuthServices.phoneNumber!.substring(3);
     }
   }
 
