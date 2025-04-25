@@ -142,7 +142,7 @@ class AuthServices {
       return;
     }
     await HiveHelper.putUID(uid);
-    final userDoc = await FirebaseCollections.users.doc(uid).get();
+    final userDoc = await FirebaseCollections.workers.doc(uid).get();
     if (userDoc.exists) {
       Navigator.pushAndRemoveUntil(
         context,

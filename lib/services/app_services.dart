@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:handyman_bbk_panel/helpers/collections.dart';
 import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
 import 'package:handyman_bbk_panel/models/booking_data.dart';
@@ -10,13 +11,13 @@ class AppServices {
   static String? uid = HiveHelper.getUID();
 
   static Stream<UserData> getUserData({String? uid}) {
-    return FirebaseCollections.users.doc(uid).snapshots().map((event) {
+    return FirebaseCollections.workers.doc(uid).snapshots().map((event) {
       return UserData.fromMap(event.data() as Map<String, dynamic>);
     });
   }
 
   static Stream<int> getWorkersCount() {
-    return FirebaseCollections.users
+    return FirebaseCollections.workers
         .where("userType", isEqualTo: "Worker")
         .snapshots()
         .map((event) => event.docs.length);
@@ -42,7 +43,7 @@ class AppServices {
   }
 
   static Stream<List<UserData>> getWorkersList() {
-    return FirebaseCollections.users
+    return FirebaseCollections.workers
         .where("userType", isEqualTo: "Worker")
         .snapshots()
         .map((event) => event.docs
@@ -73,7 +74,7 @@ class AppServices {
   }
 
   static Stream<UserData?> getUserStream(String uid) {
-    return FirebaseCollections.users.doc(uid).snapshots().map((snapshot) {
+    return FirebaseCollections.workers.doc(uid).snapshots().map((snapshot) {
       if (snapshot.exists) {
         return UserData.fromMap(snapshot.data() as Map<String, dynamic>);
       } else {
@@ -192,5 +193,19 @@ class AppServices {
         return OrdersModel.fromJson(data);
       }).toList();
     });
+  }
+
+  static Future<void> updateFCMToken(String token) async {
+    if (uid == null && uid!.isEmpty) {
+      return;
+    } else {
+      try {
+        return FirebaseCollections.workers.doc(uid).update({'fcmToken': token});
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error updating FCM token: $e');
+        }
+      }
+    }
   }
 }
