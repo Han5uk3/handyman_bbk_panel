@@ -134,7 +134,7 @@ class WorkersBloc extends Bloc<WorkersEvent, WorkersState> {
         'acceptedDateTime': FieldValue.serverTimestamp(),
       };
 
-      if (bookingData == null || bookingData['workerData'] == null) {
+      if (bookingData != null) {
         updateData['workerData'] = event.workerData.toMap();
       }
 

@@ -73,6 +73,7 @@ class _JobCardState extends State<JobCard> {
       if (mounted) {
         setState(() {
           workerData = user;
+          log(workerData!.toMap().toString());
           isLoading = false;
         });
       }
