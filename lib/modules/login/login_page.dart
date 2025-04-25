@@ -113,13 +113,13 @@ class _LoginPageState extends State<LoginPage> {
             ),
             child: TextField(
               controller: _phoneController,
-              maxLength: 10,
+              maxLength: 9,
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(
                 counterText: "",
                 hintText:
-                    AppLocalizations.of(context)!.enter10digitmobilenumber,
-                prefixText: '+91 - ',
+                    AppLocalizations.of(context)!.enter9digitmobilenumber,
+                prefixText: '+966 - ',
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: 10,

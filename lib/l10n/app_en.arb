@@ -135,7 +135,7 @@
     "ccv":"CVV",
     "add":"Add",
     "areYouSureWantToDeleteYourProfileWithServiceNow":"Are you sure you want to delete your Profile with Service now?",
-    "enter10digitmobilenumber":"Enter 10 digit mobile number",
+    "enter9digitmobilenumber":"Enter 9 digit mobile number",
     "oTPsentsuccessfully":"OTP sent successfully",
     "failedtosendOTP":"Failed to send OTP",
     "anunexpectederroroccurred":"An unexpected error occurred",

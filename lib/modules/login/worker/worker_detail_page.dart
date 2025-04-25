@@ -33,7 +33,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   final _formKey = GlobalKey<FormState>();
 
   String? selectedTitle;
-  String? selectedPhoneCode = '+91';
+  String? selectedPhoneCode = '+966';
   String selectedGender = 'Male';
   String selectedService = 'Plumbing';
   String? selectedExperience = 'Less than 1 year';
@@ -46,7 +46,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   bool isLoading = false;
 
   final titleOptions = ['Mr.', 'Ms.', 'Mrs.', 'Dr.'];
-  final phoneCodeOptions = ['+91', '+955', '+965'];
+  final phoneCodeOptions = ['+966', '+965', "+91"];
   final genderOptions = ['Male', 'Female', 'Other'];
   final serviceOptions = ['Plumbing', 'Electrical'];
   final experienceOptions = [
@@ -375,7 +375,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
           selectedPhoneCode,
           [
             FilteringTextInputFormatter.digitsOnly,
-            LengthLimitingTextInputFormatter(10)
+            LengthLimitingTextInputFormatter(9)
           ],
           TextInputType.phone,
         ),
