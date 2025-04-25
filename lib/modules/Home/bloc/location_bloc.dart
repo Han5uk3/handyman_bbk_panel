@@ -50,7 +50,7 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
           mainLocation = fullLocation;
           subLocation = _locationService.userLocality;
         }
-        await FirebaseCollections.users.doc(AppServices.uid).update({
+        await FirebaseCollections.workers.doc(AppServices.uid).update({
           "longitude": _locationService.longitude,
           "latitude": _locationService.latitude,
         });

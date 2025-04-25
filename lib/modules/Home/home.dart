@@ -10,6 +10,7 @@ import 'package:handyman_bbk_panel/modules/products/products_page.dart';
 import 'package:handyman_bbk_panel/modules/profile/profile_page.dart';
 import 'package:handyman_bbk_panel/modules/workers/workers_page.dart';
 import 'package:handyman_bbk_panel/services/app_services.dart';
+import 'package:handyman_bbk_panel/services/initilize_notification.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -22,6 +23,12 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    InitilizeNotification.initializeFCM();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
