@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:handyman_bbk_panel/helpers/collections.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
@@ -212,7 +213,7 @@ class WorkersBloc extends Bloc<WorkersEvent, WorkersState> {
           'workerData.longitude': longitude,
         });
       } catch (e) {
-        print('Error updating location: $e');
+        debugPrint('Error updating location: $e');
       }
     });
   }

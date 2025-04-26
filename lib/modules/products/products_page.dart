@@ -28,13 +28,13 @@ class _ProductsPageState extends State<ProductsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: handyAppBar(AppLocalizations.of(context)!.products, context,
-          isCenter: true,
-          isneedtopop: false,
-          iswhite: true,
-          actions: [
-            IconButton(onPressed: () {}, icon: Icon(Icons.filter_list))
-          ]),
+      appBar: handyAppBar(
+        AppLocalizations.of(context)!.products,
+        context,
+        isCenter: true,
+        isneedtopop: false,
+        iswhite: true,
+      ),
       body: _buildProductsList(),
       floatingActionButton: FloatingActionButton(
         shape: RoundedRectangleBorder(

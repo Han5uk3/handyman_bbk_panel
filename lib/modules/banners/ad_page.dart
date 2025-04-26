@@ -33,7 +33,6 @@ class _AdPageState extends State<AdPage> with SingleTickerProviderStateMixin {
     'homeProductAds': false,
   };
 
-  // Animation controllers
   late AnimationController _uploadAnimationController;
   late Animation<double> _uploadAnimation;
 
@@ -72,7 +71,6 @@ class _AdPageState extends State<AdPage> with SingleTickerProviderStateMixin {
         }
       });
 
-      // Start the upload animation
       _uploadAnimationController.reset();
       _uploadAnimationController.repeat();
 
@@ -83,9 +81,7 @@ class _AdPageState extends State<AdPage> with SingleTickerProviderStateMixin {
         } else {
           context.read<BannerBloc>().add(AddHomeBanner(imageFile));
         }
-      } finally {
-        // We'll stop the animation in the listener when the upload completes
-      }
+      } finally {}
     }
   }
 
@@ -94,10 +90,8 @@ class _AdPageState extends State<AdPage> with SingleTickerProviderStateMixin {
     return BlocListener<BannerBloc, BannerState>(
       listener: (context, state) {
         if (state is BannerAdded) {
-          // Stop the animation when upload completes
           _uploadAnimationController.stop();
 
-          // Reset upload states
           setState(() {
             _isUploading = false;
             _categoryUploading.forEach((key, value) {
@@ -113,10 +107,8 @@ class _AdPageState extends State<AdPage> with SingleTickerProviderStateMixin {
           return;
         }
         if (state is BannerOperationFailure) {
-          // Stop the animation when upload fails
           _uploadAnimationController.stop();
 
-          // Reset upload states
           setState(() {
             _isUploading = false;
             _categoryUploading.forEach((key, value) {
@@ -132,10 +124,8 @@ class _AdPageState extends State<AdPage> with SingleTickerProviderStateMixin {
           );
           return;
         } else if (state is BannerOperationFailure) {
-          // Stop the animation when operation fails
           _uploadAnimationController.stop();
 
-          // Reset upload states
           setState(() {
             _isUploading = false;
             _categoryUploading.forEach((key, value) {
@@ -453,7 +443,6 @@ class _AdPageState extends State<AdPage> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildUploadingAnimation() {
-    // Reset and start animation
     if (!_uploadAnimationController.isAnimating) {
       _uploadAnimationController.reset();
       _uploadAnimationController.repeat();
@@ -469,7 +458,6 @@ class _AdPageState extends State<AdPage> with SingleTickerProviderStateMixin {
               return Stack(
                 alignment: Alignment.center,
                 children: [
-                  // Animated progress indicator
                   SizedBox(
                     width: 50,
                     height: 50,
@@ -479,7 +467,6 @@ class _AdPageState extends State<AdPage> with SingleTickerProviderStateMixin {
                       strokeWidth: 3,
                     ),
                   ),
-                  // Upload icon in the center
                   Icon(Icons.cloud_upload, size: 28),
                 ],
               );

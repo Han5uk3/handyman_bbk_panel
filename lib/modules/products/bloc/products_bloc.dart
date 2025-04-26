@@ -32,8 +32,6 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
             fileName: "$productId.jpg",
           );
         } catch (e) {
-          // emit(
-          //     ProductAddingErrorState(errorMessage: "Image upload failed: $e"));
           return;
         }
       }
@@ -80,6 +78,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       await FirebaseCollections.products.doc(event.productId).update({
         "discount": event.discount,
         "availability": event.avialability,
+        "isFeatured": event.isFeatured,
       });
       emit(UpdateProductSuccessState());
     } catch (e) {

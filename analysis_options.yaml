@@ -16,6 +16,8 @@ analyzer:
     must_be_immutable: ignore
     deprecated_member_use: ignore
     unnecessary_null_comparison: ignore
+    library_private_types_in_public_api: ignore
+    library_prefixes: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

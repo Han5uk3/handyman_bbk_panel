@@ -19,8 +19,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class WorkerDetailPage extends StatefulWidget {
-  const WorkerDetailPage({super.key, required this.isProfile});
   final bool isProfile;
+  UserData? workerData;
+  bool? isEditProfile;
+  WorkerDetailPage(
+      {super.key,
+      required this.isProfile,
+      this.workerData,
+      this.isEditProfile});
+
   @override
   State<WorkerDetailPage> createState() => _WorkerDetailPageState();
 }
@@ -30,24 +37,20 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   final TextEditingController locationController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-
   final _formKey = GlobalKey<FormState>();
-
   String? selectedTitle;
   String? selectedPhoneCode = '+966';
   String? selectedGender = 'Male';
   String? selectedService = 'Plumbing';
   String? selectedExperience = 'Less than 1 year';
   DateTime selectedDate = DateTime.now();
-
   File? _profileImageFile;
   File? _idImageFile;
-
   bool isEdit = false;
   bool isLoading = false;
-  late Map<String, String> genderOptions;
-  late Map<String, String> serviceOptions;
-  late Map<String, String> experienceOptions;
+  Map<String, String>? genderOptions;
+  Map<String, String>? serviceOptions;
+  Map<String, String>? experienceOptions;
 
   final titleOptions = ['Mr.', 'Ms.', 'Mrs.', 'Dr.'];
   final phoneCodeOptions = ['+966', '+965', "+91"];
@@ -61,31 +64,27 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   @override
   void initState() {
     super.initState();
-    serviceOptions = {
-      'Electricity': AppLocalizations.of(context)!.electricity,
-      'Plumbing': AppLocalizations.of(context)!.plumbing,
-    };
-
-    genderOptions = {
-      'Male': AppLocalizations.of(context)!.male,
-      'Female': AppLocalizations.of(context)!.female,
-      'Other': AppLocalizations.of(context)!.other,
-    };
-    experienceOptions = {
-      'Less than 1 year': AppLocalizations.of(context)!.lessthan1year,
-      '1-3 years': AppLocalizations.of(context)!.year1to3,
-      '3-5 years': AppLocalizations.of(context)!.year3to5,
-      '5+ years': AppLocalizations.of(context)!.year5plus,
-    };
-
     selectedTitle = titleOptions.first;
     selectedPhoneCode = phoneCodeOptions.first;
-    selectedGender = genderOptions[selectedGender];
-    selectedService = serviceOptions[selectedService];
-    selectedExperience = experienceOptions[selectedExperience];
+    selectedGender = genderOptions?[selectedGender];
+    selectedService = serviceOptions?[selectedService];
+    selectedExperience = experienceOptions?[selectedExperience];
 
     if (!widget.isProfile) {
       isEdit = true;
+    }
+
+    if (widget.isEditProfile ?? false) {
+      isEdit = true;
+      selectedGender = widget.workerData?.gender;
+      selectedService = widget.workerData?.service ?? 'Plumbing';
+      selectedExperience = widget.workerData?.experience;
+      selectedTitle = widget.workerData?.title;
+      // selectedDate = widget.workerData?.dateOfBirth;
+      nameController.text = widget.workerData?.name ?? '';
+      locationController.text = widget.workerData?.location ?? '';
+      phoneController.text = widget.workerData?.phoneNumber ?? '';
+      emailController.text = widget.workerData?.email ?? '';
     }
 
     if (AuthServices.userName != null ||
@@ -110,6 +109,47 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
     phoneController.dispose();
     emailController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    genderOptions = {
+      'Male': AppLocalizations.of(context)!.male,
+      'Female': AppLocalizations.of(context)!.female,
+      'Other': AppLocalizations.of(context)!.other,
+    };
+
+    serviceOptions = {
+      'Electricity': AppLocalizations.of(context)!.electricity,
+      'Plumbing': AppLocalizations.of(context)!.plumbing,
+    };
+
+    experienceOptions = {
+      'Less than 1 year': AppLocalizations.of(context)!.lessthan1year,
+      '1-3 years': AppLocalizations.of(context)!.year1to3,
+      '3-5 years': AppLocalizations.of(context)!.year3to5,
+      '5+ years': AppLocalizations.of(context)!.year5plus,
+    };
+
+    if (selectedGender != null && genderOptions != null) {
+      selectedGender = selectedGender;
+    } else {
+      selectedGender = 'Male';
+    }
+
+    if (selectedService != null && serviceOptions != null) {
+      selectedService = selectedService;
+    } else {
+      selectedService = 'Plumbing';
+    }
+
+    if (selectedExperience != null && experienceOptions != null) {
+      selectedExperience = selectedExperience;
+    } else {
+      selectedExperience = 'Less than 1 year';
+    }
   }
 
   Future<void> _pickImage({required bool isProfilePic}) async {
@@ -425,14 +465,14 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
           children: [
             Expanded(
               child: CustomDropdown(
-                  items: genderOptions.values.toList(),
+                  items: genderOptions?.values.toList() ?? [],
                   hasBorder: true,
-                  selectedValue: genderOptions[selectedGender],
+                  selectedValue: genderOptions?[selectedGender],
                   onChanged: (value) {
                     setState(() {
-                      selectedGender = genderOptions.entries
+                      selectedGender = genderOptions?.entries
                           .firstWhere((entry) => entry.value == value)
-                          .key; // Store English
+                          .key;
                     });
                   }),
             ),
@@ -476,14 +516,14 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
             fontSize: 16),
         const SizedBox(height: 8),
         CustomDropdown(
-            items: serviceOptions.values.toList(),
+            items: serviceOptions?.values.toList() ?? [],
             hasBorder: true,
-            selectedValue: serviceOptions[selectedService],
+            selectedValue: serviceOptions?[selectedService],
             onChanged: (value) {
               setState(() {
-                selectedService = serviceOptions.entries
+                selectedService = serviceOptions?.entries
                     .firstWhere((entry) => entry.value == value)
-                    .key; // Store English
+                    .key;
               });
             }),
         const SizedBox(height: 15),
@@ -493,14 +533,14 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
             fontSize: 16),
         const SizedBox(height: 8),
         CustomDropdown(
-            items: experienceOptions.values.toList(),
+            items: experienceOptions?.values.toList() ?? [],
             hasBorder: true,
-            selectedValue: experienceOptions[selectedExperience],
+            selectedValue: experienceOptions?[selectedExperience],
             onChanged: (value) {
               setState(() {
-                selectedExperience = experienceOptions.entries
+                selectedExperience = experienceOptions?.entries
                     .firstWhere((entry) => entry.value == value)
-                    .key; // Store English
+                    .key;
               });
             }),
       ],

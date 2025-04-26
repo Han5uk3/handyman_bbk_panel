@@ -95,8 +95,9 @@ class _TrackWorkerScreenState extends State<TrackWorkerScreen> {
           markerId: const MarkerId('user'),
           position: userLatLng!,
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-          infoWindow:
-              InfoWindow(title: AppLocalizations.of(context)!.yourLocation),
+          infoWindow: InfoWindow(
+              title: AppLocalizations.of(context)!.yourLocation,
+              snippet: bookingData?.name),
         ),
       );
     }
@@ -109,8 +110,9 @@ class _TrackWorkerScreenState extends State<TrackWorkerScreen> {
           icon: BitmapDescriptor.defaultMarkerWithHue(
             BitmapDescriptor.hueGreen,
           ),
-          infoWindow:
-              InfoWindow(title: AppLocalizations.of(context)!.workerLocation),
+          infoWindow: InfoWindow(
+              title: AppLocalizations.of(context)!.workerLocation,
+              snippet: bookingData?.workerData?.name),
         ),
       );
     }

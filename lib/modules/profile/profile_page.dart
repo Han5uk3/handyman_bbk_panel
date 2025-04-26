@@ -5,6 +5,7 @@ import 'package:handyman_bbk_panel/common_widget/button.dart';
 import 'package:handyman_bbk_panel/common_widget/outline_button.dart';
 import 'package:handyman_bbk_panel/common_widget/svgicon.dart';
 import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
+import 'package:handyman_bbk_panel/models/userdata_models.dart';
 import 'package:handyman_bbk_panel/modules/login/login_page.dart';
 import 'package:handyman_bbk_panel/modules/login/worker/worker_detail_page.dart';
 import 'package:handyman_bbk_panel/modules/profile/earnings_page.dart';
@@ -23,7 +24,18 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final bool _isLoading = false;
   bool isGuestUser = false;
+  UserData? workerData;
   @override
+  void initState() {
+    fetchWorkerData();
+    super.initState();
+  }
+
+  void fetchWorkerData() async {
+    workerData =
+        await AppServices.getUserById(isWorkerData: true, uid: AppServices.uid);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +52,11 @@ class _ProfilePageState extends State<ProfilePage> {
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => WorkerDetailPage(isProfile: true),
+                    builder: (context) => WorkerDetailPage(
+                      isProfile: true,
+                      workerData: workerData,
+                      isEditProfile: true,
+                    ),
                   ),
                 );
               },
