@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>931781606491-bl5t9c9j2c1ggbm3ola76es2h123p2ln.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.931781606491-bl5t9c9j2c1ggbm3ola76es2h123p2ln</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>931781606491-1443gk6n7pbjmi08ibbnjgjgmnm50buu.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCGNHVqMkT0z8P5n0AWsuyUDit_acGS-Uk</string>
+	<key>GCM_SENDER_ID</key>
+	<string>931781606491</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.handyman.bbk.panel</string>
+	<key>PROJECT_ID</key>
+	<string>handyman-app-f0b59</string>
+	<key>STORAGE_BUCKET</key>
+	<string>handyman-app-f0b59.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:931781606491:ios:29b3edf341b73cd447537e</string>
+</dict>
+</plist>

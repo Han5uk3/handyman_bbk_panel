@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:handyman_bbk_panel/common_widget/outline_button.dart';
-
+import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
 import 'package:handyman_bbk_panel/common_widget/svgicon.dart';
-import 'package:handyman_bbk_panel/modules/login/worker/worker_detail_page.dart';
-
+import 'package:handyman_bbk_panel/modules/login/otp/otp.dart';
+import 'package:handyman_bbk_panel/services/auth_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,8 +19,6 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _phoneController = TextEditingController();
   bool _isChecked = false;
   bool isLoading = false;
-  bool isAdmin = true;
-
   @override
   void dispose() {
     _phoneController.dispose();
@@ -29,20 +27,25 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final reducedKeyboardInset = MediaQuery.of(context).viewInsets.bottom * 0.1;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false, // prevent Scaffold from resizing
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
-          // Fixed-size background that doesn't resize
-          Container(
-            decoration: BoxDecoration(color: AppColor.shammaam),
-            child: SizedBox(
-              height: screenHeight,
-              width: double.infinity,
+          AnimatedPositioned(
+            duration: Duration(milliseconds: 200),
+            curve: Curves.easeOut,
+            top: -reducedKeyboardInset,
+            left: 0,
+            right: 0,
+            bottom: -160,
+            child: Container(
+              width: screenWidth,
+              decoration: BoxDecoration(color: AppColor.shammaam),
               child: Padding(
-                padding: const EdgeInsets.only(top: 70),
+                padding: const EdgeInsets.only(top: 90),
                 child: SvgPicture.asset(
                   "assets/images/loginimage.svg",
                   fit: BoxFit.fill,
@@ -50,17 +53,26 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-
-          // Foreground scrollable content that handles keyboard properly
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [_imageView(), _loginForm()],
-              ),
+          SingleChildScrollView(
+            reverse: true,
+            physics: NeverScrollableScrollPhysics(),
+            padding: EdgeInsets.only(bottom: reducedKeyboardInset),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AnimatedPadding(
+                  padding: EdgeInsets.only(top: reducedKeyboardInset + 60),
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeOut,
+                  child: _imageView(context),
+                ),
+                AnimatedPadding(
+                  padding: EdgeInsets.only(top: 0),
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeOut,
+                  child: _loginForm(context),
+                ),
+              ],
             ),
           ),
         ],
@@ -68,18 +80,18 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _imageView() {
+  Widget _imageView(BuildContext context) {
     return Container(
       color: AppColor.transparent,
       width: MediaQuery.of(context).size.width,
       height:
-          MediaQuery.of(context).size.height * (Platform.isIOS ? 0.42 : 0.43),
-      padding: EdgeInsets.fromLTRB(90, 0, 90, 90),
+          MediaQuery.of(context).size.height * (Platform.isIOS ? 0.35 : 0.35),
+      padding: EdgeInsets.fromLTRB(90, 90, 90, 90),
       child: Center(child: loadsvg("assets/images/logo.svg")),
     );
   }
 
-  Widget _loginForm() {
+  Widget _loginForm(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.transparent,
@@ -88,55 +100,11 @@ class _LoginPageState extends State<LoginPage> {
           topRight: Radius.circular(20),
         ),
       ),
-      padding: const EdgeInsets.only(left: 25, right: 25, top: 0, bottom: 16),
+      padding: const EdgeInsets.only(left: 25, right: 25, top: 0, bottom: 0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Login As',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            spacing: 12,
-            children: [
-              Expanded(
-                child: HandymanOutlineButton(
-                  borderRadius: 5,
-                  borderThickness: 1,
-                  text: "Admin",
-                  onPressed: () {
-                    setState(() {
-                      isAdmin = true;
-                    });
-                  },
-                  textColor: isAdmin ? Colors.black : AppColor.lightGrey400,
-                  borderColor: isAdmin ? Colors.black : AppColor.lightGrey300,
-                ),
-              ),
-              Expanded(
-                child: HandymanOutlineButton(
-                  text: "Worker",
-                  onPressed: () {
-                    setState(() {
-                      isAdmin = false;
-                    });
-                  },
-                  textColor: isAdmin ? AppColor.lightGrey400 : AppColor.yellow,
-                  borderColor:
-                      isAdmin ? AppColor.lightGrey300 : AppColor.yellow,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 16,
-          ),
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -145,12 +113,13 @@ class _LoginPageState extends State<LoginPage> {
             ),
             child: TextField(
               controller: _phoneController,
-              maxLength: 10,
+              maxLength: 9,
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 counterText: "",
-                hintText: 'Enter 10 digit mobile number',
-                prefixText: '+91 - ',
+                hintText:
+                    AppLocalizations.of(context)!.enter9digitmobilenumber,
+                prefixText: '+966 - ',
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: 10,
@@ -174,38 +143,12 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
-                'I agree with the ',
+              Text(
+                AppLocalizations.of(context)!.iAgreeWithTheTermsAndConditions,
                 style: TextStyle(color: Colors.black),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: const Text(
-                  'Terms & Conditions',
-                  style: TextStyle(color: Colors.green),
-                ),
               ),
             ],
           ),
-          !isAdmin
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 12),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => WorkerDetailPage(
-                            isProfile: true,
-                          ),
-                        ));
-                      },
-                      child: Text("Register as a Worker?",
-                          style: TextStyle(color: AppColor.yellow)),
-                    ),
-                  ],
-                )
-              : SizedBox.shrink(),
           const SizedBox(height: 30),
           Row(
             children: [
@@ -214,8 +157,7 @@ class _LoginPageState extends State<LoginPage> {
                   duration: Duration(milliseconds: 300),
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () {},
-                    // onPressed: isLoading ? null : _sendOTP,
+                    onPressed: isLoading ? null : _sendOTP,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColor.black,
                       foregroundColor: AppColor.white,
@@ -240,7 +182,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               SizedBox(width: 12),
                               Text(
-                                "Sending OTP...",
+                                AppLocalizations.of(context)!.sendingOtp,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
@@ -249,7 +191,7 @@ class _LoginPageState extends State<LoginPage> {
                             ],
                           )
                         : Text(
-                            "Get OTP",
+                            AppLocalizations.of(context)!.getOtp,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
@@ -261,12 +203,13 @@ class _LoginPageState extends State<LoginPage> {
             ],
           ),
           const SizedBox(height: 30),
-          const Row(
+          Row(
             children: [
               Expanded(child: Divider()),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Text('OR', style: TextStyle(color: AppColor.greyDark)),
+                child: Text(AppLocalizations.of(context)!.or,
+                    style: TextStyle(color: AppColor.greyDark)),
               ),
               Expanded(child: Divider()),
             ],
@@ -274,30 +217,28 @@ class _LoginPageState extends State<LoginPage> {
           const SizedBox(height: 10),
           Platform.isIOS
               ? _loginButtonTile(
-                  onTap: () {},
-                  // onTap: () async {
-                  //   final user = await AuthServices().signInWithApple();
-                  //   if (user != null) {
-                  //     await AuthServices().checkUser(
-                  //       userCredential: user,
-                  //       context: context,
-                  //     );
-                  //   }
-                  // },
+                  onTap: () async {
+                    final user = await AuthServices().signInWithApple();
+                    if (user != null) {
+                      await AuthServices().checkUser(
+                        userCredential: user,
+                        context: context,
+                      );
+                    }
+                  },
                   title: "Apple",
                 )
               : SizedBox(),
           _loginButtonTile(
-            onTap: () {},
-            // onTap: () async {
-            //   final user = await AuthServices().signInWithGoogle();
-            //   if (user != null) {
-            //     await AuthServices().checkUser(
-            //       userCredential: user,
-            //       context: context,
-            //     );
-            //   }
-            // },
+            onTap: () async {
+              final user = await AuthServices().signInWithGoogle();
+              if (user != null) {
+                await AuthServices().checkUser(
+                  userCredential: user,
+                  context: context,
+                );
+              }
+            },
             title: "Google",
           ),
         ],
@@ -305,99 +246,100 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Future<void> _sendOTP() async {
-  //   final phone = _phoneController.text.trim();
+  Future<void> _sendOTP() async {
+    final phone = _phoneController.text.trim();
 
-  //   if (phone.length == 10 && RegExp(r'^[0-9]{10}$').hasMatch(phone)) {
-  //     if (_isChecked) {
-  //       setState(() {
-  //         isLoading = true;
-  //       });
+    if (phone.length == 9 && RegExp(r'^[0-9]{9}$').hasMatch(phone)) {
+      if (_isChecked) {
+        setState(() {
+          isLoading = true;
+        });
 
-  //       try {
-  //         await AuthServices().sendOTP(
-  //           phoneNumber: phone,
-  //           onCodeSent: (verificationId) {
-  //             setState(() {
-  //               isLoading = false;
-  //             });
+        try {
+          await AuthServices().sendOTP(
+            phoneNumber: phone,
+            onCodeSent: (verificationId) {
+              setState(() {
+                isLoading = false;
+              });
 
-  //             // Subtle success feedback
-  //             HandySnackBar.show(
-  //               context: context,
-  //               message: "OTP sent successfully",
-  //               isTrue: true,
-  //             );
+              // Subtle success feedback
+              HandySnackBar.show(
+                context: context,
+                message: AppLocalizations.of(context)!.oTPsentsuccessfully,
+                isTrue: true,
+              );
 
-  //             // Navigate with a smoother transition
-  //             Navigator.of(context).push(
-  //               PageRouteBuilder(
-  //                 pageBuilder: (context, animation, secondaryAnimation) =>
-  //                     OtpVerificationScreen(
-  //                   phoneNumber: phone,
-  //                   verificationId: verificationId,
-  //                 ),
-  //                 transitionsBuilder: (
-  //                   context,
-  //                   animation,
-  //                   secondaryAnimation,
-  //                   child,
-  //                 ) {
-  //                   const begin = Offset(1.0, 0.0);
-  //                   const end = Offset.zero;
-  //                   const curve = Curves.easeInOut;
-  //                   var tween = Tween(
-  //                     begin: begin,
-  //                     end: end,
-  //                   ).chain(CurveTween(curve: curve));
-  //                   var offsetAnimation = animation.drive(tween);
-  //                   return SlideTransition(
-  //                     position: offsetAnimation,
-  //                     child: child,
-  //                   );
-  //                 },
-  //                 transitionDuration: Duration(milliseconds: 300),
-  //               ),
-  //             );
-  //           },
-  //           onError: (error) {
-  //             setState(() {
-  //               isLoading = false;
-  //             });
+              // Navigate with a smoother transition
+              Navigator.of(context).push(
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      OtpVerificationScreen(
+                    phoneNumber: phone,
+                    verificationId: verificationId,
+                  ),
+                  transitionsBuilder: (
+                    context,
+                    animation,
+                    secondaryAnimation,
+                    child,
+                  ) {
+                    const begin = Offset(1.0, 0.0);
+                    const end = Offset.zero;
+                    const curve = Curves.easeInOut;
+                    var tween = Tween(
+                      begin: begin,
+                      end: end,
+                    ).chain(CurveTween(curve: curve));
+                    var offsetAnimation = animation.drive(tween);
+                    return SlideTransition(
+                      position: offsetAnimation,
+                      child: child,
+                    );
+                  },
+                  transitionDuration: Duration(milliseconds: 300),
+                ),
+              );
+            },
+            onError: (error) {
+              setState(() {
+                isLoading = false;
+              });
 
-  //             HandySnackBar.show(
-  //               context: context,
-  //               message: error.message ?? "Failed to send OTP",
-  //               isTrue: false,
-  //             );
-  //           },
-  //         );
-  //       } catch (e) {
-  //         setState(() {
-  //           isLoading = false;
-  //         });
+              HandySnackBar.show(
+                context: context,
+                message: error.message ??
+                    AppLocalizations.of(context)!.failedtosendOTP,
+                isTrue: false,
+              );
+            },
+          );
+        } catch (e) {
+          setState(() {
+            isLoading = false;
+          });
 
-  //         HandySnackBar.show(
-  //           context: context,
-  //           message: "An unexpected error occurred",
-  //           isTrue: false,
-  //         );
-  //       }
-  //     } else {
-  //       HandySnackBar.show(
-  //         context: context,
-  //         message: "Please accept our terms and conditions",
-  //         isTrue: false,
-  //       );
-  //     }
-  //   } else {
-  //     HandySnackBar.show(
-  //       context: context,
-  //       message: "Enter valid mobile number",
-  //       isTrue: false,
-  //     );
-  //   }
-  // }
+          HandySnackBar.show(
+            context: context,
+            message: AppLocalizations.of(context)!.anunexpectederroroccurred,
+            isTrue: false,
+          );
+        }
+      } else {
+        HandySnackBar.show(
+          context: context,
+          message: AppLocalizations.of(context)!.pleaseacceptterms,
+          isTrue: false,
+        );
+      }
+    } else {
+      HandySnackBar.show(
+        context: context,
+        message: AppLocalizations.of(context)!.entervalidmobilenumber,
+        isTrue: false,
+      );
+    }
+  }
 
   Widget _loginButtonTile({void Function()? onTap, String? title}) {
     return GestureDetector(
@@ -433,7 +375,9 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(width: 15),
             Text(
-              "Continue with $title",
+              title == "Apple"
+                  ? AppLocalizations.of(context)!.applelogin
+                  : AppLocalizations.of(context)!.googlelogin,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
