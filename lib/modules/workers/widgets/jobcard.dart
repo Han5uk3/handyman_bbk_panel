@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
@@ -73,7 +71,6 @@ class _JobCardState extends State<JobCard> {
       if (mounted) {
         setState(() {
           workerData = user;
-          log(workerData!.toMap().toString());
           isLoading = false;
         });
       }
@@ -111,7 +108,6 @@ class _JobCardState extends State<JobCard> {
     return StreamBuilder<UserData?>(
       stream: _userStream,
       builder: (context, snapshot) {
-        log(snapshot.data.toString());
         final UserData? streamUserData = snapshot.data;
 
         if (streamUserData != null && streamUserData != userData) {

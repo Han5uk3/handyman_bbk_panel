@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
@@ -25,8 +24,6 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       String? productId;
 
       productId = FirebaseCollections.products.doc().id;
-      log("Product ID: $productId");
-      log("Product Image: ${event.productImage?.path}");
       if (event.productImage != null) {
         try {
           imageUrl = await StorageService.uploadFile(
@@ -35,13 +32,11 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
             fileName: "$productId.jpg",
           );
         } catch (e) {
-          log("Image upload error: $e");
           // emit(
           //     ProductAddingErrorState(errorMessage: "Image upload failed: $e"));
           return;
         }
       }
-      log("Image URL: $imageUrl");
       ProductsModel productsModel = ProductsModel(
           id: productId,
           name: event.productModel.name,
@@ -51,15 +46,12 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
           availability: event.productModel.availability,
           category: event.productModel.category,
           image: imageUrl);
-      log(productsModel.toMap().toString());
 
       await FirebaseCollections.products
           .doc(productId)
           .set(productsModel.toMap());
       emit(ProductAddingSuccessState());
-    } catch (error, stackTrace) {
-      log("❌ Firebase set error: $error");
-      log("❌ Stack trace: $stackTrace");
+    } catch (error) {
       emit(ProductAddingErrorState(errorMessage: error.toString()));
     }
   }
@@ -85,7 +77,6 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       UpdateProductEvent event, Emitter<ProductsState> emit) async {
     emit(UpdateProductLoadingState());
     try {
-      log(event.avialability);
       await FirebaseCollections.products.doc(event.productId).update({
         "discount": event.discount,
         "availability": event.avialability,

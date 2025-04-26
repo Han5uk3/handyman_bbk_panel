@@ -9,6 +9,7 @@ import 'package:handyman_bbk_panel/modules/orders/order_details_page.dart';
 import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 
 class OrdersPage extends StatefulWidget {
   const OrdersPage({super.key});
@@ -81,6 +82,11 @@ class _OrdersPageState extends State<OrdersPage> {
 
         String dateStr = 'N/A';
         String timeStr = 'N/A';
+
+        if (order.orderDate != null) {
+          dateStr = DateFormat('dd/MM/yyyy').format(order.orderDate!);
+          timeStr = DateFormat('h:mm a').format(order.orderDate!);
+        }
 
         return GestureDetector(
           onTap: () {

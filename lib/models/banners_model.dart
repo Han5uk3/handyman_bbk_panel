@@ -1,19 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Banner {
-  final String id;
-  final String image;
-  final String type; // 'home' or 'product'
-  final String? category; // 'electrical', 'plumbing', or null for home banner
-  final bool isActive;
+class BannerModel {
+  final String? id;
+  final String? image;
+  final String? type;
+  final String? category;
+  final bool? isActive;
   final DateTime? createdAt;
 
-  Banner({
-    required this.id,
-    required this.image,
-    required this.type,
+  BannerModel({
+    this.id,
+    this.image,
+    this.type,
     this.category,
-    required this.isActive,
+    this.isActive,
     this.createdAt,
   });
 
@@ -28,8 +28,8 @@ class Banner {
     };
   }
 
-  factory Banner.fromMap(Map<String, dynamic> map) {
-    return Banner(
+  factory BannerModel.fromMap(Map<String, dynamic> map) {
+    return BannerModel(
       id: map['id'] ?? '',
       image: map['image'] ?? '',
       type: map['type'] ?? '',

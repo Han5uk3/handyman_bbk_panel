@@ -1,6 +1,5 @@
-import 'dart:developer';
 import 'dart:io';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +7,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/common_widget/loader.dart';
 import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
+import 'package:handyman_bbk_panel/models/banners_model.dart';
 import 'package:handyman_bbk_panel/modules/banners/bloc/banner_bloc.dart';
 import 'package:handyman_bbk_panel/modules/banners/bloc/banner_event.dart';
 import 'package:handyman_bbk_panel/modules/banners/bloc/banner_state.dart';
+import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
@@ -23,27 +24,38 @@ class AdPage extends StatefulWidget {
   State<AdPage> createState() => _AdPageState();
 }
 
-class _AdPageState extends State<AdPage> {
+class _AdPageState extends State<AdPage> with SingleTickerProviderStateMixin {
   bool _isUploading = false;
   final Map<String, bool> _categoryUploading = {
     'electrical': false,
+    'electricity': false,
     'plumbing': false,
+    'homeProductAds': false,
   };
+
+  // Animation controllers
+  late AnimationController _uploadAnimationController;
+  late Animation<double> _uploadAnimation;
 
   @override
   void initState() {
     super.initState();
-    _loadBanners();
+    _uploadAnimationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 1500),
+    );
+    _uploadAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _uploadAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
   }
 
-  void _loadBanners() {
-    if (widget.isHomeBanner) {
-      context.read<BannerBloc>().add(LoadHomeBanners());
-    } else {
-      // For product page, load both electrical and plumbing banners
-      context.read<BannerBloc>().add(LoadProductBanners('electrical'));
-      context.read<BannerBloc>().add(LoadProductBanners('plumbing'));
-    }
+  @override
+  void dispose() {
+    _uploadAnimationController.dispose();
+    super.dispose();
   }
 
   Future<void> _pickAndUploadImage({String? category}) async {
@@ -60,25 +72,19 @@ class _AdPageState extends State<AdPage> {
         }
       });
 
+      // Start the upload animation
+      _uploadAnimationController.reset();
+      _uploadAnimationController.repeat();
+
       try {
         final File imageFile = File(pickedFile.path);
         if (category != null) {
-          // Log the category for debugging
-          log('Uploading image for category: $category');
-          // Upload category-specific banner (electrical/plumbing)
           context.read<BannerBloc>().add(AddProductBanner(imageFile, category));
         } else {
-          // Upload home banner
           context.read<BannerBloc>().add(AddHomeBanner(imageFile));
         }
       } finally {
-        setState(() {
-          if (category != null) {
-            _categoryUploading[category] = false;
-          } else {
-            _isUploading = false;
-          }
-        });
+        // We'll stop the animation in the listener when the upload completes
       }
     }
   }
@@ -87,23 +93,72 @@ class _AdPageState extends State<AdPage> {
   Widget build(BuildContext context) {
     return BlocListener<BannerBloc, BannerState>(
       listener: (context, state) {
-        if (state is BannerOperationSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
+        if (state is BannerAdded) {
+          // Stop the animation when upload completes
+          _uploadAnimationController.stop();
+
+          // Reset upload states
+          setState(() {
+            _isUploading = false;
+            _categoryUploading.forEach((key, value) {
+              _categoryUploading[key] = false;
+            });
+          });
+
+          HandySnackBar.show(
+            context: context,
+            message: "Banner added successfully",
+            isTrue: true,
           );
-          // Reload banners after successful operation
-          _loadBanners();
+          return;
+        }
+        if (state is BannerOperationFailure) {
+          // Stop the animation when upload fails
+          _uploadAnimationController.stop();
+
+          // Reset upload states
+          setState(() {
+            _isUploading = false;
+            _categoryUploading.forEach((key, value) {
+              _categoryUploading[key] = false;
+            });
+          });
+
+          Navigator.pop(context);
+          HandySnackBar.show(
+            context: context,
+            message: state.error,
+            isTrue: false,
+          );
+          return;
         } else if (state is BannerOperationFailure) {
-          log('Banner operation failed: ${state.error}');
+          // Stop the animation when operation fails
+          _uploadAnimationController.stop();
+
+          // Reset upload states
+          setState(() {
+            _isUploading = false;
+            _categoryUploading.forEach((key, value) {
+              _categoryUploading[key] = false;
+            });
+          });
+
           HandySnackBar.show(
             context: context,
             message: state.error,
             isTrue: false,
           );
         }
+        if (state is BannerDeletedSuccess) {
+          HandySnackBar.show(
+            context: context,
+            message: "Banner deleted successfully",
+            isTrue: true,
+          );
+          return;
+        }
       },
       child: Scaffold(
-        floatingActionButton: _buildFloatingActionButton(),
         appBar: handyAppBar(
           widget.isHomeBanner
               ? AppLocalizations.of(context)!.homeads
@@ -114,23 +169,29 @@ class _AdPageState extends State<AdPage> {
           iswhite: true,
         ),
         body: _buildBody(),
+        floatingActionButton: _buildFloatingActionButton(),
       ),
     );
   }
 
   Widget _buildFloatingActionButton() {
-    // Show loading FAB when uploading
     if (_isUploading) {
       return FloatingActionButton(
         onPressed: null,
         backgroundColor: Colors.grey,
-        child: CircularProgressIndicator(
-          color: AppColor.white,
+        child: AnimatedBuilder(
+          animation: _uploadAnimationController,
+          builder: (context, child) {
+            return CircularProgressIndicator(
+              value: _uploadAnimation.value,
+              color: AppColor.white,
+              strokeWidth: 3,
+            );
+          },
         ),
       );
     }
 
-    // Only show FAB for home banner page
     if (widget.isHomeBanner) {
       return FloatingActionButton(
         heroTag: AppLocalizations.of(context)!.add,
@@ -143,7 +204,7 @@ class _AdPageState extends State<AdPage> {
         ),
       );
     } else {
-      return SizedBox.shrink(); // No FAB for product banners
+      return SizedBox.shrink();
     }
   }
 
@@ -154,31 +215,35 @@ class _AdPageState extends State<AdPage> {
   }
 
   Widget _buildHomeBannerList() {
-    return BlocBuilder<BannerBloc, BannerState>(
-      builder: (context, state) {
-        if (state is BannerLoading) {
+    return StreamBuilder<List<BannerModel>>(
+      stream: AppServices.getBanners(isHome: true),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return HandymanLoader();
-        } else if (state is HomeBannersLoadedState &&
-            state.banners.isNotEmpty) {
-          // Show list of home banners
-          return ListView.builder(
-            itemCount: state.banners.length,
-            itemBuilder: (context, index) {
-              final banner = state.banners[index];
-              return _buildBannerItem(banner);
-            },
-          );
-        } else {
-          // Show empty state when no banners
+        }
+        if (snapshot.hasError) {
+          return Center(
+              child: Text(
+                  '${AppLocalizations.of(context)!.error}: ${snapshot.error}'));
+        }
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return _buildEmptyBanner();
         }
+        final banners = snapshot.data!;
+
+        return ListView.builder(
+          itemCount: banners.length,
+          itemBuilder: (context, index) {
+            final banner = banners[index];
+            return _buildBannerItem(banner);
+          },
+        );
       },
     );
   }
 
-  Widget _buildBannerItem(dynamic banner) {
-    final bool hasValidImage = banner.image.isNotEmpty;
-
+  Widget _buildBannerItem(BannerModel banner) {
+    final bool hasValidImage = banner.image?.isNotEmpty ?? false;
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Stack(
@@ -189,14 +254,14 @@ class _AdPageState extends State<AdPage> {
               height: 160,
               width: double.infinity,
               child: hasValidImage
-                  ? _buildNetworkImage(banner.image)
+                  ? _buildNetworkImage(banner.image ?? "")
                   : _buildNoImagePlaceholder(),
             ),
           ),
           Positioned(
             top: 10,
             right: 10,
-            child: _buildDeleteButton(banner.id),
+            child: _buildDeleteButton(banner.id ?? ''),
           ),
         ],
       ),
@@ -204,35 +269,31 @@ class _AdPageState extends State<AdPage> {
   }
 
   Widget _buildNetworkImage(String imageUrl) {
-    return Image.network(
-      imageUrl,
-      fit: BoxFit.cover,
-      loadingBuilder: (context, child, loadingProgress) {
-        if (loadingProgress == null) return child;
-        return Center(
-          child: CircularProgressIndicator(
-            value: loadingProgress.expectedTotalBytes != null
-                ? loadingProgress.cumulativeBytesLoaded /
-                    loadingProgress.expectedTotalBytes!
-                : null,
-          ),
-        );
-      },
-      errorBuilder: (context, error, stackTrace) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.error, color: Colors.red[300]),
-              SizedBox(height: 8),
-              Text(
-                AppLocalizations.of(context)!.failedtoloadimage,
-                style: TextStyle(color: Colors.red[300]),
-              ),
-            ],
-          ),
-        );
-      },
+    return SizedBox(
+      height: 155,
+      width: double.infinity,
+      child: CachedNetworkImage(
+        imageUrl: imageUrl,
+        fit: BoxFit.cover,
+        placeholder: (context, url) {
+          return HandymanLoader();
+        },
+        errorListener: (value) => (context, error, stackTrace) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.error, color: Colors.red[300]),
+                SizedBox(height: 8),
+                Text(
+                  AppLocalizations.of(context)!.failedtoloadimage,
+                  style: TextStyle(color: Colors.red[300]),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -254,10 +315,7 @@ class _AdPageState extends State<AdPage> {
 
   Widget _buildDeleteButton(String bannerId) {
     return GestureDetector(
-      onTap: () {
-        log('Deleting banner with ID: $bannerId');
-        context.read<BannerBloc>().add(DeleteBanner(bannerId));
-      },
+      onTap: () => context.read<BannerBloc>().add(DeleteBannerEvent(bannerId)),
       child: Container(
         decoration: BoxDecoration(
           color: AppColor.white,
@@ -294,161 +352,151 @@ class _AdPageState extends State<AdPage> {
   }
 
   Widget _buildProductBanners() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Electrical section
-          HandyLabel(
-            text: AppLocalizations.of(context)!.electricity,
-            fontSize: 18,
-            isBold: true,
+    return StreamBuilder<List<BannerModel>>(
+      stream: AppServices.getBanners(isHome: false),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return HandymanLoader();
+        }
+        if (snapshot.hasError) {
+          return Center(
+              child: Text(
+                  '${AppLocalizations.of(context)!.error}: ${snapshot.error}'));
+        }
+
+        List<BannerModel> banners = snapshot.data ?? [];
+
+        BannerModel? getBannerFor(String category) {
+          return banners.firstWhere(
+            (banner) => banner.category == category,
+            orElse: () => BannerModel(category: category),
+          );
+        }
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              HandyLabel(
+                text: "Home Product Ads",
+                fontSize: 18,
+                isBold: true,
+              ),
+              SizedBox(height: 10),
+              _buildImagePlaceholder('homeProductAds',
+                  banner: getBannerFor('homeProductAds')),
+              SizedBox(height: 25),
+              HandyLabel(
+                text: AppLocalizations.of(context)!.electricity,
+                fontSize: 18,
+                isBold: true,
+              ),
+              SizedBox(height: 10),
+              _buildImagePlaceholder('electricity',
+                  banner: getBannerFor('electricity')),
+              SizedBox(height: 25),
+              HandyLabel(
+                text: AppLocalizations.of(context)!.plumbing,
+                isBold: true,
+                fontSize: 18,
+              ),
+              SizedBox(height: 10),
+              _buildImagePlaceholder('plumbing',
+                  banner: getBannerFor('plumbing')),
+            ],
           ),
-          SizedBox(height: 10),
-          _buildElectricalBanner(),
-          SizedBox(height: 25),
-
-          // Plumbing section
-          HandyLabel(
-            text: AppLocalizations.of(context)!.plumbing,
-            isBold: true,
-            fontSize: 18,
-          ),
-          SizedBox(height: 10),
-          _buildPlumbingBanner(),
-        ],
-      ),
-    );
-  }
-
-  // Dedicated builder for electrical banner
-  Widget _buildElectricalBanner() {
-    return BlocBuilder<BannerBloc, BannerState>(
-      buildWhen: (previous, current) {
-        // Only rebuild for electrical banner states
-        if (current is ProductBannersLoaded) {
-          return current.category == 'electrical';
-        }
-        if (current is ProductBannersLoading) {
-          return current.category == 'electrical';
-        }
-        return current is BannerOperationSuccess ||
-            current is BannerOperationFailure;
-      },
-      builder: (context, state) {
-        // Show loading indicator when uploading
-        if (_categoryUploading['electrical'] == true) {
-          return Container(
-            height: 155,
-            width: double.infinity,
-            alignment: Alignment.center,
-            child: CircularProgressIndicator(),
-          );
-        }
-
-        // Show banner if loaded
-        if (state is ProductBannersLoaded &&
-            state.category == 'electrical' &&
-            state.banners.isNotEmpty) {
-          log('Found electrical banner: ${state.banners.first.id}');
-          return _buildBannerItem(state.banners.first);
-        }
-
-        // Show placeholder by default
-        return _buildImagePlaceholder('electrical');
+        );
       },
     );
   }
 
-  // Dedicated builder for plumbing banner
-  Widget _buildPlumbingBanner() {
-    return BlocBuilder<BannerBloc, BannerState>(
-      buildWhen: (previous, current) {
-        // Only rebuild for plumbing banner states
-        if (current is ProductBannersLoaded) {
-          return current.category == 'electrical';
-        }
-        if (current is ProductBannersLoaded) {
-          return current.category == 'plumbing';
-        }
-        if (current is ProductBannersLoading) {
-          return current.category == 'electrical';
-        }
-        if (current is ProductBannersLoading) {
-          return current.category == 'plumbing';
-        }
-        return current is BannerOperationSuccess ||
-            current is BannerOperationFailure;
-      },
-      builder: (context, state) {
-        // Show loading indicator when uploading
-        if (_categoryUploading['plumbing'] == true) {
-          return Container(
-            height: 155,
-            width: double.infinity,
-            alignment: Alignment.center,
-            child: CircularProgressIndicator(),
-          );
-        }
-        if (_categoryUploading['electrical'] == true) {
-          return Container(
-            height: 155,
-            width: double.infinity,
-            alignment: Alignment.center,
-            child: CircularProgressIndicator(),
-          );
-        }
+  Widget _buildImagePlaceholder(String category, {BannerModel? banner}) {
+    final isImageAvailable =
+        banner?.image != null && (banner?.image?.isNotEmpty ?? false);
+    final isUploading = _categoryUploading[category] == true;
 
-        // Show banner if loaded
-        if (state is ProductBannersLoaded &&
-            state.category == 'plumbing' &&
-            state.banners.isNotEmpty) {
-          log('Found plumbing banner: ${state.banners.first.id}');
-          return _buildBannerItem(state.banners.first);
-        }
-        if (state is ProductBannersLoaded &&
-            state.category == 'electrical' &&
-            state.banners.isNotEmpty) {
-          log('Found electrical banner: ${state.banners.first.id}');
-          return _buildBannerItem(state.banners.first);
-        }
-
-        // Show placeholder by default
-        return _buildImagePlaceholder('plumbing');
-      },
-    );
-  }
-
-  Widget _buildImagePlaceholder(String category) {
     return GestureDetector(
-      onTap: () => _pickAndUploadImage(category: category),
+      onTap: !isImageAvailable && !isUploading
+          ? () => _pickAndUploadImage(category: category)
+          : null,
       child: DottedBorder(
         borderType: BorderType.RRect,
         radius: Radius.circular(12),
         dashPattern: [4, 6],
         strokeWidth: 2,
         color: Colors.grey,
-        child: SizedBox(
-          height: 155,
-          width: double.infinity,
-          child: _categoryUploading[category] == true
-              ? Center(child: CircularProgressIndicator())
-              : Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.add_photo_alternate_rounded, size: 40),
-                      SizedBox(width: 8),
-                      HandyLabel(
-                        text: AppLocalizations.of(context)!
-                            .clickheretouploadimage,
-                        fontSize: 14,
-                      )
-                    ],
+        child: isImageAvailable
+            ? _buildBannerItem(banner ?? BannerModel(category: category))
+            : SizedBox(
+                height: 155,
+                width: double.infinity,
+                child: isUploading
+                    ? _buildUploadingAnimation()
+                    : Center(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.add_photo_alternate_rounded, size: 40),
+                            SizedBox(width: 8),
+                            HandyLabel(
+                              text: AppLocalizations.of(context)!
+                                  .clickheretouploadimage,
+                              fontSize: 14,
+                            )
+                          ],
+                        ),
+                      ),
+              ),
+      ),
+    );
+  }
+
+  Widget _buildUploadingAnimation() {
+    // Reset and start animation
+    if (!_uploadAnimationController.isAnimating) {
+      _uploadAnimationController.reset();
+      _uploadAnimationController.repeat();
+    }
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AnimatedBuilder(
+            animation: _uploadAnimationController,
+            builder: (context, child) {
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Animated progress indicator
+                  SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: CircularProgressIndicator(
+                      value: _uploadAnimation.value,
+                      color: AppColor.black,
+                      strokeWidth: 3,
+                    ),
                   ),
-                ),
-        ),
+                  // Upload icon in the center
+                  Icon(Icons.cloud_upload, size: 28),
+                ],
+              );
+            },
+          ),
+          SizedBox(height: 16),
+          HandyLabel(
+            text: "Uploading...",
+            fontSize: 14,
+          ),
+          SizedBox(height: 8),
+          HandyLabel(
+            text: "Please wait...",
+            fontSize: 12,
+            textcolor: Colors.grey,
+          ),
+        ],
       ),
     );
   }
