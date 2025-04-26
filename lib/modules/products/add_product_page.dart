@@ -90,7 +90,8 @@ class _AddProductPageState extends State<AddProductPage> {
         ? context.read<ProductsBloc>().add(UpdateProductEvent(
             avialability: _selectedAvailability,
             discount: _discountController.text,
-            productId: widget.productModel!.id ?? ''))
+            productId: widget.productModel!.id ?? '',
+            isFeatured: _selectedFeatured == 'Yes' ? true : false))
         : context.read<ProductsBloc>().add(AddNewProductEvent(
             productModel: ProductsModel(
               name: _nameController.text,
@@ -114,23 +115,6 @@ class _AddProductPageState extends State<AddProductPage> {
 
   @override
   void initState() {
-    super.initState();
-
-    _categoryMap = {
-      'Electricity': AppLocalizations.of(context)!.electricity,
-      'Plumbing': AppLocalizations.of(context)!.plumbing,
-    };
-
-    _availabilityMap = {
-      'in stock': AppLocalizations.of(context)!.instock,
-      'out of stock': AppLocalizations.of(context)!.outofstock,
-    };
-
-    _featuredMap = {
-      'Yes': AppLocalizations.of(context)!.yes,
-      'No': AppLocalizations.of(context)!.no,
-    };
-
     if (widget.isEdit) {
       _nameController.text = widget.productModel?.name ?? "";
       _priceController.text = widget.productModel?.price ?? "";
@@ -140,6 +124,24 @@ class _AddProductPageState extends State<AddProductPage> {
       _selectedCategory = widget.productModel?.category ?? 'Electricity';
       _imageUrl = widget.productModel?.image;
     }
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    _categoryMap = {
+      'Electricity': AppLocalizations.of(context)!.electricity,
+      'Plumbing': AppLocalizations.of(context)!.plumbing,
+    };
+    _availabilityMap = {
+      'in stock': AppLocalizations.of(context)!.instock,
+      'out of stock': AppLocalizations.of(context)!.outofstock,
+    };
+    _featuredMap = {
+      'Yes': AppLocalizations.of(context)!.yes,
+      'No': AppLocalizations.of(context)!.no,
+    };
+    super.didChangeDependencies();
   }
 
   @override
@@ -285,7 +287,7 @@ class _AddProductPageState extends State<AddProductPage> {
                 setState(() {
                   _selectedFeatured = _featuredMap.entries
                       .firstWhere((entry) => entry.value == value)
-                      .key; // Store English
+                      .key;
                 });
               },
             ),

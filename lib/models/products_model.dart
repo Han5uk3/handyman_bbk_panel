@@ -7,8 +7,9 @@ class ProductsModel {
   final String? availability;
   final String? category;
   final String? image;
+  final bool? isFeatured;
 
-  ProductsModel( {
+  ProductsModel({
     this.id,
     this.name,
     this.price,
@@ -17,6 +18,7 @@ class ProductsModel {
     this.availability,
     this.category,
     this.image,
+    this.isFeatured,
   });
 
   factory ProductsModel.fromMap(Map<String, dynamic> map) {
@@ -28,8 +30,8 @@ class ProductsModel {
       discount: map['discount'] ?? '0',
       availability: map['availability'] ?? '',
       category: map['category'] ?? '',
-
       image: map['image'] ?? 'No image selected',
+      isFeatured: map['isFeatured'] ?? false,
     );
   }
 
@@ -43,6 +45,7 @@ class ProductsModel {
       'availability': availability,
       'category': category,
       'image': image,
+      'isFeatured': isFeatured,
     };
   }
 }

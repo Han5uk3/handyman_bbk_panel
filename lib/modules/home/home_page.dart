@@ -33,13 +33,11 @@ class _HomePageState extends State<HomePage> {
   bool _showGrid = true;
   late LocationBloc _locationBloc;
 
-  // Streams for data
   Stream<int>? _workersCountStream;
   Stream<int>? _scheduledBookingsStream;
   Stream<int>? _urgentBookingsStream;
-  Stream<dynamic>? _productsStream; // Using dynamic to handle both int and num
+  Stream<dynamic>? _productsStream;
 
-  // Sample data for top workers
   final List<Map<String, dynamic>> _topWorkers = [
     {
       "name": "Mathew John",
@@ -86,9 +84,8 @@ class _HomePageState extends State<HomePage> {
       _workersCountStream = AppServices.getWorkerTotalJobsCount();
       _scheduledBookingsStream = AppServices.getWorkerScheduledJobsCount();
       _urgentBookingsStream = AppServices.getWorkerUrgentJobsCount();
-      // For worker, productsStream is actually earnings
-      _productsStream = AppServices
-          .getProductsCount(); // This is a placeholder for earnings stream
+
+      _productsStream = AppServices.getProductsCount();
     }
   }
 

@@ -28,11 +28,13 @@ class UpdateProductEvent extends ProductsEvent {
   final String productId;
   final String avialability;
   final String discount;
+  final bool isFeatured;
   const UpdateProductEvent(
       {required this.productId,
       required this.avialability,
-      required this.discount});
+      required this.discount,
+      required this.isFeatured});
 
   @override
-  List<Object> get props => [avialability, productId, discount];
+  List<Object> get props => [avialability, productId, discount, isFeatured];
 }
