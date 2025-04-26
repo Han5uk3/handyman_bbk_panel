@@ -382,11 +382,6 @@
     "uploading":"Uploading...",
     "pleasewait":"Please wait...",
     "featured":"Featured",
-
-
-
-
-
     "bookingcancelledsuccessfully":"Booking cancelled successfully",
     "noServicesAvailable": "No {serviceType} services available",
     "@noServicesAvailable": {

@@ -357,7 +357,6 @@
     "paid":"مدفوع",
     "unpaid":"غير مدفوع",
     "choose":"اختر",
-
     "failedtoloadaudio":"فشل في تحميل الصوت. يرجى المحاولة مرة أخرى.",
     "playbackerror":"خطأ في التشغيل. انقر للمحاولة مرة أخرى",
     "jobbstartedsuccessfully":"تم بدء الوظيفة بنجاح",
@@ -377,10 +376,6 @@
     "uploading":"تحميل...",
     "pleasewait":"يرجى الانتظار...",
     "featured":"مميز",
-
-
-
-
     "pleaseselectaworker":"يرجى اختيار عامل",
     "workerassignedsuccessfully":"تم تعيين العامل بنجاح",
     "noServicesAvailable": "لا توجد خدمات {serviceType} متاحة",
