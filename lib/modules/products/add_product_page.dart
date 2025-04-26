@@ -33,8 +33,10 @@ class _AddProductPageState extends State<AddProductPage> {
 
   late Map<String, String> _categoryMap;
   late Map<String, String> _availabilityMap;
+  late Map<String, String> _featuredMap;
   String _selectedCategory = 'Electricity';
   String _selectedAvailability = 'in stock';
+  String _selectedFeatured = 'No';
   File? _imageFile;
 
   String? _imageUrl;
@@ -122,6 +124,11 @@ class _AddProductPageState extends State<AddProductPage> {
     _availabilityMap = {
       'in stock': AppLocalizations.of(context)!.instock,
       'out of stock': AppLocalizations.of(context)!.outofstock,
+    };
+
+    _featuredMap = {
+      'Yes': AppLocalizations.of(context)!.yes,
+      'No': AppLocalizations.of(context)!.no,
     };
 
     if (widget.isEdit) {
@@ -266,6 +273,21 @@ class _AddProductPageState extends State<AddProductPage> {
                   minLines: 4,
                 ),
               ),
+            ),
+          ),
+          _buildFormField(
+            label: AppLocalizations.of(context)!.featured,
+            child: CustomDropdown(
+              items: _featuredMap.values.toList(),
+              hasBorder: true,
+              selectedValue: _featuredMap[_selectedFeatured],
+              onChanged: (value) {
+                setState(() {
+                  _selectedFeatured = _featuredMap.entries
+                      .firstWhere((entry) => entry.value == value)
+                      .key; // Store English
+                });
+              },
             ),
           ),
           _buildFormField(
