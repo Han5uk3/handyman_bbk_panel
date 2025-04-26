@@ -278,12 +278,13 @@ class _TrackWorkerScreenState extends State<TrackWorkerScreen> {
                     text: AppLocalizations.of(context)!.worker,
                     fontSize: 14,
                     isBold: false,
-                    textcolor: AppColor.lightGrey300,
+                    textcolor: AppColor.lightGrey600,
                   ),
                   SizedBox(height: 5),
                   HandyLabel(
                     text: bookingData?.workerData?.name ?? '',
                     isBold: true,
+                    fontSize: 18,
                   ),
                 ],
               ),
@@ -296,44 +297,51 @@ class _TrackWorkerScreenState extends State<TrackWorkerScreen> {
             ],
           ),
           Divider(color: AppColor.lightGrey400, thickness: 1),
-          Row(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                spacing: 15,
-                children: [
-                  HandyLabel(
-                    text: AppLocalizations.of(context)!.estimatedTimeOfArrival,
-                    fontSize: 14,
-                    isBold: false,
-                    textcolor: AppColor.lightGrey600,
-                  ),
-                  HandyLabel(
-                    text: timeArrival,
-                    fontSize: 14,
-                    isBold: false,
-                    textcolor: AppColor.black,
-                  ),
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  HandyLabel(
-                    text: AppLocalizations.of(context)!.distanceToReach,
-                    fontSize: 14,
-                    isBold: false,
-                    textcolor: AppColor.lightGrey600,
-                  ),
-                  HandyLabel(
-                    text: distanceText ?? '',
-                    fontSize: 14,
-                    isBold: false,
-                    textcolor: AppColor.black,
-                  ),
-                ],
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    HandyLabel(
+                      text:
+                          AppLocalizations.of(context)!.estimatedTimeOfArrival,
+                      fontSize: 14,
+                      isBold: false,
+                      textcolor: AppColor.lightGrey600,
+                    ),
+                    HandyLabel(
+                      text: timeArrival,
+                      fontSize: 14,
+                      isBold: false,
+                      textcolor: AppColor.black,
+                    ),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    HandyLabel(
+                      text: AppLocalizations.of(context)!.distanceToReach,
+                      fontSize: 14,
+                      isBold: false,
+                      textcolor: AppColor.lightGrey600,
+                    ),
+                    HandyLabel(
+                      text: distanceText ?? '',
+                      fontSize: 14,
+                      isBold: false,
+                      textcolor: AppColor.black,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
