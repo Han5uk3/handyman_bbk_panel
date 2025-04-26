@@ -363,10 +363,19 @@
     "unpaid":"Unpaid",
     "noimageavailable":"No image available",
     "failedtoloadimage":"Failed to load image",
-    
-
-
-
+    "failedtoloadaudio":"Failed to load audio. Please try again.",
+    "playbackerror":"Playback error. Tap to retry",
+    "jobstartedsuccessfully":"Job started successfully",
+    "markascompleted":"Mark as Completed",
+    "startjob":"Start Job",
+    "jobcanonlybestartedonthescheduleddate":"Job can only be started on the scheduled date",
+    "voicenote":"Voice Note",
+    "loadingaudioforfasterplayback":"Loading audio for faster playback",
+    "unabletoplayaudio":"Unable to play audio. Tap to retry.",
+    "issueImage":"Issue Image",
+    "before":"Before",
+    "after":"After",
+    "reviewbycustomer":"Review by Customer",
 
 
 

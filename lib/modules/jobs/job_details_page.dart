@@ -21,6 +21,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:io';
 
 class JobDetailsPage extends StatefulWidget {
@@ -243,7 +244,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
       setState(() {
         _isLoading = false;
         _hasError = true;
-        _errorMessage = 'Failed to load audio. Please try again.';
+        _errorMessage = AppLocalizations.of(context)!.failedtoloadaudio;
       });
     }
   }
@@ -272,7 +273,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
     setState(() {
       _hasError = true;
       _isAudioInitialized = false;
-      _errorMessage = 'Playback error. Tap to retry.';
+      _errorMessage = AppLocalizations.of(context)!.playbackerror;
     });
 
     try {
@@ -326,7 +327,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
           });
           HandySnackBar.show(
               context: context,
-              message: "Job started successfully",
+              message: AppLocalizations.of(context)!.jobstartedsuccessfully,
               isTrue: true);
           return;
         }
@@ -347,14 +348,14 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                       padding: EdgeInsets.fromLTRB(16, 5, 16, 28),
                       child: HandymanButton(
                         text: isWorkStarted
-                            ? "Mark as Completed"
-                            : "Start Job ($bookedDate)",
+                            ? AppLocalizations.of(context)!.markascompleted
+                            : "${AppLocalizations.of(context)!.startjob} ($bookedDate)",
                         isLoading: _isjobStartLoading,
                         onPressed: isStartButtonLocked
                             ? () {
                                 HandySnackBar.show(
                                     context: context,
-                                    message: "Only start on the scheduled date",
+                                    message: AppLocalizations.of(context)!.jobcanonlybestartedonthescheduleddate,
                                     isTrue: false);
                               }
                             : isWorkStarted
@@ -386,7 +387,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                   color: AppColor.green,
                   child: Center(
                     child: HandyLabel(
-                      text: "Completed on 24 Feb",
+                      text: "${AppLocalizations.of(context)!.completedon}24 Feb",
                       isBold: false,
                       fontSize: 14,
                       textcolor: AppColor.white,
@@ -409,7 +410,10 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                HandyLabel(text: "Issue Details", isBold: true, fontSize: 16),
+                HandyLabel(
+                    text: AppLocalizations.of(context)!.issueDetails,
+                    isBold: true,
+                    fontSize: 16),
                 const SizedBox(height: 10),
                 SizedBox(
                   child: Text(
@@ -466,7 +470,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        HandyLabel(text: "Voice Note", isBold: true, fontSize: 16),
+        HandyLabel(text: AppLocalizations.of(context)!.voicenote, isBold: true, fontSize: 16),
         const SizedBox(height: 10),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -498,7 +502,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Loading audio for faster playback...',
+                         AppLocalizations.of(context)!.loadingaudioforfasterplayback ,
                           style: TextStyle(
                               color: Colors.blue.shade700, fontSize: 12),
                         ),
@@ -530,7 +534,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Unable to play audio. Tap to retry.',
+                            AppLocalizations.of(context)!.unabletoplayaudio,
                             style: TextStyle(color: Colors.red.shade700),
                           ),
                         ),
@@ -696,7 +700,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        HandyLabel(text: "Issue Image", isBold: true, fontSize: 16),
+        HandyLabel(text: AppLocalizations.of(context)!.issueImage, isBold: true, fontSize: 16),
         const SizedBox(height: 10),
         GestureDetector(
           onTap: () {
@@ -829,8 +833,8 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const HandyLabel(
-                  text: "Customer Name",
+                 HandyLabel(
+                  text: AppLocalizations.of(context)!.customername,
                   isBold: false,
                   fontSize: 14,
                 ),
@@ -882,7 +886,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              HandyLabel(text: "Before", isBold: true, fontSize: 16),
+              HandyLabel(text: AppLocalizations.of(context)!.before, isBold: true, fontSize: 16),
               const SizedBox(height: 10),
               CachedNetworkImage(
                 height: 100,
@@ -905,7 +909,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              HandyLabel(text: "After", isBold: true, fontSize: 16),
+              HandyLabel(text: AppLocalizations.of(context)!.after, isBold: true, fontSize: 16),
               const SizedBox(height: 10),
               CachedNetworkImage(
                 height: 100,
@@ -935,7 +939,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          HandyLabel(text: "Rating by Customer", isBold: true, fontSize: 16),
+          HandyLabel(text:AppLocalizations.of(context)!.reviewbycustomer, isBold: true, fontSize: 16),
           const SizedBox(height: 24),
           RatingDisplay(
               rating: reviewModel?.rating ?? 0.0,

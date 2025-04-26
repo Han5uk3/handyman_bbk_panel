@@ -355,6 +355,23 @@
     "paid":"مدفوع",
     "unpaid":"غير مدفوع",
     "choose":"اختر",
+    "failedtoloadaudio":"فشل في تحميل الصوت. يرجى المحاولة مرة أخرى.",
+    "playbackerror":"خطأ في التشغيل. انقر للمحاولة مرة أخرى",
+    "jobbstartedsuccessfully":"تم بدء الوظيفة بنجاح",
+    "markascompleted":"تحديد كمكتمل",
+    "startjob":"بدء الوظيفة",
+    "jobcanonlybestartedonthescheduleddate":"لا يمكن بدء الوظيفة في تاريخ الموعد المحدد",
+    "voicenote":"ملاحظة صوتية",
+    "loadingaudioforfasterplayback":"تحميل الصوت للتشغيل أسرع",
+    "unabletoplayaudio":"غير قادر على تشغيل الصوت. انقر للمحاولة مرة أخرى.",
+    "issueImage":"صورة المشكلة",
+    "before":"قبل",
+    "after":"بعد",
+    "reviewbycustomer":"تقييم من قبل العميل",
+
+
+
+
     "pleaseselectaworker":"يرجى اختيار عامل",
     "workerassignedsuccessfully":"تم تعيين العامل بنجاح",
     "noServicesAvailable": "لا توجد خدمات {serviceType} متاحة",
