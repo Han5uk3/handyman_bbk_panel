@@ -5,6 +5,7 @@ import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
 import 'package:handyman_bbk_panel/common_widget/svgicon.dart';
 import 'package:handyman_bbk_panel/modules/login/otp/otp.dart';
 import 'package:handyman_bbk_panel/services/auth_services.dart';
+import 'package:handyman_bbk_panel/sheets/localization_sheet.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -61,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 AnimatedPadding(
-                  padding: EdgeInsets.only(top: reducedKeyboardInset + 60),
+                  padding: EdgeInsets.only(top: reducedKeyboardInset + 80),
                   duration: Duration(milliseconds: 300),
                   curve: Curves.easeOut,
                   child: _imageView(context),
@@ -92,6 +93,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _loginForm(BuildContext context) {
+    bool isLTR = Directionality.of(context) == TextDirection.ltr;
     return Container(
       decoration: BoxDecoration(
         color: Colors.transparent,
@@ -105,6 +107,16 @@ class _LoginPageState extends State<LoginPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Align(
+            alignment: isLTR ? Alignment.centerRight : Alignment.centerLeft,
+            child: IconButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.white),
+              ),
+              icon: const Icon(Icons.language, color: AppColor.black),
+              onPressed: () => Localization.showLanguageDialog(context),
+            ),
+          ),
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -117,8 +129,7 @@ class _LoginPageState extends State<LoginPage> {
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(
                 counterText: "",
-                hintText:
-                    AppLocalizations.of(context)!.enter9digitmobilenumber,
+                hintText: AppLocalizations.of(context)!.enter9digitmobilenumber,
                 prefixText: '+966 - ',
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(
