@@ -86,10 +86,27 @@ class StorageService {
   }
 
   static Future<void> deleteFile(String mainPath, String fileName) async {
+    final fullPath = '$mainPath/$fileName';
+
     try {
-      await storage.ref('$mainPath/$fileName').delete();
+      await storage.ref(fullPath).delete();
+      if (kDebugMode) print('✅ File deleted at: $fullPath');
+    } on FirebaseException catch (e) {
+      if (e.code == 'object-not-found') {
+        if (kDebugMode) {
+          debugPrint('⚠️ File not found at $fullPath, skipping delete...');
+        }
+      } else {
+        if (kDebugMode) {
+          debugPrint('❌ FirebaseException while deleting: ${e.code} - ${e.message}');
+        }
+        rethrow;
+      }
     } catch (e) {
-      if (kDebugMode) print('Failed to delete file: $e');
+      if (kDebugMode) {
+        debugPrint('❌ Unexpected error deleting file at $fullPath: $e');
+      }
+      rethrow;
     }
   }
 }

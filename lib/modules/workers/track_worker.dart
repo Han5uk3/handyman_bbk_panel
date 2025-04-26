@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:math' as Math;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -155,7 +154,6 @@ class _TrackWorkerScreenState extends State<TrackWorkerScreen> {
       }
 
       durationInMinutes = (totalDistance / 40) * 60;
-      log(durationInMinutes?.toString() ?? "0");
 
       distanceText =
           "${totalDistance.toStringAsFixed(1)} ${AppLocalizations.of(context)!.km}";
