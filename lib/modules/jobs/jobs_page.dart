@@ -212,7 +212,11 @@ class _JobsPageState extends State<JobsPage>
   Widget _scheduledTabContent() {
     return StreamBuilder<List<BookingModel>>(
       stream: AppServices.getBookingsStream(
-          isUrgent: false, status: "S", secondStatus: "A"),
+          isUrgent: false,
+          status: "S",
+          secondStatus: "A",
+          workingStatus: "W",
+          completedStatus: widget.isAdmin ? "C" : ""),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(

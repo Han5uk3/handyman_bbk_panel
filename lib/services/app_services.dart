@@ -99,11 +99,12 @@ class AppServices {
     });
   }
 
-  static Stream<List<BookingModel>> getBookingsStream({
-    bool? isUrgent,
-    String? status,
-    String? secondStatus,
-  }) {
+  static Stream<List<BookingModel>> getBookingsStream(
+      {bool? isUrgent,
+      String? status,
+      String? secondStatus,
+      String? workingStatus,
+      String? completedStatus}) {
     Query query = FirebaseCollections.bookings;
 
     if (isUrgent != null) {
@@ -112,7 +113,8 @@ class AppServices {
 
     if (status != null && secondStatus != null) {
       // If both status and secondStatus are provided, use `in` for an OR condition
-      query = query.where('status', whereIn: [status, secondStatus]);
+      query = query.where('status',
+          whereIn: [status, secondStatus, workingStatus, completedStatus]);
     } else if (status != null) {
       // If only status is provided
       query = query.where('status', isEqualTo: status);
