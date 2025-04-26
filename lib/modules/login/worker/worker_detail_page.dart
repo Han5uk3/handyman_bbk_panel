@@ -100,6 +100,10 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
         (AuthServices.phoneNumber?.isNotEmpty ?? false)) {
       phoneController.text = AuthServices.phoneNumber!.substring(4);
     }
+    serviceOptions = {
+      'Electricity': 'Electricity',
+      'Plumbing': 'Plumbing',
+    };
   }
 
   @override
@@ -139,7 +143,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
       selectedGender = 'Male';
     }
 
-    if (selectedService != null && serviceOptions != null) {
+    if (selectedService != null) {
       selectedService = selectedService;
     } else {
       selectedService = 'Plumbing';
@@ -518,11 +522,15 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
         CustomDropdown(
             items: serviceOptions?.values.toList() ?? [],
             hasBorder: true,
-            selectedValue: serviceOptions?[selectedService],
+            selectedValue: serviceOptions?[selectedService] ?? selectedService,
             onChanged: (value) {
               setState(() {
                 selectedService = serviceOptions?.entries
-                    .firstWhere((entry) => entry.value == value)
+                    .firstWhere(
+                      (entry) => entry.value == value,
+                      orElse: () =>
+                          MapEntry(selectedService ?? 'Plumbing', value),
+                    )
                     .key;
               });
             }),
