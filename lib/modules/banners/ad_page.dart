@@ -107,7 +107,7 @@ class _AdPageState extends State<AdPage> with SingleTickerProviderStateMixin {
 
           HandySnackBar.show(
             context: context,
-            message: "Banner added successfully",
+            message: AppLocalizations.of(context)!.banneraddedsuccessfully,
             isTrue: true,
           );
           return;
@@ -152,7 +152,7 @@ class _AdPageState extends State<AdPage> with SingleTickerProviderStateMixin {
         if (state is BannerDeletedSuccess) {
           HandySnackBar.show(
             context: context,
-            message: "Banner deleted successfully",
+            message: AppLocalizations.of(context)!.bannerdeletedsuccessfully,
             isTrue: true,
           );
           return;
@@ -379,7 +379,7 @@ class _AdPageState extends State<AdPage> with SingleTickerProviderStateMixin {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               HandyLabel(
-                text: "Home Product Ads",
+                text: AppLocalizations.of(context)!.homeProductAds,
                 fontSize: 18,
                 isBold: true,
               ),
@@ -487,12 +487,12 @@ class _AdPageState extends State<AdPage> with SingleTickerProviderStateMixin {
           ),
           SizedBox(height: 16),
           HandyLabel(
-            text: "Uploading...",
+            text: AppLocalizations.of(context)!.uploading,
             fontSize: 14,
           ),
           SizedBox(height: 8),
           HandyLabel(
-            text: "Please wait...",
+            text: AppLocalizations.of(context)!.pleasewait,
             fontSize: 12,
             textcolor: Colors.grey,
           ),
