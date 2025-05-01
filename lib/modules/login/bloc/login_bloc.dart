@@ -12,7 +12,9 @@ part 'login_state.dart';
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc() : super(LoginInitial()) {
     on<CreateAccountEvent>(_createAccount);
+     on<UpdateProfileEvent>(_updateProfile);
   }
+
 
   void _createAccount(
       CreateAccountEvent event, Emitter<LoginState> emit) async {
@@ -53,4 +55,30 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       emit(CreateAccountFailure(e.toString()));
     }
   }
+  void _updateProfile(UpdateProfileEvent event, Emitter<LoginState> emit) async {
+  String uid = HiveHelper.getUID();
+  emit(UpdateProfileLoading());
+
+  try {
+
+    final Map<String, dynamic> updatedData = {
+      "username": event.username,
+      "email": event.email,
+      "address": event.address,
+      "service": event.service,
+      "experience": event.experience,
+      
+    };
+
+    await FirebaseCollections.workers
+        .doc(uid)
+        .update(updatedData);
+
+    emit(UpdateProfileSuccess());
+  } catch (e) {
+    emit(UpdateProfileFailure(e.toString()));
+  }
 }
+}
+
+

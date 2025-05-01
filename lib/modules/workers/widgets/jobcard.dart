@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:handyman_bbk_panel/common_widget/jobsummarycard.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/models/booking_data.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
@@ -116,7 +117,8 @@ class _JobCardState extends State<JobCard> {
 
         return GestureDetector(
           onTap: (widget.bookingData.status != "A" &&
-                  widget.bookingData.status != "W")
+                  widget.bookingData.status != "W" &&
+                  widget.bookingData.status != "C")
               ? () {}
               : () {
                   Navigator.push(
@@ -432,7 +434,7 @@ class _JobCardState extends State<JobCard> {
             ),
             const SizedBox(width: 4),
             HandyLabel(
-              text: getformattedDate(widget.bookingData.date),
+              text: getformattedDate(widget.bookingData.date, context),
               fontSize: 14,
               isBold: true,
             ),
@@ -449,7 +451,7 @@ class _JobCardState extends State<JobCard> {
             ),
             const SizedBox(width: 4),
             HandyLabel(
-              text: widget.bookingData.time ?? 'N/A',
+              text: getlocalizedtime(widget.bookingData.time, context) ?? 'N/A',
               fontSize: 14,
               isBold: true,
             ),
@@ -459,19 +461,12 @@ class _JobCardState extends State<JobCard> {
             height: 40,
             color: AppColor.greyDark,
           ),
-          Row(children: [
-            const Icon(
-              Icons.attach_money,
-              size: 18,
-            ),
-            const SizedBox(width: 4),
-            HandyLabel(
-              text:
-                  "${AppLocalizations.of(context)!.sar} ${widget.bookingData.totalFee ?? 'N/A'}",
-              fontSize: 14,
-              isBold: true,
-            ),
-          ])
+          HandyLabel(
+            text:
+                "${AppLocalizations.of(context)!.sar} ${widget.bookingData.totalFee ?? 'N/A'}",
+            fontSize: 14,
+            isBold: true,
+          )
         ],
       ),
     );
@@ -505,7 +500,7 @@ class _JobCardState extends State<JobCard> {
         HandyLabel(
           textcolor: status == "C" ? AppColor.green : AppColor.red,
           text: status == "C"
-              ? "${AppLocalizations.of(context)!.completedon} ${getformattedDate(widget.bookingData.completedDateTime)}"
+              ? "${AppLocalizations.of(context)!.completedon} ${getformattedDate(widget.bookingData.completedDateTime, context)}"
               : AppLocalizations.of(context)!.cancelled,
           fontSize: 14,
         )
@@ -514,8 +509,20 @@ class _JobCardState extends State<JobCard> {
   }
 }
 
-String getformattedDate(DateTime? date) {
+String getformattedDate(DateTime? date, context) {
   if (date == null) return 'N/A';
   DateFormat dateFormat = DateFormat("dd MMM");
-  return dateFormat.format(date);
+  return getlocalizeddate(dateFormat.format(date), context);
+}
+
+getlocalizedtime(time, context) {
+  AppLocalizations ln = AppLocalizations.of(context)!;
+  String tod = time
+      .toString()
+      .substring((time.toString().length - 2), time.toString().length);
+  if (tod == "AM") {
+    return "${time.toString().substring(0, time.toString().length - 2)} ${ln.am}";
+  } else {
+    return "${time.toString().substring(0, time.toString().length - 2)} ${ln.pm}";
+  }
 }

@@ -9,6 +9,7 @@ import 'package:handyman_bbk_panel/common_widget/loader.dart';
 import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
 import 'package:handyman_bbk_panel/modules/workers/bloc/workers_bloc.dart';
+import 'package:handyman_bbk_panel/modules/workers/worker_rating_page.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -255,7 +256,7 @@ class _WorkerInfoPageState extends State<WorkerInfoPage> {
                 child: Text(AppLocalizations.of(context)!.noidproofavailable),
               ),
             ),
-          const Divider(thickness: 1, height: 32),
+
           // _detailRow("Registered On", workerData. ?? "Not available"),
         ],
       ),
@@ -329,40 +330,51 @@ class _WorkerInfoPageState extends State<WorkerInfoPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Divider(thickness: 1),
-          Row(
-            children: [
-              HandyLabel(
-                text: "0.0",
-                isBold: true,
-                fontSize: 16,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: RatingBar.builder(
-                  initialRating: 0.0,
-                  minRating: 0.5,
-                  maxRating: 5.0,
-                  direction: Axis.horizontal,
-                  allowHalfRating: true,
-                  unratedColor: AppColor.lightGrey300,
-                  itemCount: 5,
-                  itemSize: 20,
-                  ignoreGestures: true,
-                  itemPadding: EdgeInsets.zero,
-                  itemBuilder: (context, _) =>
-                      Icon(Icons.star, color: AppColor.yellow),
-                  onRatingUpdate: (rating) {},
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const WorkerRatingPage(),
                 ),
-              ),
-              HandyLabel(
-                text: "${0} ${AppLocalizations.of(context)!.reviews}",
-                isBold: false,
-                fontSize: 16,
-              ),
-            ],
+              );
+            },
+            child: Row(
+              children: [
+                HandyLabel(
+                  text: "0.0",
+                  isBold: true,
+                  fontSize: 16,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: RatingBar.builder(
+                    initialRating: 0.0,
+                    minRating: 0.5,
+                    maxRating: 5.0,
+                    direction: Axis.horizontal,
+                    allowHalfRating: true,
+                    unratedColor: AppColor.lightGrey300,
+                    itemCount: 5,
+                    itemSize: 20,
+                    ignoreGestures: true,
+                    itemPadding: EdgeInsets.zero,
+                    itemBuilder: (context, _) =>
+                        Icon(Icons.star, color: AppColor.yellow),
+                    onRatingUpdate: (rating) {},
+                  ),
+                ),
+                HandyLabel(
+                  text: "${0} ${AppLocalizations.of(context)!.reviews}",
+                  isBold: false,
+                  fontSize: 16,
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 20),
           // _detailRow("Total Jobs", workerData.totalJobs?.toString() ?? "0"),
@@ -423,8 +435,8 @@ class _WorkerInfoPageState extends State<WorkerInfoPage> {
       return AppLocalizations.of(context)!.female;
     } else if (text == "Other") {
       return AppLocalizations.of(context)!.other;
-    } else if (text == "Electrical") {
-      return AppLocalizations.of(context)!.electrical;
+    } else if (text == "Electricity") {
+      return AppLocalizations.of(context)!.electricity;
     } else if (text == "Plumbing") {
       return AppLocalizations.of(context)!.plumbing;
     }

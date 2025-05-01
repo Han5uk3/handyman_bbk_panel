@@ -19,3 +19,31 @@ class CreateAccountEvent extends LoginEvent {
   @override
   List<Object> get props => [userData];
 }
+
+class UpdateProfileEvent extends LoginEvent {
+ 
+  final String username;
+  final String email;
+  final String address;
+  final String service;
+  final String experience;
+
+  const UpdateProfileEvent({
+   
+    required this.username,
+    required this.email,
+    required this.address,
+    required this.service,
+    required this.experience,
+  });
+
+  @override
+  List<Object> get props => [
+       
+        username,
+        email,
+        address,
+        service,
+        experience,
+      ];
+}
