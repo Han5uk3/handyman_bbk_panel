@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:handyman_bbk_panel/models/review_model.dart';
 import 'package:handyman_bbk_panel/modules/workers/widgets/ratingreview.dart';
 
 class WorkerRatingPage extends StatelessWidget {
@@ -16,9 +17,10 @@ class WorkerRatingPage extends StatelessWidget {
   }
 
   Widget _buildBody(context) {
+    ReviewModel? reviewModel;
     return ListView.builder(
       itemBuilder: (context, index) {
-        return RatingreviewCard();
+        return RatingreviewCard(reviewModel: reviewModel);
       },
       itemCount: 3,
     );
