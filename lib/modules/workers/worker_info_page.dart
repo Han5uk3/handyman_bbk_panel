@@ -435,8 +435,8 @@ class _WorkerInfoPageState extends State<WorkerInfoPage> {
       return AppLocalizations.of(context)!.female;
     } else if (text == "Other") {
       return AppLocalizations.of(context)!.other;
-    } else if (text == "Electrical") {
-      return AppLocalizations.of(context)!.electrical;
+    } else if (text == "Electricity") {
+      return AppLocalizations.of(context)!.electricity;
     } else if (text == "Plumbing") {
       return AppLocalizations.of(context)!.plumbing;
     }

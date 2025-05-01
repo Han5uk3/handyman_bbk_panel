@@ -1,5 +1,8 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +10,7 @@ import 'package:handyman_bbk_panel/common_widget/appbar.dart';
 import 'package:handyman_bbk_panel/common_widget/button.dart';
 import 'package:handyman_bbk_panel/common_widget/custom_drop_drown.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
+import 'package:handyman_bbk_panel/common_widget/loader.dart';
 import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
 import 'package:handyman_bbk_panel/common_widget/text_field.dart';
 import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
@@ -41,10 +45,11 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   String? selectedTitle;
   String? selectedPhoneCode = '+966';
   String? selectedGender = 'Male';
-  String? selectedService = 'Plumbing';
+  String? selectedService = 'Electricity';
   String? selectedExperience = 'Less than 1 year';
   DateTime selectedDate = DateTime.now();
   File? _profileImageFile;
+  String? _profileImageUrl;
   File? _idImageFile;
   bool isEdit = false;
   bool isLoading = false;
@@ -64,6 +69,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   @override
   void initState() {
     super.initState();
+    _loadProfileImage();
     selectedTitle = titleOptions.first;
     selectedPhoneCode = phoneCodeOptions.first;
     selectedGender = genderOptions?[selectedGender];
@@ -75,7 +81,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
     }
 
     if (widget.isEditProfile ?? false) {
-      isEdit = true;
+      isEdit = false;
       selectedGender = widget.workerData?.gender;
       selectedService = widget.workerData?.service ?? 'Plumbing';
       selectedExperience = widget.workerData?.experience;
@@ -104,6 +110,51 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
       'Electricity': 'Electricity',
       'Plumbing': 'Plumbing',
     };
+  }
+
+  Future<void> _loadProfileImage() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('workers')
+        .doc(HiveHelper.getUID())
+        .get();
+
+    setState(() {
+      _profileImageUrl = snapshot.data()?['profilePic'];
+    });
+  }
+
+  Future<void> _pickImage(bool isprofileimage) async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile == null) return;
+    isprofileimage
+        ? setState(() {
+            _profileImageFile = File(pickedFile.path);
+          })
+        : setState(() {
+            _idImageFile = File(pickedFile.path);
+          });
+
+    await _uploadImageToFirebase();
+  }
+
+  Future<void> _uploadImageToFirebase() async {
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child('workers')
+        .child('${HiveHelper.getUID()}.jpg');
+
+    await ref.putFile(_profileImageFile!);
+    final downloadUrl = await ref.getDownloadURL();
+
+    await FirebaseFirestore.instance
+        .collection('workers')
+        .doc(HiveHelper.getUID())
+        .update({'profilePic': downloadUrl});
+
+    setState(() {
+      _profileImageUrl = downloadUrl;
+    });
   }
 
   @override
@@ -156,32 +207,6 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
     }
   }
 
-  Future<void> _pickImage({required bool isProfilePic}) async {
-    try {
-      final picker = ImagePicker();
-      final pickedFile = await picker.pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 80,
-      );
-
-      if (pickedFile != null) {
-        setState(() {
-          if (isProfilePic) {
-            _profileImageFile = File(pickedFile.path);
-          } else {
-            _idImageFile = File(pickedFile.path);
-          }
-        });
-      }
-    } catch (e) {
-      HandySnackBar.shower(
-        context: context,
-        message: "${AppLocalizations.of(context)!.errorpickingimage}: $e",
-        isTrue: false,
-      );
-    }
-  }
-
   String _formattedDate(DateTime date) =>
       '${date.day}/${date.month}/${date.year}';
 
@@ -208,7 +233,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
       _showValidationError(
           AppLocalizations.of(context)!.pleaseenteryourlocation);
       return false;
-    } else if (_idImageFile == null) {
+    } else if (!isEdit && _idImageFile == null) {
       _showValidationError(AppLocalizations.of(context)!.pleaseuploadidproof);
       return false;
     }
@@ -258,6 +283,13 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
 
   void _handleProfileUpdate() {
     if (!_validateForm()) return;
+    context.read<LoginBloc>().add(UpdateProfileEvent(
+          username: nameController.text,
+          email: emailController.text,
+          address: locationController.text,
+          service: selectedService ?? "",
+          experience: selectedExperience ?? "",
+        ));
     HandySnackBar.show(
       context: context,
       isTrue: true,
@@ -285,7 +317,7 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
                           ? _handleProfileUpdate
                           : () {
                               setState(() {
-                                isEdit = true;
+                                isEdit = !isEdit;
                               });
                             },
                       child: Text(
@@ -364,24 +396,34 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
   }
 
   Widget _buildProfileImageSection() {
+    final imageWidget = _profileImageFile != null
+        ? Image.file(_profileImageFile!, fit: BoxFit.cover)
+        : (_profileImageUrl != null
+            ? CachedNetworkImage(
+                imageUrl: _profileImageUrl!,
+                placeholder: (context, url) => HandymanLoader(),
+                errorWidget: (context, url, error) => Icon(Icons.error),
+                fit: BoxFit.cover,
+              )
+            : Icon(Icons.account_circle, size: 100));
     return Align(
       alignment: Alignment.center,
       child: Stack(
         alignment: Alignment.bottomRight,
         children: [
           CircleAvatar(
-            radius: 65,
-            backgroundColor: Colors.grey[200],
-            backgroundImage: _profileImageFile != null
-                ? FileImage(_profileImageFile!)
-                : null,
-            child: _profileImageFile == null
-                ? Icon(Icons.person, size: 50, color: Colors.grey)
-                : null,
-          ),
+              radius: 70,
+              backgroundColor: Colors.grey[300],
+              child: ClipOval(
+                child: SizedBox(
+                  width: 140,
+                  height: 140,
+                  child: imageWidget,
+                ),
+              )),
           if (isEdit)
             GestureDetector(
-              onTap: () => _pickImage(isProfilePic: true),
+              onTap: () => _pickImage(true),
               child: Container(
                 padding: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
@@ -565,90 +607,115 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
           fontSize: 16,
         ),
         const SizedBox(height: 12),
-        GestureDetector(
-          onTap: () => _pickImage(isProfilePic: false),
-          child: _idImageFile != null
-              ? Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      height: 120,
-                      width: MediaQuery.of(context).size.width * 0.5,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.file(
-                          _idImageFile!,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: -5,
-                      right: -15,
-                      child: Container(
-                        height: 25,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 4,
-                            ),
-                          ],
-                        ),
-                        child: IconButton(
-                          icon: Icon(Icons.close, color: Colors.red),
-                          iconSize: 17,
-                          padding: const EdgeInsets.all(4),
-                          constraints: const BoxConstraints(),
-                          onPressed: () {
-                            setState(() {
-                              _idImageFile = null;
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              : DottedBorder(
-                  borderType: BorderType.RRect,
-                  strokeWidth: 2,
-                  radius: const Radius.circular(12),
-                  color: AppColor.lightGrey400,
-                  dashPattern: const [6, 5],
+        widget.isProfile
+            ? GestureDetector(
+                onTap: () =>
+                    _showEnlargedImage(context, widget.workerData!.idProof!),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(12)),
                   child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 30),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.add_photo_alternate_outlined,
-                            color: AppColor.lightGrey400, size: 40),
-                        const SizedBox(height: 8),
-                        Text(
-                          AppLocalizations.of(context)!.uploadidproof,
-                          style: TextStyle(
-                            color: AppColor.lightGrey400,
-                            fontSize: 12,
-                          ),
+                    width: MediaQuery.of(context).size.width * 0.55,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
                         ),
                       ],
                     ),
+                    child: CachedNetworkImage(
+                        imageUrl: widget.workerData!.idProof ?? '',
+                        fit: BoxFit.cover),
                   ),
                 ),
-        ),
+              )
+            : GestureDetector(
+                onTap: () => _pickImage(false),
+                child: _idImageFile != null
+                    ? Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Container(
+                            height: 120,
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.file(
+                                _idImageFile!,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: -5,
+                            right: -15,
+                            child: Container(
+                              height: 25,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 4,
+                                  ),
+                                ],
+                              ),
+                              child: IconButton(
+                                icon: Icon(Icons.close, color: Colors.red),
+                                iconSize: 17,
+                                padding: const EdgeInsets.all(4),
+                                constraints: const BoxConstraints(),
+                                onPressed: () {
+                                  setState(() {
+                                    _idImageFile = null;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : DottedBorder(
+                        borderType: BorderType.RRect,
+                        strokeWidth: 2,
+                        radius: const Radius.circular(12),
+                        color: AppColor.lightGrey400,
+                        dashPattern: const [6, 5],
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 30),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add_photo_alternate_outlined,
+                                  color: AppColor.lightGrey400, size: 40),
+                              const SizedBox(height: 8),
+                              Text(
+                                AppLocalizations.of(context)!.uploadidproof,
+                                style: TextStyle(
+                                  color: AppColor.lightGrey400,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+              ),
       ],
     );
   }
@@ -786,6 +853,47 @@ class _WorkerDetailPageState extends State<WorkerDetailPage> {
           )
         ],
       ),
+    );
+  }
+
+  void _showEnlargedImage(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.7,
+                  ),
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    fit: BoxFit.contain,
+                    placeholder: (context, url) =>
+                        const Center(child: HandymanLoader()),
+                    errorWidget: (context, url, error) => const Center(
+                      child: Icon(Icons.error, size: 50, color: Colors.red),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
