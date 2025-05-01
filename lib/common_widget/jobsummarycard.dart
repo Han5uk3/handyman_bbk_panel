@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/common_widget/location_history_display.dart';
@@ -49,7 +48,7 @@ class Jobsummarycard extends StatelessWidget {
             children: [
               SizedBox(height: 1),
               HandyLabel(
-                text: jobType,
+                text: getlocalizedjobname(jobType, context),
                 isBold: true,
                 fontSize: 18,
               ),
@@ -74,7 +73,7 @@ class Jobsummarycard extends StatelessWidget {
                       size: 18,
                     ),
                     HandyLabel(
-                      text: date,
+                      text: getlocalizeddate(date, context),
                       fontSize: 14,
                       isBold: true,
                     ),
@@ -90,7 +89,7 @@ class Jobsummarycard extends StatelessWidget {
                       size: 18,
                     ),
                     HandyLabel(
-                      text: time,
+                      text: getlocalizedtime(time, context),
                       fontSize: 14,
                       isBold: true,
                     ),
@@ -104,7 +103,7 @@ class Jobsummarycard extends StatelessWidget {
                     HandyLabel(
                       text: "${AppLocalizations.of(context)!.sar} $price",
                       fontSize: 14,
-                      isBold: false,
+                      isBold: true,
                     ),
                     SizedBox(
                       width: 4,
@@ -113,6 +112,7 @@ class Jobsummarycard extends StatelessWidget {
                       text: _getPaidtext(paymentStatus, context),
                       textcolor: paymentStatus ? AppColor.green : AppColor.red,
                       fontSize: 14,
+                      isBold: true,
                     ),
                   ])
                 ],
@@ -129,5 +129,60 @@ class Jobsummarycard extends StatelessWidget {
     return paymentDone
         ? AppLocalizations.of(context)!.paid
         : AppLocalizations.of(context)!.unpaid;
+  }
+}
+
+getlocalizedtime(time, context) {
+  AppLocalizations ln = AppLocalizations.of(context)!;
+  String tod = time
+      .toString()
+      .substring((time.toString().length - 2), time.toString().length);
+  if (tod == "AM") {
+    return "${time.toString().substring(0, time.toString().length - 2)} ${ln.am}";
+  } else {
+    return "${time.toString().substring(0, time.toString().length - 2)} ${ln.pm}";
+  }
+}
+
+getlocalizeddate(date, context) {
+  AppLocalizations ln = AppLocalizations.of(context)!;
+  String month = date
+      .toString()
+      .substring((date.toString().length - 3), date.toString().length);
+
+  switch (month) {
+    case "Jan":
+      return "${date.toString().substring(0, date.toString().length - 3)} ${ln.jan}";
+    case "Feb":
+      return "${date.toString().substring(0, date.toString().length - 3)} ${ln.feb}";
+    case "Mar":
+      return "${date.toString().substring(0, date.toString().length - 3)} ${ln.mar}";
+    case "Apr":
+      return "${date.toString().substring(0, date.toString().length - 3)} ${ln.apr}";
+    case "May":
+      return "${date.toString().substring(0, date.toString().length - 3)} ${ln.may}";
+    case "Jun":
+      return "${date.toString().substring(0, date.toString().length - 3)} ${ln.jun}";
+    case "Jul":
+      return "${date.toString().substring(0, date.toString().length - 3)} ${ln.jul}";
+    case "Aug":
+      return "${date.toString().substring(0, date.toString().length - 3)} ${ln.aug}";
+    case "Sep":
+      return "${date.toString().substring(0, date.toString().length - 3)} ${ln.sep}";
+    case "Oct":
+      return "${date.toString().substring(0, date.toString().length - 3)} ${ln.oct}";
+    case "Nov":
+      return "${date.toString().substring(0, date.toString().length - 3)} ${ln.nov}";
+    case "Dec":
+      return "${date.toString().substring(0, date.toString().length - 3)} ${ln.dec}";
+  }
+}
+
+getlocalizedjobname(name, context) {
+  AppLocalizations ln = AppLocalizations.of(context)!;
+  if (name == "Electricity") {
+    return ln.electricity;
+  } else {
+    return ln.plumbing;
   }
 }

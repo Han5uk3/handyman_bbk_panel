@@ -355,7 +355,8 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                             ? () {
                                 HandySnackBar.show(
                                     context: context,
-                                    message: AppLocalizations.of(context)!.jobcanonlybestartedonthescheduleddate,
+                                    message: AppLocalizations.of(context)!
+                                        .jobcanonlybestartedonthescheduleddate,
                                     isTrue: false);
                               }
                             : isWorkStarted
@@ -387,7 +388,8 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                   color: AppColor.green,
                   child: Center(
                     child: HandyLabel(
-                      text: "${AppLocalizations.of(context)!.completedon}24 Feb",
+                      text:
+                          "${AppLocalizations.of(context)!.completedon} 24 Feb",
                       isBold: false,
                       fontSize: 14,
                       textcolor: AppColor.white,
@@ -470,7 +472,10 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        HandyLabel(text: AppLocalizations.of(context)!.voicenote, isBold: true, fontSize: 16),
+        HandyLabel(
+            text: AppLocalizations.of(context)!.voicenote,
+            isBold: true,
+            fontSize: 16),
         const SizedBox(height: 10),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -502,7 +507,8 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                         AppLocalizations.of(context)!.loadingaudioforfasterplayback ,
+                          AppLocalizations.of(context)!
+                              .loadingaudioforfasterplayback,
                           style: TextStyle(
                               color: Colors.blue.shade700, fontSize: 12),
                         ),
@@ -700,7 +706,10 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        HandyLabel(text: AppLocalizations.of(context)!.issueImage, isBold: true, fontSize: 16),
+        HandyLabel(
+            text: AppLocalizations.of(context)!.issueImage,
+            isBold: true,
+            fontSize: 16),
         const SizedBox(height: 10),
         GestureDetector(
           onTap: () {
@@ -833,7 +842,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                 HandyLabel(
+                HandyLabel(
                   text: AppLocalizations.of(context)!.customername,
                   isBold: false,
                   fontSize: 14,
@@ -886,7 +895,10 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              HandyLabel(text: AppLocalizations.of(context)!.before, isBold: true, fontSize: 16),
+              HandyLabel(
+                  text: AppLocalizations.of(context)!.before,
+                  isBold: true,
+                  fontSize: 16),
               const SizedBox(height: 10),
               CachedNetworkImage(
                 height: 100,
@@ -895,7 +907,9 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                 errorWidget: (context, url, error) => Container(
                   height: 100,
                   width: 150,
-                  decoration: BoxDecoration(),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColor.lightGrey400)),
                   child: Center(
                     child: Icon(Icons.error),
                   ),
@@ -909,7 +923,10 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              HandyLabel(text: AppLocalizations.of(context)!.after, isBold: true, fontSize: 16),
+              HandyLabel(
+                  text: AppLocalizations.of(context)!.after,
+                  isBold: true,
+                  fontSize: 16),
               const SizedBox(height: 10),
               CachedNetworkImage(
                 height: 100,
@@ -918,7 +935,9 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                 errorWidget: (context, url, error) => Container(
                   height: 100,
                   width: 150,
-                  decoration: BoxDecoration(),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColor.lightGrey400)),
                   child: Center(
                     child: Icon(Icons.error),
                   ),
@@ -939,7 +958,10 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          HandyLabel(text:AppLocalizations.of(context)!.reviewbycustomer, isBold: true, fontSize: 16),
+          HandyLabel(
+              text: AppLocalizations.of(context)!.reviewbycustomer,
+              isBold: true,
+              fontSize: 16),
           const SizedBox(height: 24),
           RatingDisplay(
               rating: reviewModel?.rating ?? 0.0,
@@ -974,3 +996,4 @@ String getformattedDate(DateTime? date) {
   DateFormat dateFormat = DateFormat("dd MMM");
   return dateFormat.format(date);
 }
+

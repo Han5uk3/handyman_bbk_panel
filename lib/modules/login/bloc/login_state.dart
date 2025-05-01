@@ -23,3 +23,15 @@ class CreateAccountFailure extends LoginState {
   List<Object> get props => [error];
 }
 
+class UpdateProfileLoading extends LoginState {}
+
+class UpdateProfileSuccess extends LoginState {}
+
+class UpdateProfileFailure extends LoginState {
+  final String error;
+
+  const UpdateProfileFailure(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
