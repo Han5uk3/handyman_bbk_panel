@@ -1,10 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
+import 'package:handyman_bbk_panel/models/review_model.dart';
+import 'package:handyman_bbk_panel/models/userdata_models.dart';
+import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 
-class RatingreviewCard extends StatelessWidget {
-  const RatingreviewCard({super.key});
+class RatingreviewCard extends StatefulWidget {
+  const RatingreviewCard({super.key, this.reviewModel});
+
+  final ReviewModel? reviewModel;
+
+  @override
+  State<RatingreviewCard> createState() => _RatingreviewCardState();
+}
+
+class _RatingreviewCardState extends State<RatingreviewCard> {
+  UserData? workerData;
+
+  @override
+  void initState() {
+    fetchWorkerData();
+    super.initState();
+  }
+
+  void fetchWorkerData() async {
+    workerData =
+        await AppServices.getUserById(isWorkerData: true, uid: AppServices.uid);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +37,7 @@ class RatingreviewCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 16),
-          const Row(
+          Row(
             spacing: 10,
             children: [
               CircleAvatar(
@@ -25,9 +48,12 @@ class RatingreviewCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    HandyLabel(text: "John Doe", isBold: true, fontSize: 18),
                     HandyLabel(
-                        text: "Rated on : 12/12/2022",
+                        text: workerData?.name ?? "",
+                        isBold: true,
+                        fontSize: 18),
+                    HandyLabel(
+                        text: "Rated on : ${widget.reviewModel?.createdAt}",
                         isBold: false,
                         fontSize: 14),
                   ])
@@ -40,14 +66,14 @@ class RatingreviewCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               HandyLabel(
-                text: "0.0",
+                text: widget.reviewModel?.rating.toString() ?? "",
                 isBold: true,
                 fontSize: 16,
               ),
               RatingBar.builder(
                 itemBuilder: (context, _) =>
                     const Icon(Icons.star, color: Colors.amber),
-                initialRating: 0,
+                initialRating: widget.reviewModel?.rating ?? 0.0,
                 onRatingUpdate: (rating) {},
                 minRating: 1,
                 direction: Axis.horizontal,
@@ -60,8 +86,10 @@ class RatingreviewCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          const HandyLabel(
-              text: "Review text here", isBold: false, fontSize: 14),
+          HandyLabel(
+              text: widget.reviewModel?.review ?? "",
+              isBold: false,
+              fontSize: 14),
         ],
       ),
     );
