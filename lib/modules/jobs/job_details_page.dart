@@ -496,14 +496,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                   ),
                   child: Row(
                     children: [
-                      SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.blue.shade300,
-                        ),
-                      ),
+                      HandymanLoader(),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -593,10 +586,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                                   child: SizedBox(
                                     width: 24,
                                     height: 24,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: AppColor.green,
-                                    ),
+                                    child: HandymanLoader(),
                                   ),
                                 )
                               : Icon(
@@ -996,4 +986,3 @@ String getformattedDate(DateTime? date) {
   DateFormat dateFormat = DateFormat("dd MMM");
   return dateFormat.format(date);
 }
-

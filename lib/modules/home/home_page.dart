@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
 import 'package:handyman_bbk_panel/common_widget/button.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
+import 'package:handyman_bbk_panel/common_widget/loader.dart';
 import 'package:handyman_bbk_panel/common_widget/svgicon.dart';
 import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
@@ -38,32 +41,9 @@ class _HomePageState extends State<HomePage> {
   Stream<int>? _urgentBookingsStream;
   Stream<dynamic>? _productsStream;
 
-  final List<Map<String, dynamic>> _topWorkers = [
-    {
-      "name": "Mathew John",
-      "job": "Plumber",
-      "color": AppColor.yellow,
-      "jobcount": "24"
-    },
-    {
-      "name": "John Samson",
-      "job": "Electrician",
-      "color": AppColor.purple,
-      "jobcount": "69"
-    },
-    {
-      "name": "Ladis Washeroom",
-      "job": "Plumber",
-      "color": AppColor.pink,
-      "jobcount": "4"
-    },
-    {
-      "name": "Allison Begrers",
-      "job": "Electrician",
-      "color": AppColor.lightblue,
-      "jobcount": "2"
-    },
-  ];
+  Stream<List<Map<String, dynamic>>>? _topWorkersStream;
+  bool _isLoadingTopWorkers = true;
+  List<Map<String, dynamic>> _topWorkers = [];
 
   @override
   void initState() {
@@ -80,6 +60,8 @@ class _HomePageState extends State<HomePage> {
       _urgentBookingsStream =
           AppServices.getScheduleUrgentCount(isUrgent: true);
       _productsStream = AppServices.getProductsCount();
+      _topWorkersStream = AppServices.getTopWorkersList();
+      _listenToTopWorkersStream();
     } else {
       _workersCountStream = AppServices.getWorkerTotalJobsCount();
       _scheduledBookingsStream = AppServices.getWorkerScheduledJobsCount();
@@ -92,6 +74,20 @@ class _HomePageState extends State<HomePage> {
   void _toggleGrid() {
     setState(() {
       _showGrid = !_showGrid;
+    });
+  }
+
+  void _listenToTopWorkersStream() {
+    _topWorkersStream?.listen((workers) {
+      setState(() {
+        _topWorkers = workers.take(4).toList(); // Limit to top 4 workers
+        _isLoadingTopWorkers = false;
+      });
+    }, onError: (error) {
+      print('Error fetching top workers: $error');
+      setState(() {
+        _isLoadingTopWorkers = false;
+      });
     });
   }
 
@@ -456,12 +452,33 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildTopWorkersSection() {
+    if (_isLoadingTopWorkers) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: HandymanLoader()
+        ),
+      );
+    }
+
+    if (_topWorkers.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text('No top workers data available'),
+        ),
+      );
+    }
+
     return Column(
       children: _topWorkers.map((worker) => _buildWorkerCard(worker)).toList(),
     );
   }
 
-  Widget _buildWorkerCard(Map<String, dynamic> worker) {
+  Widget _buildWorkerCard(Map<String, dynamic> workerData) {
+    log(workerData.toString());
+    final worker = workerData['worker'] as UserData;
+    final completedJobsCount = workerData['completedJobsCount'] as int;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       child: Card(
@@ -475,28 +492,17 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
-              Container(
-                height: 50,
-                width: 50,
-                decoration: BoxDecoration(
-                  color: worker["color"],
-                  border: Border.all(color: AppColor.lightGrey200),
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                ),
-                margin: const EdgeInsets.fromLTRB(0, 8, 8, 8),
-                padding: const EdgeInsets.all(10),
-              ),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     HandyLabel(
-                      text: worker["name"],
+                      text: worker.name ?? '',
                       isBold: true,
                       fontSize: 16,
                     ),
                     HandyLabel(
-                      text: worker["job"],
+                      text: worker.service ?? '',
                       isBold: false,
                       fontSize: 16,
                       textcolor: AppColor.lightGrey700,
@@ -505,7 +511,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               Text(
-                "${worker["jobcount"]} ${AppLocalizations.of(context)!.jobs}",
+                "$completedJobsCount ${AppLocalizations.of(context)!.jobs}",
                 style: TextStyle(color: AppColor.lightGrey700),
               )
             ],

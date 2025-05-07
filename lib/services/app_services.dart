@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:handyman_bbk_panel/helpers/collections.dart';
@@ -7,6 +9,7 @@ import 'package:handyman_bbk_panel/models/booking_data.dart';
 import 'package:handyman_bbk_panel/models/orders_model.dart';
 import 'package:handyman_bbk_panel/models/product_review_model.dart';
 import 'package:handyman_bbk_panel/models/products_model.dart';
+import 'package:handyman_bbk_panel/models/review_model.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
 
 class AppServices {
@@ -113,16 +116,11 @@ class AppServices {
     }
 
     if (status != null && secondStatus != null) {
-      // If both status and secondStatus are provided, use `in` for an OR condition
       query = query.where('status',
           whereIn: [status, secondStatus, workingStatus, completedStatus]);
     } else if (status != null) {
-      // If only status is provided
       query = query.where('status', isEqualTo: status);
     }
-
-    // Uncomment the orderBy if you want to order by date
-    // query = query.orderBy('date', descending: true);
 
     return query.snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
@@ -170,7 +168,6 @@ class AppServices {
     return FirebaseCollections.bookings
         .where('workerData.uid', isEqualTo: uid)
         .where('status', isEqualTo: "C")
-        // .where('isBookingcancel', isEqualTo: true)
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
@@ -256,6 +253,66 @@ class AppServices {
                   (e) => ProductReviewModel.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [];
+    });
+  }
+
+  static Stream<List<Map<String, dynamic>>> getTopWorkersList() {
+    return FirebaseCollections.bookings
+        .where('status', isEqualTo: 'C')
+        .snapshots()
+        .asyncMap((snapshot) async {
+      final workerCountMap = <String, int>{};
+      final workerServiceMap = <String, String>{};
+
+      for (var doc in snapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        final workerId = data['workerData']['uid'] as String;
+
+        if (!workerServiceMap.containsKey(workerId)) {
+          workerServiceMap[workerId] = data['workerData']['service'] as String;
+        }
+
+        workerCountMap[workerId] = (workerCountMap[workerId] ?? 0) + 1;
+      }
+
+      final sortedWorkerIds = workerCountMap.keys.toList()
+        ..sort((a, b) => workerCountMap[b]!.compareTo(workerCountMap[a]!));
+
+      final topWorkerIds =
+          sortedWorkerIds.take(min(10, sortedWorkerIds.length)).toList();
+
+      if (topWorkerIds.isEmpty) {
+        return <Map<String, dynamic>>[];
+      }
+
+      final usersSnapshot = await FirebaseCollections.workers
+          .where('uid', whereIn: topWorkerIds)
+          .get();
+
+      final result = usersSnapshot.docs.map((doc) {
+        final userData = UserData.fromMap(doc.data() as Map<String, dynamic>);
+        return {
+          'worker': userData,
+          'completedJobsCount': workerCountMap[userData.uid] ?? 0
+        };
+      }).toList();
+
+      result.sort((a, b) => (b['completedJobsCount'] as int)
+          .compareTo(a['completedJobsCount'] as int));
+
+      return result;
+    });
+  }
+
+  static Stream<List<ReviewModel>> getWorkerReviews(String workerId) {
+    return FirebaseCollections.reviews
+        .where('workerId', isEqualTo: workerId)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return ReviewModel.fromDocument(data, doc.id);
+      }).toList();
     });
   }
 }

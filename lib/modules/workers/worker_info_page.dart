@@ -7,9 +7,11 @@ import 'package:handyman_bbk_panel/common_widget/button.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
 import 'package:handyman_bbk_panel/common_widget/loader.dart';
 import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
+import 'package:handyman_bbk_panel/models/review_model.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
 import 'package:handyman_bbk_panel/modules/workers/bloc/workers_bloc.dart';
 import 'package:handyman_bbk_panel/modules/workers/worker_rating_page.dart';
+import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -339,41 +341,61 @@ class _WorkerInfoPageState extends State<WorkerInfoPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const WorkerRatingPage(),
+                  builder: (context) =>
+                      WorkerRatingPage(workerId: widget.workerData.uid ?? ''),
                 ),
               );
             },
-            child: Row(
-              children: [
-                HandyLabel(
-                  text: "0.0",
-                  isBold: true,
-                  fontSize: 16,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: RatingBar.builder(
-                    initialRating: 0.0,
-                    minRating: 0.5,
-                    maxRating: 5.0,
-                    direction: Axis.horizontal,
-                    allowHalfRating: true,
-                    unratedColor: AppColor.lightGrey300,
-                    itemCount: 5,
-                    itemSize: 20,
-                    ignoreGestures: true,
-                    itemPadding: EdgeInsets.zero,
-                    itemBuilder: (context, _) =>
-                        Icon(Icons.star, color: AppColor.yellow),
-                    onRatingUpdate: (rating) {},
-                  ),
-                ),
-                HandyLabel(
-                  text: "${0} ${AppLocalizations.of(context)!.reviews}",
-                  isBold: false,
-                  fontSize: 16,
-                ),
-              ],
+            child: StreamBuilder<List<ReviewModel>>(
+              stream: AppServices.getWorkerReviews(widget.workerData.uid ?? ''),
+              builder: (context, snapshot) {
+                double averageRating = 0.0;
+                int reviewCount = 0;
+
+                if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                  final reviews = snapshot.data!;
+                  reviewCount = reviews.length;
+                  double totalRating = 0.0;
+                  for (var review in reviews) {
+                    totalRating += review.rating;
+                  }
+                  averageRating = totalRating / reviewCount;
+                }
+
+                return Row(
+                  children: [
+                    HandyLabel(
+                      text: averageRating.toStringAsFixed(1),
+                      isBold: true,
+                      fontSize: 16,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: RatingBar.builder(
+                        initialRating: averageRating,
+                        minRating: 0.5,
+                        maxRating: 5.0,
+                        direction: Axis.horizontal,
+                        allowHalfRating: true,
+                        unratedColor: AppColor.lightGrey300,
+                        itemCount: 5,
+                        itemSize: 20,
+                        ignoreGestures: true,
+                        itemPadding: EdgeInsets.zero,
+                        itemBuilder: (context, _) =>
+                            Icon(Icons.star, color: AppColor.yellow),
+                        onRatingUpdate: (rating) {},
+                      ),
+                    ),
+                    HandyLabel(
+                      text:
+                          "$reviewCount ${AppLocalizations.of(context)!.reviews}",
+                      isBold: false,
+                      fontSize: 16,
+                    ),
+                  ],
+                );
+              },
             ),
           ),
           const SizedBox(height: 20),

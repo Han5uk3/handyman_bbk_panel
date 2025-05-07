@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:handyman_bbk_panel/common_widget/loader.dart';
 import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
 import 'package:handyman_bbk_panel/modules/workers/bloc/workers_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -174,10 +175,7 @@ class _JobCompletionBottomSheetState extends State<JobCompletionBottomSheet> {
                           SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
+                            child: HandymanLoader()
                           ),
                           SizedBox(width: 10),
                           Text(
