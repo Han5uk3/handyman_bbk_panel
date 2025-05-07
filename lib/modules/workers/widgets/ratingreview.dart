@@ -5,6 +5,7 @@ import 'package:handyman_bbk_panel/models/review_model.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
 import 'package:handyman_bbk_panel/services/app_services.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RatingreviewCard extends StatefulWidget {
   const RatingreviewCard({super.key, this.reviewModel});
@@ -53,7 +54,7 @@ class _RatingreviewCardState extends State<RatingreviewCard> {
                         isBold: true,
                         fontSize: 18),
                     HandyLabel(
-                        text: "Rated on : ${widget.reviewModel?.createdAt}",
+                        text: "${AppLocalizations.of(context)!.ratedon} : ${widget.reviewModel?.createdAt}",
                         isBold: false,
                         fontSize: 14),
                   ])
