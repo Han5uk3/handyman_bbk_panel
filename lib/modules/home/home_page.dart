@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:handyman_bbk_panel/common_widget/appbar.dart';
 import 'package:handyman_bbk_panel/common_widget/button.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
+import 'package:handyman_bbk_panel/common_widget/loader.dart';
 import 'package:handyman_bbk_panel/common_widget/svgicon.dart';
 import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
@@ -455,7 +456,7 @@ class _HomePageState extends State<HomePage> {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: CircularProgressIndicator(),
+          child: HandymanLoader()
         ),
       );
     }

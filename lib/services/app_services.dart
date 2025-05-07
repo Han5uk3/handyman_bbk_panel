@@ -9,6 +9,7 @@ import 'package:handyman_bbk_panel/models/booking_data.dart';
 import 'package:handyman_bbk_panel/models/orders_model.dart';
 import 'package:handyman_bbk_panel/models/product_review_model.dart';
 import 'package:handyman_bbk_panel/models/products_model.dart';
+import 'package:handyman_bbk_panel/models/review_model.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
 
 class AppServices {
@@ -300,6 +301,18 @@ class AppServices {
           .compareTo(a['completedJobsCount'] as int));
 
       return result;
+    });
+  }
+
+  static Stream<List<ReviewModel>> getWorkerReviews(String workerId) {
+    return FirebaseCollections.reviews
+        .where('workerId', isEqualTo: workerId)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return ReviewModel.fromDocument(data, doc.id);
+      }).toList();
     });
   }
 }
