@@ -7,10 +7,12 @@ import 'package:handyman_bbk_panel/common_widget/appbar.dart';
 import 'package:handyman_bbk_panel/common_widget/button.dart';
 import 'package:handyman_bbk_panel/common_widget/custom_drop_drown.dart';
 import 'package:handyman_bbk_panel/common_widget/label.dart';
+import 'package:handyman_bbk_panel/common_widget/outline_button.dart';
 import 'package:handyman_bbk_panel/common_widget/snakbar.dart';
 import 'package:handyman_bbk_panel/common_widget/text_field.dart';
 import 'package:handyman_bbk_panel/models/products_model.dart';
 import 'package:handyman_bbk_panel/modules/products/bloc/products_bloc.dart';
+import 'package:handyman_bbk_panel/modules/products/reviews_display_page.dart';
 import 'package:handyman_bbk_panel/sheets/delete_product_sheet.dart';
 import 'package:handyman_bbk_panel/styles/color.dart';
 import 'package:image_picker/image_picker.dart';
@@ -194,13 +196,31 @@ class _AddProductPageState extends State<AddProductPage> {
           builder: (context, state) {
             return Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
-              child: HandymanButton(
-                text: widget.isEdit
-                    ? AppLocalizations.of(context)!.savechanges
-                    : AppLocalizations.of(context)!.addproduct,
-                isLoading: state is ProductAddingLoadingState ||
-                    state is UpdateProductLoadingState,
-                onPressed: _logProductData,
+              child: Row(
+                spacing: 10,
+                children: [
+                  widget.isEdit
+                      ? Expanded(
+                          child: HandymanOutlineButton(
+                              text: AppLocalizations.of(context)!.seereviews,
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => ReviewsDisplayPage(
+                                        productId: widget.productModel!.id!)));
+                              }),
+                        )
+                      : SizedBox(),
+                  Expanded(
+                    child: HandymanButton(
+                      text: widget.isEdit
+                          ? AppLocalizations.of(context)!.savechanges
+                          : AppLocalizations.of(context)!.addproduct,
+                      isLoading: state is ProductAddingLoadingState ||
+                          state is UpdateProductLoadingState,
+                      onPressed: _logProductData,
+                    ),
+                  ),
+                ],
               ),
             );
           },
@@ -349,6 +369,7 @@ class _AddProductPageState extends State<AddProductPage> {
   }
 
   Widget _buildImagePicker() {
+    bool isEdit = widget.isEdit;
     final bool showNetworkImage =
         widget.isEdit && _imageUrl != null && _imageFile == null;
 
@@ -377,35 +398,37 @@ class _AddProductPageState extends State<AddProductPage> {
                           ),
                   ),
                 ),
-                Positioned(
-                  top: -5,
-                  right: -15,
-                  child: Container(
-                    height: 25,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 4,
+                isEdit
+                    ? SizedBox.shrink()
+                    : Positioned(
+                        top: -5,
+                        right: -15,
+                        child: Container(
+                          height: 25,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 4,
+                              ),
+                            ],
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.close, color: Colors.red),
+                            iconSize: 17,
+                            padding: const EdgeInsets.all(4),
+                            constraints: const BoxConstraints(),
+                            onPressed: () {
+                              setState(() {
+                                _imageFile = null;
+                                if (showNetworkImage) _imageUrl = null;
+                              });
+                            },
+                          ),
                         ),
-                      ],
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.close, color: Colors.red),
-                      iconSize: 17,
-                      padding: const EdgeInsets.all(4),
-                      constraints: const BoxConstraints(),
-                      onPressed: () {
-                        setState(() {
-                          _imageFile = null;
-                          if (showNetworkImage) _imageUrl = null;
-                        });
-                      },
-                    ),
-                  ),
-                ),
+                      ),
               ],
             )
           : DottedBorder(

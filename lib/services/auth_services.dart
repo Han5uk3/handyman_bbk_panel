@@ -8,6 +8,7 @@ import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
 import 'package:handyman_bbk_panel/modules/home/home.dart';
 import 'package:handyman_bbk_panel/modules/login/worker/worker_detail_page.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AuthServices {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -136,7 +137,7 @@ class AuthServices {
     if (uid == null) {
       HandySnackBar.show(
         context: context,
-        message: "Something went wrong. Try again.",
+        message: AppLocalizations.of(context)!.somethingwentwrongpleasetryagain,
         isTrue: false,
       );
       return;

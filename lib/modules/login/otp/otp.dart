@@ -267,7 +267,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 isResending
                     ? AppLocalizations.of(context)!.sendingOtp
                     : (resendSeconds > 0
-                        ? "${AppLocalizations.of(context)!.resendotpin} 00:${resendSeconds.toString().padLeft(2, '0')} s"
+                        ? "${AppLocalizations.of(context)!.resendotpin} 00:${resendSeconds.toString().padLeft(2, '0')} ${AppLocalizations.of(context)!.sText}"
                         : AppLocalizations.of(context)!.resendotp),
                 style: TextStyle(
                   color: resendSeconds > 0 || isResending

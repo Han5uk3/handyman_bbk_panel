@@ -5,6 +5,7 @@ import 'package:handyman_bbk_panel/helpers/hive_helpers.dart';
 import 'package:handyman_bbk_panel/models/banners_model.dart';
 import 'package:handyman_bbk_panel/models/booking_data.dart';
 import 'package:handyman_bbk_panel/models/orders_model.dart';
+import 'package:handyman_bbk_panel/models/product_review_model.dart';
 import 'package:handyman_bbk_panel/models/products_model.dart';
 import 'package:handyman_bbk_panel/models/userdata_models.dart';
 
@@ -237,6 +238,24 @@ class AppServices {
         data['id'] = doc.id;
         return BannerModel.fromMap(data);
       }).toList();
+    });
+  }
+
+  static Stream<List<ProductReviewModel>> fetchProductReviews(
+      String productId) {
+    return FirebaseCollections.products.doc(productId).snapshots().map((event) {
+      final data = event.data() as Map<String, dynamic>?;
+      if (data == null) {
+        throw Exception("Product data not found");
+      }
+
+      final reviews = data['reviews'] as List<dynamic>?;
+
+      return reviews
+              ?.map(
+                  (e) => ProductReviewModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [];
     });
   }
 }
