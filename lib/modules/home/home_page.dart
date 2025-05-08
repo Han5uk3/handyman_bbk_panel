@@ -455,9 +455,7 @@ class _HomePageState extends State<HomePage> {
     if (_isLoadingTopWorkers) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: HandymanLoader()
-        ),
+            padding: const EdgeInsets.all(16.0), child: HandymanLoader()),
       );
     }
 

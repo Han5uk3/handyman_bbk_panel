@@ -375,39 +375,8 @@ class _WorkersPageState extends State<WorkersPage>
                 const SizedBox(height: 10),
                 _detailRow(AppLocalizations.of(context)!.jobsinqueue, "0"),
                 const SizedBox(height: 10),
-                const Divider(thickness: 1),
-                Row(
-                  children: [
-                    const HandyLabel(
-                      text: "0.0",
-                      isBold: true,
-                      fontSize: 16,
-                    ),
-                    const SizedBox(width: 5),
-                    Expanded(
-                      child: RatingBar.builder(
-                        initialRating: 0.0,
-                        minRating: 0.5,
-                        maxRating: 5.0,
-                        direction: Axis.horizontal,
-                        allowHalfRating: true,
-                        unratedColor: AppColor.lightGrey300,
-                        itemCount: 5,
-                        itemSize: 20,
-                        ignoreGestures: true,
-                        itemPadding: EdgeInsets.zero,
-                        itemBuilder: (context, _) =>
-                            Icon(Icons.star, color: AppColor.yellow),
-                        onRatingUpdate: (rating) {},
-                      ),
-                    ),
-                    HandyLabel(
-                      text: "0 ${AppLocalizations.of(context)!.reviews}",
-                      isBold: false,
-                      fontSize: 16,
-                    )
-                  ],
-                )
+        
+              
               ],
             ),
           ),
